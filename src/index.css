@@ -1,14 +1,119 @@
 body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font: 14px "Century Gothic", Futura, sans-serif;
+  margin: 20px;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+ol, ul {
+  padding-left: 30px;
+}
+
+.board-row:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.status {
+  margin-bottom: 10px;
+}
+
+.square {
+  background: #fff;
+  border: 1px solid #999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 34px;
+}
+
+.square:focus {
+  outline: none;
+}
+
+.kbd-navigation .square:focus {
+  background: #ddd;
+}
+
+.game {
+  display: flex;
+  flex-direction: row;
+}
+
+.game-info {
+  margin-left: 20px;
+}
+
+.color, .shape, .direction, .sound{
+  cursor: pointer;
+  /* border-width: 0 0 4px 0;
+  border-style: dotted;
+  border-color: #ff0000;
+  border-image-source: url('assets/dots.svg');
+  border-image-slice: 33% 33%;
+  border-image-repeat: round; */
+}
+
+.rule-editor {
+  border: 1px solid #CCC;
+  padding: 20px;
+  border-radius: 6px;
+  user-select: none;
+}
+
+.shape-select{
+  fill: transparent;
+  stroke: #4E77AA;
+  stroke-width: 4px;
+  width: 33px;
+  cursor: pointer;
+  height: 33px;
+  animation:spin 30s linear infinite;
+}
+
+.shape-select path{
+  transition: all 300ms ease-in;
+}
+
+.color-picker{
+  height: 48px;
+  width: 27px;
+  cursor: pointer;
+  transition: .2s ease-in;
+  animation: pulse 1s ease-in-out infinite;
+  animation-direction: alternate;
+}
+
+.direction-arrow{
+  height: 33px;
+  width: 33px;
+  fill: transparent;
+  stroke: #4E77AA;
+  stroke-width: 2px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: .2s ease-in;
+}
+/* 
+.direction-arrow-wrapper{
+  animation: wiggle 4s ease-in-out infinite;
+  animation-direction: alternate;
+} */
+
+/* @keyframes wiggle { 50% { transform: rotate(1deg); } 100% { transform: rotate(-1deg); } } */
+
+@keyframes pulse {
+  100% { transform: scale(0.98, 1.04) translate(0px,2px); }
+}
+
+@keyframes spin {
+  100% {
+       -webkit-transform: rotate(-360deg);
+       transform:rotate(-360deg);
+   }
 }
