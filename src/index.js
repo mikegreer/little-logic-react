@@ -14,10 +14,16 @@ class RuleEditor extends React.Component {
             points: this.props.points || 3,
             color: this.props.color || 0,
             direction: this.props.direction || 90,
+            directionLabel: this.angleToCompass(this.props.direction),
             visualDirection: this.props.direction || 90,
             audioSample: this.props.audioSample || 0,
             colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
         };
+    }
+
+    angleToCompass = (angle) => {
+        let compassLabels = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        return compassLabels[Math.floor(angle / 45)];
     }
 
     polyClick = () => {
@@ -40,37 +46,50 @@ class RuleEditor extends React.Component {
         this.setState({ color: colorIndex });
     }
 
+    samplePickerClick = () => {
+        let newSample = parseInt(this.state.audioSample) + 1;
+        if(newSample > 8) newSample = 0;
+        this.setState({ audioSample: newSample });
+    }
+
     directionPickerClick = () => {
         let direction = ((parseInt(this.state.direction) + 45) % 360);
         this.setState({direction: direction});
         let visualDirection = parseInt(this.state.visualDirection) + 45;
         this.setState({visualDirection: visualDirection});
+        this.setState({directionLabel: this.angleToCompass(direction)});
     }
 
     render() {
         return(
             <div className="rule-editor">
+                if
                 <PolyPicker
                     points={this.state.points}
                     onClick = {() => this.polyClick()}
                 ></PolyPicker>
+                and
                 <ColorPicker
                     color={this.state.color}
                     colorList={this.state.colorList}
                     onClick = {() => this.colorPickerClick()}
                 ></ColorPicker>
+                <br />
+                then
                 <DirectionPicker
                     direction={this.state.direction}
                     visualDirection={this.state.visualDirection}
                     onClick = {() => this.directionPickerClick()}
                 ></DirectionPicker>
+                and
                 <SamplePicker
                     audioSample={this.state.audioSample}
+                    onClick = {() => this.samplePickerClick()}
                 ></SamplePicker>
                 <RuleOutput
                     points={this.state.points}
                     color={this.state.color}
-                    direction={this.state.direction}
+                    direction={this.state.directionLabel}
                     audioSample={this.state.audioSample}
                 ></RuleOutput>
             </div>
@@ -128,9 +147,30 @@ class DirectionPicker extends React.Component {
 }
 
 class SamplePicker extends React.Component {
+    samplePosition = (value) => {
+        var xGrid = (value % 3) * 14.5 + 4;
+        var yGrid = (Math.floor(value/3) % 3) * 14.5 + 3.5;
+        return {
+            x: xGrid,
+            y: yGrid,
+        }
+    }
+
     render() {
+        let positions = this.samplePosition(this.props.audioSample);
+        console.log(positions);
         return (
-            <div></div>
+            <svg className="drum" onClick={() => this.props.onClick()} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 46.9 46.9">
+                <g>
+                    <path className="st0" d="M45.2,39.6c0,3.1-2.6,5.7-5.7,5.7H7.1c-3.1,0-5.7-2.6-5.7-5.7V7.1c0-3.1,2.6-5.7,5.7-5.7h32.4
+                        c3.1,0,5.7,2.6,5.7,5.7V39.6z"/>
+                </g>
+                <line className="st1" x1="1.4" y1="16" x2="45.2" y2="16"/>
+                <line className="st1" x1="1.4" y1="30.7" x2="45.2" y2="30.7"/>
+                <line className="st1" x1="30.6" y1="1.4" x2="30.6" y2="45.3"/>
+                <line className="st1" x1="16" y1="1.4" x2="16" y2="45.3"/>
+                <rect className="drum-marker" x={positions.x} y={positions.y} rx="4" ry="4" width="10" height="10"/>
+            </svg>
         );
     }
 }
@@ -233,7 +273,7 @@ class PolyPicker extends React.Component {
                 points="5"
                 color="0"
                 direction="45"
-                audioSample="3"
+                audioSample="0"
             ></RuleEditor>
             <RuleEditor
                 points="3"

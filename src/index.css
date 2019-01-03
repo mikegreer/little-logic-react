@@ -72,6 +72,7 @@ ol, ul {
   stroke-width: 4px;
   width: 33px;
   cursor: pointer;
+  padding: 0 10px;
   height: 33px;
   animation:spin 30s linear infinite;
 }
@@ -81,9 +82,10 @@ ol, ul {
 }
 
 .color-picker{
-  height: 48px;
   width: 27px;
   cursor: pointer;
+  padding: 0 10px;
+  display: inline-block;
   transition: .2s ease-in;
   animation: pulse 1s ease-in-out infinite;
   animation-direction: alternate;
@@ -99,11 +101,34 @@ ol, ul {
   margin-top: 4px;
   transition: .2s ease-in;
 }
-/* 
+
 .direction-arrow-wrapper{
-  animation: wiggle 4s ease-in-out infinite;
-  animation-direction: alternate;
-} */
+  display: inline-block;
+  padding: 10px;
+  /* animation: wiggle 4s ease-in-out infinite;
+  animation-direction: alternate; */
+}
+
+.drum{
+  width: 33px;
+  cursor: pointer;
+  padding: 0 10px;
+}
+.drum .drum-marker{
+  transition: all 100ms ease-in;
+}
+.st0{
+  fill:none;
+  stroke:#4E77AA;
+  stroke-width:2;
+  stroke-miterlimit:10;
+}
+.st1{
+  fill:none;
+  stroke:#4E77AA;
+  stroke-miterlimit:10;
+}
+.drum-marker{fill: #4E77AA;}
 
 /* @keyframes wiggle { 50% { transform: rotate(1deg); } 100% { transform: rotate(-1deg); } } */
 
