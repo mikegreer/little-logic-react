@@ -208,19 +208,55 @@ class PolyPicker extends React.Component {
     }
   }
   
-//   class Square extends React.Component {
-//     render() {
-//       return (
-//         <button className="square">
-//             <Poly 
-//                 points={this.props.value} 
-//                 onClick={() => this.addOne()}
-//             />
-//         </button>
-//       );
-//     }
-//   }
-  
+class Square extends React.Component {
+    render() {
+        return (
+        <button className="square" onClick={(x, y) => this.props.onClick(this.props.col, this.props.row)}>
+            .
+        </button>
+        );
+    }
+}
+
+class Emitter extends React.Component {
+    render() {
+        return (
+        <button className="square">
+            o
+        </button>
+        );
+    }
+}
+
+class LogicRow extends React.Component {
+    render() {
+        const cells = [];
+        this.props.data.forEach((cell, index) => {
+            //empty cell
+            if(cell === 0){
+                cells.push(<Square key={index} row={index} col={this.props.rowIndex} type={cell} onClick={(x, y) => this.props.onClick(x, y)}></Square>);
+            }
+            if(cell === 1){
+                cells.push(<Emitter key={index} type={cell}></Emitter>);
+            }
+        });
+        return(
+            <div>{cells}</div>
+        );
+    }
+}
+
+class LogicGrid extends React.Component {
+    render() {
+        const grid = [];
+        this.props.level.forEach((row, index) => {
+            grid.push(<LogicRow key={index} rowIndex={index} data={row} onClick={(x, y) => this.props.onClick(x, y)}></LogicRow>);
+        });
+        return(
+            <div>{grid}</div>
+        );
+    }
+}
 //   class Board extends React.Component {
 //     constructor(props) {
 //         super(props);
@@ -266,9 +302,27 @@ class PolyPicker extends React.Component {
 //   }
   
   class Game extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            level: this.props.level,
+        };
+    }
+
+    cellClick = (x, y) => {
+        console.log(x, y, this.state.level[x]);
+        let level = this.state.level.slice();
+        level[x][y] = level[x][y] + 1;
+        this.setState({level: level});
+    }
+
     render() {
       return (
         <div className="game">
+            <LogicGrid
+                level={this.props.level}
+                onClick = {(x, y) => this.cellClick(x, y)}
+            ></LogicGrid>
             <RuleEditor
                 points="5"
                 color="0"
@@ -286,10 +340,22 @@ class PolyPicker extends React.Component {
     }
   }
   
+  const gameLevel = [
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,1,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+  ]
   // ========================================
   
   ReactDOM.render(
-    <Game />,
+    <Game level={gameLevel}/>,
     document.getElementById('root')
   );
   
