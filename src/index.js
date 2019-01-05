@@ -12,6 +12,7 @@ class RuleEditor extends React.Component {
         super(props);
         this.state = {
             points: this.props.points || 3,
+            pointsLabel: this.shapeToString(parseInt(this.props.points)),
             color: this.props.color || 0,
             direction: this.props.direction || 90,
             directionLabel: this.angleToCompass(this.props.direction),
@@ -19,6 +20,22 @@ class RuleEditor extends React.Component {
             audioSample: this.props.audioSample || 0,
             colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
         };
+    }
+
+    shapeToString = (points) => {
+        let shapeLabel;
+        if(points === 3){
+            shapeLabel = "triangle";
+        }else if(points === 4){
+            shapeLabel = "square";
+        }else if(points === 5){
+            shapeLabel = "pentagon";
+        }else if(points === 6){
+            shapeLabel = "hexagon";
+        }else if(points === 7){
+            shapeLabel = "heptagon";
+        }
+        return shapeLabel;
     }
 
     angleToCompass = (angle) => {
@@ -87,7 +104,7 @@ class RuleEditor extends React.Component {
                     onClick = {() => this.samplePickerClick()}
                 ></SamplePicker>
                 <RuleOutput
-                    points={this.state.points}
+                    points={this.state.pointsLabel}
                     color={this.state.color}
                     direction={this.state.directionLabel}
                     audioSample={this.state.audioSample}
@@ -158,7 +175,6 @@ class SamplePicker extends React.Component {
 
     render() {
         let positions = this.samplePosition(this.props.audioSample);
-        console.log(positions);
         return (
             <svg className="drum" onClick={() => this.props.onClick()} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 46.9 46.9">
                 <g>
@@ -211,8 +227,16 @@ class PolyPicker extends React.Component {
 class Square extends React.Component {
     render() {
         return (
-        <button className="square" onClick={(x, y) => this.props.onClick(this.props.col, this.props.row)}>
-            .
+        <button
+            className="square"
+            onClick={(x, y) => this.props.onClick(this.props.col, this.props.row)}
+        >
+            {
+              this.props.cellType === 1 ? <Emitter></Emitter> : null
+            }
+            {
+              this.props.cellType === 2 ? <Router></Router> : null
+            }
         </button>
         );
     }
@@ -221,9 +245,25 @@ class Square extends React.Component {
 class Emitter extends React.Component {
     render() {
         return (
-        <button className="square">
-            o
-        </button>
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 46 46">
+                <g>
+                    <path className="st0" d="M45.2,39.6c0,3.1-2.6,5.7-5.7,5.7H7.1c-3.1,0-5.7-2.6-5.7-5.7V7.1c0-3.1,2.6-5.7,5.7-5.7h32.4
+                        c3.1,0,5.7,2.6,5.7,5.7V39.6z"/>
+                </g>
+            </svg>
+        );
+    }
+}
+
+class Router extends React.Component {
+    render() {
+        return (
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="10px" y="10px" viewBox="-10 -10 66 66">
+                <g>
+                    <path className="st0" d="M45.2,39.6c0,3.1-2.6,5.7-5.7,5.7H7.1c-3.1,0-5.7-2.6-5.7-5.7V7.1c0-3.1,2.6-5.7,5.7-5.7h32.4
+                        c3.1,0,5.7,2.6,5.7,5.7V39.6z"/>
+                </g>
+            </svg>
         );
     }
 }
@@ -233,12 +273,18 @@ class LogicRow extends React.Component {
         const cells = [];
         this.props.data.forEach((cell, index) => {
             //empty cell
-            if(cell === 0){
-                cells.push(<Square key={index} row={index} col={this.props.rowIndex} type={cell} onClick={(x, y) => this.props.onClick(x, y)}></Square>);
-            }
-            if(cell === 1){
-                cells.push(<Emitter key={index} type={cell}></Emitter>);
-            }
+            // if(cell === 0){
+            cells.push(<Square 
+                key={index}
+                row={index}
+                col={this.props.rowIndex}
+                cellType={cell}
+                onClick={(x, y) => this.props.onClick(x, y)}
+            ></Square>);
+            // }
+            // if(cell === 1){
+                // cells.push(<Emitter key={index} type={cell}></Emitter>);
+            // }
         });
         return(
             <div>{cells}</div>
@@ -257,72 +303,70 @@ class LogicGrid extends React.Component {
         );
     }
 }
-//   class Board extends React.Component {
-//     constructor(props) {
-//         super(props);
-//         this.state = {
-//           squares: [
-//             2,2,2,
-//             1,1,1,
-//             2,2,2
-//           ],
-//         };
-//     }
 
-//     renderSquare(i) {
-//       return (
-//         <Square
-//             value={this.state.squares[i]}
-//         />
-//       )
-//     }
-  
-//     render() {
-//       return (
-//         <div>
-//           <div className="board-row">
-//             {this.renderSquare(0)}
-//             {this.renderSquare(1)}
-//             {this.renderSquare(2)}
-//           </div>
-//           <div className="board-row">
-//             {this.renderSquare(3)}
-//             {this.renderSquare(4)}
-//             {this.renderSquare(5)}
-//           </div>
-//           <div className="board-row">
-//             {this.renderSquare(6)}
-//             {this.renderSquare(7)}
-//             {this.renderSquare(8)}
-//           </div>
-          
-//         </div>
-//       );
-//     }
-//   }
-  
-  class Game extends React.Component {
+class PaintBoxButton extends React.Component {
+    render () {
+        return (
+            <button onClick={() => this.props.onClick()}>
+                {this.props.label}
+            </button>
+        );
+    }
+}
+class PaintBox extends React.Component {
+    render() {
+        const buttons = [];
+        this.props.cellTypes.forEach((type, index) => {
+            buttons.push(
+                <PaintBoxButton 
+                    key = {type.label}
+                    label={type.label}
+                    onClick={()=>this.props.onClick(type.id)}
+                ></PaintBoxButton>
+            );
+        });
+        return(
+            <div>{buttons}</div>
+        );
+    }
+}
+
+class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             level: this.props.level,
+            currentlyAdding: 0,
+            cellTypes: [
+                {id: 0, label: "Blank"},
+                {id: 1, label: "Emitter"},
+                {id: 2, label: "Router"},
+                {id: 3, label: "Gate"},
+            ]
         };
     }
 
     cellClick = (x, y) => {
-        console.log(x, y, this.state.level[x]);
-        let level = this.state.level.slice();
-        level[x][y] = level[x][y] + 1;
+        const level = this.state.level.slice();
+        level[x][y] = this.state.currentlyAdding;
         this.setState({level: level});
+    }
+
+    setType = (type) => {
+        this.setState({currentlyAdding: type});
     }
 
     render() {
       return (
         <div className="game">
             <LogicGrid
-                level={this.props.level}
+                level = {this.props.level}
                 onClick = {(x, y) => this.cellClick(x, y)}
             ></LogicGrid>
+            <PaintBox
+                cellTypes = {this.state.cellTypes}
+                onClick = {(type) => this.setType(type)}    
+            ></PaintBox>
             <RuleEditor
                 points="5"
                 color="0"
@@ -338,9 +382,24 @@ class LogicGrid extends React.Component {
         </div>
       );
     }
-  }
+}
   
-  const gameLevel = [
+//data model
+/*
+settings
+  cellsWide
+  cellsHigh
+emitters
+  [x, y, releaseFrequency, releaseRules]
+routers
+  [x, y, rules[]]
+goals
+  [x, y, rules[]]
+particles
+  [x, y, dx, dy, color, shape]
+*/
+
+const gameLevel = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,1,0,0,0,0,0],
@@ -351,11 +410,10 @@ class LogicGrid extends React.Component {
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
-  ]
+];
   // ========================================
   
-  ReactDOM.render(
+ReactDOM.render(
     <Game level={gameLevel}/>,
     document.getElementById('root')
-  );
-  
+);
