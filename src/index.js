@@ -105,26 +105,16 @@ class LayoutToggle extends React.Component {
     }
 }
 
-class PaintBoxButton extends React.Component {
-    render () {
-        return (
-            <button onClick={() => this.props.onClick()}>
-                {this.props.label}
-            </button>
-        );
-    }
-}
-
 class PaintBox extends React.Component {
     render() {
         const buttons = [];
         this.props.cellTypes.forEach((type, index) => {
             buttons.push(
-                <PaintBoxButton 
+                <span 
                     key = {type.label}
-                    label = {type.label}
+                    className={classNames({ "selected": type.id === this.props.currentlyAdding}, "editor-button")}
                     onClick={()=>this.props.onClick(type.id)}
-                ></PaintBoxButton>
+                >{type.label}</span>
             );
         });
         return(
@@ -150,19 +140,11 @@ class Game extends React.Component {
         });
         return level;
     }
+
     constructor(props) {
         super(props);
         this.state = {
-            level: this.constructLevel(10, 10, [{
-                cellIndex: 0,
-                releaseFrequency: 2,
-                releaseRules: {
-                    color: 1,
-                    points: 3,
-                    direction: 45,
-                    sample: 1
-                },
-            }]),
+            level: this.constructLevel(10, 10, []),
             editingLevel: false,
             selectedCell: null,
             currentlyAdding: 0,
@@ -172,18 +154,8 @@ class Game extends React.Component {
                 {id: 2, label: "Router"},
                 {id: 3, label: "Gate"},
             ],
-            emitters: [
-                {
-                    cellID: 0,
-                    releaseFrequency: 2,
-                    releaseRules: {
-                        color: 1,
-                        points: 3,
-                        direction: 45,
-                        sample: 1 
-                    },
-                },
-            ],
+            emitters: [],
+            colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
         };
     }
 
@@ -191,6 +163,15 @@ class Game extends React.Component {
         if(this.state.editingLevel){
             const level = this.state.level.slice();
             level[cellID].type = this.state.currentlyAdding;
+            level[cellID].rules = [
+                {
+                    points: 5,
+                    color: 0,
+                    direction: 45,
+                    visualDirection: 45,
+                    audioSample:0
+                }
+            ];
             this.setState({level: level});
         }else{
             const level = this.state.level.slice();
@@ -208,8 +189,54 @@ class Game extends React.Component {
     }
 
     toggleEditMode = () => {
-        console.log('a');
         this.setState({editingLevel: !this.state.editingLevel});
+    }
+
+    //TODO: merge poly, color, direction, and sample click handlers into one?
+    polyClick = (cellID) => {
+        const level = this.state.level.slice();
+        let points = level[cellID].rules[0].points;
+        if(points + 1 > 7){
+            points = 3;
+        }else{
+            points +=1;
+        }
+        level[cellID].rules[0].points = points;
+        this.setState({level: level});
+    }
+
+    colorPickerClick = (cellID) => {
+        const level = this.state.level.slice();
+        let colorIndex = level[cellID].rules[0].color;
+        if(colorIndex + 1 >= this.state.colorList.length){
+            colorIndex = 0;
+        }else{
+            colorIndex ++;
+        }
+        level[cellID].rules[0].color = colorIndex;
+        this.setState({ level : level });
+    }
+
+    directionPickerClick = (cellID) => {
+        //TODO: direction object with direction, visualDirection, and direction label
+        const level = this.state.level.slice();
+        let direction = level[cellID].rules[0].direction;
+        direction = (direction + 45) % 360;
+        let visualDirection = level[cellID].rules[0].visualDirection + 45;
+        level[cellID].rules[0].direction = direction;
+        level[cellID].rules[0].visualDirection = visualDirection;
+        this.setState({ level : level });
+    }
+
+    samplePickerClick = (cellID) => {
+        const level = this.state.level.slice();
+        let audioSample = level[cellID].rules[0].audioSample;
+        console.log(audioSample);
+        audioSample += 1;
+        if(audioSample > 8) audioSample = 0;
+        level[cellID].rules[0].audioSample = audioSample;
+        
+        this.setState({ level : level });
     }
 
     render() {
@@ -227,21 +254,19 @@ class Game extends React.Component {
                 ></LayoutToggle>
                 <PaintBox
                     cellTypes = {this.state.cellTypes}
+                    currentlyAdding = {this.state.currentlyAdding}
                     onClick = {(type) => this.setType(type)}    
                 ></PaintBox>
             </div>
             
-            <RuleEditor
-                points="5"
-                color="0"
-                direction="45"
-                audioSample="0"
-            ></RuleEditor>
-            <RuleEditor
-                points="3"
-                color="3"
-                direction="90"
-                audioSample="3"
+            <RuleEditor 
+                level = {this.state.level}
+                cell = {this.state.selectedCell}
+                onPolyClick = {(cellID) => this.polyClick(cellID)}
+                onColorPickerClick = {(cellID) => this.colorPickerClick(cellID)}
+                onDirectionPickerClick = {(cellID) => this.directionPickerClick(cellID)}
+                onSamplePickerClick = {(cellID) => this.samplePickerClick(cellID)}
+                colorList = {this.state.colorList}
             ></RuleEditor>
         </div>
       );

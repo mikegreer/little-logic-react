@@ -17,7 +17,7 @@ class ColorPicker extends React.Component {
         return (
             <div
                 className="color-picker"
-                onClick={() => this.props.onClick()}
+                onClick={(cellID) => this.props.onClick(cellID)}
             >
             <svg className="drop noselect" version="1.1" id="Layer_1" x="0px" y="0px" preserveAspectRatio="xMidYMid meet" viewBox="0 0 55.9 79.7">
                 <path 
@@ -37,7 +37,7 @@ class DirectionPicker extends React.Component {
             transform: `rotate(${this.props.visualDirection}deg)`
         }
         return (
-            <div className="direction-arrow-wrapper" onClick={() => this.props.onClick()}>
+            <div className="direction-arrow-wrapper" onClick={() => this.props.onClick(this.props.cellID)}>
                 <svg style={arrowStyle} className="direction-arrow noselect" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 46.9 46.9">
                     <g>
                         <path d="M45.8,31.2c0.6,0.7,0.3,1.3-0.6,1.3h-8.5c-0.9,0-1.7,0.8-1.7,1.7v7.3c0,0.9-0.8,1.7-1.7,1.7H13.5c-0.9,0-1.7-0.8-1.7-1.7
@@ -62,7 +62,7 @@ class SamplePicker extends React.Component {
     render() {
         let positions = this.samplePosition(this.props.audioSample);
         return (
-            <svg className="drum" onClick={() => this.props.onClick()} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 46.9 46.9">
+            <svg className="drum" onClick={() => this.props.onClick(this.props.cellID)} version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 46.9 46.9">
                 <g>
                     <path className="st0" d="M45.2,39.6c0,3.1-2.6,5.7-5.7,5.7H7.1c-3.1,0-5.7-2.6-5.7-5.7V7.1c0-3.1,2.6-5.7,5.7-5.7h32.4
                         c3.1,0,5.7,2.6,5.7,5.7V39.6z"/>
@@ -86,14 +86,14 @@ class PolyPicker extends React.Component {
             var pointAngle;
             for(var i = 1; i <= pointsCount; i++){
                 if(i < pointsCount){
-                pointAngle = angleUnit * i + rotationOffset;
+                    pointAngle = angleUnit * i + rotationOffset;
                 }else{
-                pointAngle = angleUnit * pointsCount + rotationOffset;
+                    pointAngle = angleUnit * pointsCount + rotationOffset;
                 }
                 var px = Math.cos(pointAngle) * 50 + 50;
                 var py = Math.sin(pointAngle) * 50 + 50;
                 if(path === ""){
-                path = "M" + px + " " + py + " ";
+                    path = "M" + px + " " + py + " ";
                 }
                 path += "L " + px + " " + py + " ";
             }
@@ -104,7 +104,7 @@ class PolyPicker extends React.Component {
         <svg
             className="shape-select" 
             viewBox="0 0 100 100"
-            onClick={() => this.props.onClick()}
+            onClick={() => this.props.onClick(this.props.cellID)}
         ><path d={generatePath(this.props.points)}></path></svg>
         )
     }
@@ -114,14 +114,9 @@ class RuleEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            points: this.props.points || 3,
             pointsLabel: this.shapeToString(parseInt(this.props.points)),
-            color: this.props.color || 0,
-            direction: this.props.direction || 90,
             directionLabel: this.angleToCompass(this.props.direction),
-            visualDirection: this.props.direction || 90,
-            audioSample: this.props.audioSample || 0,
-            colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
+            // visualDirection: this.props.direction || 90,
         };
     }
 
@@ -146,72 +141,51 @@ class RuleEditor extends React.Component {
         return compassLabels[Math.floor(angle / 45)];
     }
 
-    polyClick = () => {
-        let points = parseInt(this.state.points);
-        if(points + 1 > 7){
-            points = 3;
-        }else{
-            points +=1;
-        }
-        this.setState({ points: points });
-    }
-
-    colorPickerClick = () => {
-        let colorIndex = parseInt(this.state.color);
-        if(colorIndex + 1 >= this.state.colorList.length){
-            colorIndex = 0;
-        }else{
-            colorIndex ++;
-        }
-        this.setState({ color: colorIndex });
-    }
-
-    samplePickerClick = () => {
-        let newSample = parseInt(this.state.audioSample) + 1;
-        if(newSample > 8) newSample = 0;
-        this.setState({ audioSample: newSample });
-    }
-
-    directionPickerClick = () => {
-        let direction = ((parseInt(this.state.direction) + 45) % 360);
-        this.setState({direction: direction});
-        let visualDirection = parseInt(this.state.visualDirection) + 45;
-        this.setState({visualDirection: visualDirection});
-        this.setState({directionLabel: this.angleToCompass(direction)});
-    }
-
     render() {
+        const cell = this.props.level[this.props.cell];
+        let rules = [];
+        let rule = {};
+        if(cell){
+            rules = cell.rules;
+            if(rules[0]){
+                rule = rules[0];
+            }
+        }
         return(
             <div className="rule-editor">
                 if
                 <PolyPicker
-                    points={this.state.points}
-                    onClick = {() => this.polyClick()}
+                    points = {rule.points}
+                    onClick = {() => this.props.onPolyClick(this.props.cell)}
+                    cellID = {this.props.cell}
                 ></PolyPicker>
                 and
                 <ColorPicker
-                    color={this.state.color}
-                    colorList={this.state.colorList}
-                    onClick = {() => this.colorPickerClick()}
+                    color = {rule.color}
+                    colorList={this.props.colorList}
+                    onClick = {() => this.props.onColorPickerClick(this.props.cell)}
+                    cellID = {this.props.cell}
                 ></ColorPicker>
                 <br />
                 then
                 <DirectionPicker
-                    direction={this.state.direction}
-                    visualDirection={this.state.visualDirection}
-                    onClick = {() => this.directionPickerClick()}
+                    direction = {rule.direction}
+                    visualDirection = {rule.visualDirection}
+                    onClick = {() => this.props.onDirectionPickerClick(this.props.cell)}
+                    cellID = {this.props.cell}
                 ></DirectionPicker>
                 and
                 <SamplePicker
-                    audioSample={this.state.audioSample}
-                    onClick = {() => this.samplePickerClick()}
+                    audioSample = {rule.audioSample}
+                    onClick = {() => this.props.onSamplePickerClick(this.props.cell)}
+                    cellID = {this.props.cell}
                 ></SamplePicker>
-                <RuleOutput
-                    points={this.state.pointsLabel}
-                    color={this.state.color}
-                    direction={this.state.directionLabel}
-                    audioSample={this.state.audioSample}
-                ></RuleOutput>
+                {/* <RuleOutput
+                    points = {this.state.pointsLabel}
+                    color = {this.state.color}
+                    direction = {this.state.directionLabel}
+                    audioSample = {this.state.audioSample}
+                ></RuleOutput> */}
             </div>
         );
     }

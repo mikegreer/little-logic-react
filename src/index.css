@@ -71,6 +71,18 @@ ol, ul {
   user-select: none;
 }
 
+
+.editor-button {
+  box-sizing: border-box;
+  display: block;
+  width: 120px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.editor-button.selected{
+  border: 2px solid #ff00ff;
+}
+
 .shape-select{
   fill: transparent;
   stroke: #4E77AA;
@@ -146,9 +158,6 @@ ol, ul {
 .grid-row{
   display: block;
   height: 33px;
-}
-.paintbox button{
-  border-radius: 0;
 }
 
 .layout-edit-toggle{
