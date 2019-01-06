@@ -146,7 +146,7 @@ class Game extends React.Component {
         this.state = {
             level: this.constructLevel(10, 10, []),
             editingLevel: false,
-            selectedCell: null,
+            selectedCell: 0,
             currentlyAdding: 0,
             cellTypes: [
                 {id: 0, label: "Blank"},
@@ -193,61 +193,70 @@ class Game extends React.Component {
     }
 
     //TODO: merge poly, color, direction, and sample click handlers into one?
-    polyClick = (cellID) => {
+    polyClick = (cellID, ruleID) => {
         const level = this.state.level.slice();
-        let points = level[cellID].rules[0].points;
+        let points = level[cellID].rules[ruleID].points;
         if(points + 1 > 7){
             points = 3;
         }else{
             points +=1;
         }
-        level[cellID].rules[0].points = points;
+        level[cellID].rules[ruleID].points = points;
         this.setState({level: level});
     }
 
-    colorPickerClick = (cellID) => {
+    colorPickerClick = (cellID, ruleID) => {
         const level = this.state.level.slice();
-        let colorIndex = level[cellID].rules[0].color;
+        let colorIndex = level[cellID].rules[ruleID].color;
         if(colorIndex + 1 >= this.state.colorList.length){
             colorIndex = 0;
         }else{
             colorIndex ++;
         }
-        level[cellID].rules[0].color = colorIndex;
+        level[cellID].rules[ruleID].color = colorIndex;
         this.setState({ level : level });
     }
 
-    directionPickerClick = (cellID) => {
+    directionPickerClick = (cellID, ruleID) => {
         //TODO: direction object with direction, visualDirection, and direction label
         const level = this.state.level.slice();
-        let direction = level[cellID].rules[0].direction;
+        let direction = level[cellID].rules[ruleID].direction;
         direction = (direction + 45) % 360;
-        let visualDirection = level[cellID].rules[0].visualDirection + 45;
-        level[cellID].rules[0].direction = direction;
-        level[cellID].rules[0].visualDirection = visualDirection;
+        let visualDirection = level[cellID].rules[ruleID].visualDirection + 45;
+        level[cellID].rules[ruleID].direction = direction;
+        level[cellID].rules[ruleID].visualDirection = visualDirection;
         this.setState({ level : level });
     }
 
-    samplePickerClick = (cellID) => {
+    samplePickerClick = (cellID, ruleID) => {
         const level = this.state.level.slice();
-        let audioSample = level[cellID].rules[0].audioSample;
-        console.log(audioSample);
+        let audioSample = level[cellID].rules[ruleID].audioSample;
         audioSample += 1;
         if(audioSample > 8) audioSample = 0;
-        level[cellID].rules[0].audioSample = audioSample;
+        level[cellID].rules[ruleID].audioSample = audioSample;
         
         this.setState({ level : level });
     }
 
+    addNewRule = (cellID) => {
+        const level = this.state.level.slice();
+        level[cellID].rules.push(
+            {
+                points: 5,
+                color: 0,
+                direction: 45,
+                visualDirection: 45,
+                audioSample:0
+            }
+        );
+        this.setState({level: level});
+    }
+
     render() {
       return (
+        <div className="wrapper">
         <div className="game">
-            <div className="level">
-                <LogicGrid
-                    level = {this.state.level}
-                    emitters = {this.state.emitters}
-                    onClick = {(cellID) => this.cellClick(cellID)}
-                ></LogicGrid>
+            <div className="level-editor">
                 <LayoutToggle
                     editingLevel={this.state.editingLevel}
                     onClick = {() => this.toggleEditMode()}
@@ -258,16 +267,27 @@ class Game extends React.Component {
                     onClick = {(type) => this.setType(type)}    
                 ></PaintBox>
             </div>
+
+            <div className="level">
+                <LogicGrid
+                    level = {this.state.level}
+                    emitters = {this.state.emitters}
+                    onClick = {(cellID) => this.cellClick(cellID)}
+                ></LogicGrid>
+            </div>
+            
             
             <RuleEditor 
                 level = {this.state.level}
                 cell = {this.state.selectedCell}
-                onPolyClick = {(cellID) => this.polyClick(cellID)}
-                onColorPickerClick = {(cellID) => this.colorPickerClick(cellID)}
-                onDirectionPickerClick = {(cellID) => this.directionPickerClick(cellID)}
-                onSamplePickerClick = {(cellID) => this.samplePickerClick(cellID)}
                 colorList = {this.state.colorList}
+                addNewRule = {(cellID, ruleID) => this.addNewRule(cellID, ruleID)}
+                onPolyClick = {(cellID, ruleID) => this.polyClick(cellID, ruleID)}
+                onColorPickerClick = {(cellID, ruleID) => this.colorPickerClick(cellID, ruleID)}
+                onDirectionPickerClick = {(cellID, ruleID) => this.directionPickerClick(cellID, ruleID)}
+                onSamplePickerClick = {(cellID, ruleID) => this.samplePickerClick(cellID, ruleID)}
             ></RuleEditor>
+        </div>
         </div>
       );
     }
