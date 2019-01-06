@@ -6,12 +6,12 @@ body {
 ol, ul {
   padding-left: 30px;
 }
-
+/* 
 .board-row:after {
   clear: both;
   content: "";
   display: table;
-}
+} */
 
 .status {
   margin-bottom: 10px;
@@ -30,6 +30,11 @@ ol, ul {
   padding: 0;
   text-align: center;
   width: 34px;
+  height: 34px;
+}
+
+.square.selected{
+  border: 4px solid #ff00ff;
 }
 
 .square:focus {
@@ -144,6 +149,11 @@ ol, ul {
 }
 .paintbox button{
   border-radius: 0;
+}
+
+.layout-edit-toggle{
+  padding: 20px 0;
+  display: block;
 }
 
 /* @keyframes wiggle { 50% { transform: rotate(1deg); } 100% { transform: rotate(-1deg); } } */

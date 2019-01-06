@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import classNames from 'classnames';
 import RuleEditor from './components/RuleEditor';
+import Slider from './components/Slider';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(<App />, document.getElementById('root'));
@@ -50,7 +52,8 @@ class Square extends React.Component {
     render() {
         return (
             <button
-                className="square"
+                className={classNames({ 'selected': this.props.selected }, "square")}
+                // className={this.props.selected ? "selected":"square2"}
                 onClick={(cellIndex) => this.props.onClick(this.props.cellIndex)}
             >
                 {this.props.cellType === 1 ? <Emitter></Emitter> : null}
@@ -68,12 +71,36 @@ class LogicGrid extends React.Component {
             grid.push(<Square 
                 key={index}
                 cellIndex={index}
-                cellType={cell}
+                cellType={cell.type}
                 onClick={(cellID) => this.props.onClick(cellID)}
+                selected={cell.selected}
                 ></Square>);
+        });
+        const emitters = [];
+        this.props.emitters.forEach((emitter, index) => {
+            emitters.push(
+                <Emitter
+                    cellID={emitter.cellID}
+                    releaseFrequency={emitter.releaseFrequency}
+                    releaseRules={emitter.releaseRules}
+                ></Emitter>)
         });
         return(
             <div className="grid">{grid}</div>
+        );
+    }
+}
+
+class LayoutToggle extends React.Component {
+    render () {
+        return (
+            <span className="layout-edit-toggle">
+                Editing layout
+                <Slider
+                    isChecked = {this.props.editingLevel}
+                    onClick = {() => this.props.onClick()}
+                ></Slider>
+            </span>
         );
     }
 }
@@ -95,7 +122,7 @@ class PaintBox extends React.Component {
             buttons.push(
                 <PaintBoxButton 
                     key = {type.label}
-                    label={type.label}
+                    label = {type.label}
                     onClick={()=>this.props.onClick(type.id)}
                 ></PaintBoxButton>
             );
@@ -107,21 +134,37 @@ class PaintBox extends React.Component {
 }
 
 class Game extends React.Component {
+    constructLevel = (width, height, emitters) => {
+        const level = [];
+        // level.length = width * height;
+        for(let i = 0; i < width * height; i ++){
+            level.push({
+                id: i,
+                type: 0,
+                rules: [],
+                selected: false,
+            })
+        }
+        emitters.forEach((emitter, index) => {
+            level[emitter.cellIndex].type = 1;
+        });
+        return level;
+    }
     constructor(props) {
         super(props);
         this.state = {
-            level: [
-                0,1,2,3,0,0,0,0,0,0,
-                0,0,0,0,0,0,0,0,0,0,
-                0,0,0,0,1,0,0,0,0,0,
-                0,0,0,0,0,0,0,0,0,0,
-                0,0,0,0,0,0,0,0,0,0,
-                0,0,0,0,0,0,0,0,0,0,
-                0,0,0,0,0,0,0,0,0,0,
-                0,0,0,0,0,0,0,0,0,0,
-                0,0,0,0,0,0,0,0,0,0,
-                0,0,0,0,0,0,0,0,0,0,
-            ],
+            level: this.constructLevel(10, 10, [{
+                cellIndex: 0,
+                releaseFrequency: 2,
+                releaseRules: {
+                    color: 1,
+                    points: 3,
+                    direction: 45,
+                    sample: 1
+                },
+            }]),
+            editingLevel: false,
+            selectedCell: null,
             currentlyAdding: 0,
             cellTypes: [
                 {id: 0, label: "Blank"},
@@ -131,9 +174,8 @@ class Game extends React.Component {
             ],
             emitters: [
                 {
-                    x: 0,
-                    y: 0,
-                    releaseEverySeconds: 2,
+                    cellID: 0,
+                    releaseFrequency: 2,
                     releaseRules: {
                         color: 1,
                         points: 3,
@@ -146,13 +188,28 @@ class Game extends React.Component {
     }
 
     cellClick = (cellID) => {
-        const level = this.state.level.slice();
-        level[cellID] = this.state.currentlyAdding;
-        this.setState({level: level});
+        if(this.state.editingLevel){
+            const level = this.state.level.slice();
+            level[cellID].type = this.state.currentlyAdding;
+            this.setState({level: level});
+        }else{
+            const level = this.state.level.slice();
+            level[cellID].selected = true;
+            if(this.state.selectedCell || this.state.selectedCell === 0){
+                level[this.state.selectedCell].selected = null;
+            }
+            this.setState({level: level});
+            this.setState({selectedCell: cellID});
+        }
     }
 
     setType = (type) => {
         this.setState({currentlyAdding: type});
+    }
+
+    toggleEditMode = () => {
+        console.log('a');
+        this.setState({editingLevel: !this.state.editingLevel});
     }
 
     render() {
@@ -161,9 +218,13 @@ class Game extends React.Component {
             <div className="level">
                 <LogicGrid
                     level = {this.state.level}
-                    emitters = {this.props.emitters}
+                    emitters = {this.state.emitters}
                     onClick = {(cellID) => this.cellClick(cellID)}
                 ></LogicGrid>
+                <LayoutToggle
+                    editingLevel={this.state.editingLevel}
+                    onClick = {() => this.toggleEditMode()}
+                ></LayoutToggle>
                 <PaintBox
                     cellTypes = {this.state.cellTypes}
                     onClick = {(type) => this.setType(type)}    
