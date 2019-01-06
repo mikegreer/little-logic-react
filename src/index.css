@@ -130,6 +130,22 @@ ol, ul {
 }
 .drum-marker{fill: #4E77AA;}
 
+.level{
+  width: 330px;
+  padding: 20px;
+}
+.grid{
+  padding-bottom: 20px;
+  flex: row;
+}
+.grid-row{
+  display: block;
+  height: 33px;
+}
+.paintbox button{
+  border-radius: 0;
+}
+
 /* @keyframes wiggle { 50% { transform: rotate(1deg); } 100% { transform: rotate(-1deg); } } */
 
 @keyframes pulse {
