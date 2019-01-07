@@ -5,6 +5,7 @@ import App from './App';
 import classNames from 'classnames';
 import RuleEditor from './components/RuleEditor';
 import Slider from './components/Slider';
+import Toolbox from './components/Toolbox';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(<App />, document.getElementById('root'));
@@ -146,6 +147,7 @@ class Game extends React.Component {
         this.state = {
             level: this.constructLevel(10, 10, []),
             editingLevel: false,
+            currentTool: 0,
             selectedCell: 0,
             currentlyAdding: 0,
             cellTypes: [
@@ -159,27 +161,40 @@ class Game extends React.Component {
         };
     }
 
+    //helper function to update cell
+    updateCell = (cellChanges, cellID) => {
+        const level = this.state.level.slice();
+        const updatedCell = Object.assign(level[cellID], cellChanges);
+        level[cellID] = updatedCell;
+        this.setState({level: level});
+    }
+
+    //TODO: helper function to update rule within cell
+
     cellClick = (cellID) => {
-        if(this.state.editingLevel){
-            const level = this.state.level.slice();
-            level[cellID].type = this.state.currentlyAdding;
-            level[cellID].rules = [
-                {
-                    points: 5,
-                    color: 0,
-                    direction: 45,
-                    visualDirection: 45,
-                    audioSample:0
-                }
-            ];
-            this.setState({level: level});
+        if(this.state.currentTool === 2){
+            this.updateCell({
+                type: this.state.currentlyAdding,
+                rules: [
+                    {
+                        points: 5,
+                        color: 0,
+                        direction: 45,
+                        visualDirection: 45,
+                        audioSample:0
+                    }
+                ],
+            }, cellID);
         }else{
-            const level = this.state.level.slice();
-            level[cellID].selected = true;
+            this.updateCell({
+                selected: true,
+            }, cellID);
+
             if(this.state.selectedCell || this.state.selectedCell === 0){
-                level[this.state.selectedCell].selected = null;
+                this.updateCell({
+                    selected: null,
+                }, this.state.selectedCell);
             }
-            this.setState({level: level});
             this.setState({selectedCell: cellID});
         }
     }
@@ -252,11 +267,18 @@ class Game extends React.Component {
         this.setState({level: level});
     }
 
+    toolboxClick = (toolID) => {
+        this.setState({currentTool: parseInt(toolID)});
+    }
+
     render() {
       return (
         <div className="wrapper">
         <div className="game">
             <div className="level-editor">
+                <Toolbox
+                    onClick = {(toolID) => this.toolboxClick(toolID)}
+                ></Toolbox>
                 <LayoutToggle
                     editingLevel={this.state.editingLevel}
                     onClick = {() => this.toggleEditMode()}
