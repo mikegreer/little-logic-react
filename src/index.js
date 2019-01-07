@@ -4,7 +4,6 @@ import './index.css';
 import App from './App';
 import classNames from 'classnames';
 import RuleEditor from './components/RuleEditor';
-import Slider from './components/Slider';
 import Toolbox from './components/Toolbox';
 import * as serviceWorker from './serviceWorker';
 
@@ -92,20 +91,6 @@ class LogicGrid extends React.Component {
     }
 }
 
-class LayoutToggle extends React.Component {
-    render () {
-        return (
-            <span className="layout-edit-toggle">
-                Editing layout
-                <Slider
-                    isChecked = {this.props.editingLevel}
-                    onClick = {() => this.props.onClick()}
-                ></Slider>
-            </span>
-        );
-    }
-}
-
 class PaintBox extends React.Component {
     render() {
         const buttons = [];
@@ -146,12 +131,10 @@ class Game extends React.Component {
         super(props);
         this.state = {
             level: this.constructLevel(10, 10, []),
-            editingLevel: false,
             currentTool: 0,
             selectedCell: 0,
-            currentlyAdding: 0,
+            currentlyAdding: 1,
             cellTypes: [
-                {id: 0, label: "Blank"},
                 {id: 1, label: "Emitter"},
                 {id: 2, label: "Router"},
                 {id: 3, label: "Gate"},
@@ -185,6 +168,11 @@ class Game extends React.Component {
                     }
                 ],
             }, cellID);
+        }else if(this.state.currentTool === 3){
+            this.updateCell({
+                type: 0,
+                rules: [],
+            }, cellID);
         }else{
             this.updateCell({
                 selected: true,
@@ -201,10 +189,6 @@ class Game extends React.Component {
 
     setType = (type) => {
         this.setState({currentlyAdding: type});
-    }
-
-    toggleEditMode = () => {
-        this.setState({editingLevel: !this.state.editingLevel});
     }
 
     //TODO: merge poly, color, direction, and sample click handlers into one?
@@ -249,7 +233,6 @@ class Game extends React.Component {
         audioSample += 1;
         if(audioSample > 8) audioSample = 0;
         level[cellID].rules[ruleID].audioSample = audioSample;
-        
         this.setState({ level : level });
     }
 
@@ -278,11 +261,8 @@ class Game extends React.Component {
             <div className="level-editor">
                 <Toolbox
                     onClick = {(toolID) => this.toolboxClick(toolID)}
+                    selected = {this.state.currentTool}
                 ></Toolbox>
-                <LayoutToggle
-                    editingLevel={this.state.editingLevel}
-                    onClick = {() => this.toggleEditMode()}
-                ></LayoutToggle>
                 <PaintBox
                     cellTypes = {this.state.cellTypes}
                     currentlyAdding = {this.state.currentlyAdding}

@@ -150,14 +150,14 @@ class RuleEditor extends React.Component {
         rules.forEach((rule, index) => {
             ruleEditors.push(
                 <span key = {index} className = "rule">
-                    if
+                    <span className="editor-label">if</span>
                     <PolyPicker
                         points = {rule.points}
                         onClick = {() => this.props.onPolyClick(this.props.cell, index)}
                         cellID = {this.props.cell}
                         ruleID = {index}
                     ></PolyPicker>
-                    and
+                    <span className="editor-label">and</span>
                     <ColorPicker
                         color = {rule.color}
                         colorList={this.props.colorList}
@@ -165,7 +165,7 @@ class RuleEditor extends React.Component {
                         cellID = {this.props.cell}
                         ruleID = {index}
                     ></ColorPicker>
-                    then
+                    <span className="editor-label">then</span>
                     <DirectionPicker
                         direction = {rule.direction}
                         visualDirection = {rule.visualDirection}
@@ -173,7 +173,7 @@ class RuleEditor extends React.Component {
                         cellID = {this.props.cell}
                         ruleID = {index}
                     ></DirectionPicker>
-                    and
+                    <span className="editor-label">and</span>
                     <SamplePicker
                         audioSample = {rule.audioSample}
                         onClick = {() => this.props.onSamplePickerClick(this.props.cell, index)}
