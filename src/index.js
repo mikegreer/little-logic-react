@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import RuleEditor from './components/RuleEditor';
 import Toolbox from './components/Toolbox';
 import * as serviceWorker from './serviceWorker';
+// import ToolboxCreate from './components/ToolboxCreate';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 serviceWorker.unregister();
@@ -48,14 +49,34 @@ class Goal extends React.Component {
     }
 }
 
+class Ghost extends React.Component {
+    render() {
+        return (
+            <span className="ghostElement">
+                {this.props.currentlyAdding === 1 ? "emit":null}
+                {this.props.currentlyAdding === 2 ? "route":null}
+                {this.props.currentlyAdding === 3 ? "goal":null}
+            </span>
+        );
+    }
+}
+
 class Square extends React.Component {
     render() {
         return (
             <button
-                className={classNames({ 'selected': this.props.selected }, "square")}
-                // className={this.props.selected ? "selected":"square2"}
-                onClick={(cellIndex) => this.props.onClick(this.props.cellIndex)}
+                className={classNames(
+                    { 'selected': this.props.selected },
+                    { 'hover': this.props.hover },
+                    "square")}
+                style={
+                    {cursor: this.props.currentTool === 1 ? 'move':'default'}
+                }
+                onMouseDown={(cellIndex) => this.props.onMouseDown(this.props.cellIndex)}
+                onMouseOver={(cellIndex) => this.props.onHover(this.props.cellIndex)}
+                onMouseUp={(cellIndex) => this.props.onMouseUp(this.props.cellIndex)}
             >
+                {this.props.hover ? <Ghost currentlyAdding={this.props.currentlyAdding}></Ghost> : null}
                 {this.props.cellType === 1 ? <Emitter></Emitter> : null}
                 {this.props.cellType === 2 ? <Router></Router> : null}
                 {this.props.cellType === 3 ? <Goal></Goal> : null}
@@ -72,8 +93,13 @@ class LogicGrid extends React.Component {
                 key={index}
                 cellIndex={index}
                 cellType={cell.type}
-                onClick={(cellID) => this.props.onClick(cellID)}
+                onMouseDown={(cellID) => this.props.onMouseDown(cellID)}
+                onHover={(cellID) => this.props.onHover(cellID)}
+                onMouseUp={(cellID) => this.props.onMouseUp(cellID)}
                 selected={cell.selected}
+                hover={cell.hover}
+                currentlyAdding={this.props.currentlyAdding}
+                currentTool={this.props.currentTool}
                 ></Square>);
         });
         const emitters = [];
@@ -91,25 +117,29 @@ class LogicGrid extends React.Component {
     }
 }
 
-class PaintBox extends React.Component {
-    render() {
-        const buttons = [];
-        this.props.cellTypes.forEach((type, index) => {
-            buttons.push(
-                <span 
-                    key = {type.label}
-                    className={classNames({ "selected": type.id === this.props.currentlyAdding}, "editor-button")}
-                    onClick={()=>this.props.onClick(type.id)}
-                >{type.label}</span>
-            );
-        });
-        return(
-            <div className="paintbox">{buttons}</div>
-        );
-    }
-}
-
 class Game extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            level: this.constructLevel(10, 10, []),
+            currentTool: 0,
+            selectedCell: 0,
+            hoverCell: 0,
+            currentlyAdding: 1,
+            cellDragging: {
+                isDragging: false,
+                draggingCellID: null
+            },
+            cellTypes: [
+                {id: 1, label: "emitter"},
+                {id: 2, label: "router"},
+                {id: 3, label: "goal"},
+            ],
+            emitters: [],
+            colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
+        };
+    }
+
     constructLevel = (width, height, emitters) => {
         const level = [];
         // level.length = width * height;
@@ -127,23 +157,6 @@ class Game extends React.Component {
         return level;
     }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            level: this.constructLevel(10, 10, []),
-            currentTool: 0,
-            selectedCell: 0,
-            currentlyAdding: 1,
-            cellTypes: [
-                {id: 1, label: "Emitter"},
-                {id: 2, label: "Router"},
-                {id: 3, label: "Gate"},
-            ],
-            emitters: [],
-            colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
-        };
-    }
-
     //helper function to update cell
     updateCell = (cellChanges, cellID) => {
         const level = this.state.level.slice();
@@ -154,7 +167,40 @@ class Game extends React.Component {
 
     //TODO: helper function to update rule within cell
 
+    cellMouseUp = (cellID) => {
+        if(this.state.currentTool === 1){
+            const originID = this.state.cellDragging.draggingCellID;
+            const level = this.state.level.slice();
+            const cellMoving = level[originID];
+            this.updateCell(cellMoving, cellID);
+            this.updateCell({
+                type: 0,
+                rules: [],
+            }, originID);
+        }
+    }
+
     cellClick = (cellID) => {
+        if(this.state.currentTool === 0){
+            this.updateCell({
+                selected: true,
+            }, cellID);
+
+            if(this.state.selectedCell || this.state.selectedCell === 0){
+                this.updateCell({
+                    selected: null,
+                }, this.state.selectedCell);
+            }
+            this.setState({selectedCell: cellID});
+        }
+        if(this.state.currentTool === 1){
+            //start dragging cell
+            const cellDragging = {
+                isDragging: true,
+                draggingCellID: cellID
+            }
+            this.setState({cellDragging: cellDragging});
+        }
         if(this.state.currentTool === 2){
             this.updateCell({
                 type: this.state.currentlyAdding,
@@ -174,20 +220,26 @@ class Game extends React.Component {
                 rules: [],
             }, cellID);
         }else{
-            this.updateCell({
-                selected: true,
-            }, cellID);
-
-            if(this.state.selectedCell || this.state.selectedCell === 0){
-                this.updateCell({
-                    selected: null,
-                }, this.state.selectedCell);
-            }
-            this.setState({selectedCell: cellID});
+            
         }
     }
 
-    setType = (type) => {
+    cellHover = (cellID) => {
+        if(this.state.currentTool === 2){
+            this.updateCell({
+                hover: true,
+            }, cellID);
+
+            if(this.state.hoverCell || this.state.hoverCell === 0){
+                this.updateCell({
+                    hover: null,
+                }, this.state.hoverCell);
+            }
+            this.setState({hoverCell: cellID});
+        }  
+    }
+    
+    setCreateType = (type) => {
         this.setState({currentlyAdding: type});
     }
 
@@ -262,19 +314,22 @@ class Game extends React.Component {
                 <Toolbox
                     onClick = {(toolID) => this.toolboxClick(toolID)}
                     selected = {this.state.currentTool}
-                ></Toolbox>
-                <PaintBox
                     cellTypes = {this.state.cellTypes}
                     currentlyAdding = {this.state.currentlyAdding}
-                    onClick = {(type) => this.setType(type)}    
-                ></PaintBox>
+                    setCreateType = {(type) => this.setCreateType(type)}
+                ></Toolbox>
+               
             </div>
 
             <div className="level">
                 <LogicGrid
                     level = {this.state.level}
                     emitters = {this.state.emitters}
-                    onClick = {(cellID) => this.cellClick(cellID)}
+                    onMouseDown = {(cellID) => this.cellClick(cellID)}
+                    onHover = {(cellID) => this.cellHover(cellID)}
+                    onMouseUp = {(cellID) => this.cellMouseUp(cellID)}
+                    currentlyAdding = {this.state.currentlyAdding}
+                    currentTool = {this.state.currentTool}
                 ></LogicGrid>
             </div>
             

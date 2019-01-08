@@ -1,6 +1,7 @@
 import React from 'react';
 import './toolbox.css';
 import classNames from 'classnames';
+import ToolboxCreate from './ToolboxCreate';
 
 class Toolbox extends React.Component {
     render () {
@@ -20,6 +21,12 @@ class Toolbox extends React.Component {
                         className={classNames({selected:this.props.selected === 2})}
                         onClick = {() => this.props.onClick("2")}
                     >create</button></li>
+                <li> <ToolboxCreate
+                    hidden = {this.props.selected != 2}
+                    cellTypes = {this.props.cellTypes}
+                    currentlyAdding = {this.props.currentlyAdding}
+                    onClick = {(type) => this.props.setCreateType(type)}
+                ></ToolboxCreate></li>
                 <li><button
                         className={classNames({selected:this.props.selected === 3})}
                         onClick = {() => this.props.onClick("3")}
