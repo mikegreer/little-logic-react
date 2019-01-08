@@ -304,6 +304,25 @@ class Game extends React.Component {
 
     toolboxClick = (toolID) => {
         this.setState({currentTool: parseInt(toolID)});
+        if(toolID != 0){
+            this.setState({selectedCell: 0});
+
+        }
+    }
+
+    saveLevel = (level) => {
+        let levels = JSON.parse(localStorage.getItem('levels'));
+        if(levels === null){
+            levels = [];
+            localStorage.setItem('levels', JSON.stringify(levels));
+        }
+        levels.push(level);
+        localStorage.setItem('levels', JSON.stringify(levels));
+    }
+
+    loadLevel = () => {
+        const levels = JSON.parse(localStorage.getItem('levels'));
+        this.state = Object.assign(this.state, levels[levels.length]);
     }
 
     render() {
@@ -318,7 +337,8 @@ class Game extends React.Component {
                     currentlyAdding = {this.state.currentlyAdding}
                     setCreateType = {(type) => this.setCreateType(type)}
                 ></Toolbox>
-               
+               <button onClick={() => this.saveLevel(this.state.level)}>save</button>
+               <button onClick={() => this.loadLevel()}>load</button>
             </div>
 
             <div className="level">
