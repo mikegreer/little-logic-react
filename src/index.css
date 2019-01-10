@@ -117,6 +117,9 @@ body {
   display: inline-block;
   vertical-align: middle;
   margin-top: -20px;
+  height: 45px;
+  line-height: 45px;
+  display: inline-block;
 }
 
 .rule-button-container {
@@ -193,6 +196,18 @@ body {
   padding: 10px;
   /* animation: wiggle 4s ease-in-out infinite;
   animation-direction: alternate; */
+}
+
+.int-picker{
+  display: inline-block;
+  font-weight: bold;
+  font-size: 30px;
+  vertical-align: middle;
+  margin-top: -20px;
+  height: 45px;
+  line-height: 45px;
+  display: inline-block;
+  padding: 0 8px;
 }
 
 .drum{

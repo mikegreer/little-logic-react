@@ -5,6 +5,7 @@ import App from './App';
 import classNames from 'classnames';
 import RuleEditor from './components/RuleEditor';
 import Toolbox from './components/Toolbox';
+import LLOutput from './components/LLOutput';
 import * as serviceWorker from './serviceWorker';
 // import ToolboxCreate from './components/ToolboxCreate';
 
@@ -204,15 +205,7 @@ class Game extends React.Component {
         if(this.state.currentTool === 2){
             this.updateCell({
                 type: this.state.currentlyAdding,
-                rules: [
-                    {
-                        points: 5,
-                        color: 0,
-                        direction: 45,
-                        visualDirection: 45,
-                        audioSample:0
-                    }
-                ],
+                rules: [this.newRule(this.state.currentlyAdding)],
             }, cellID);
         }else if(this.state.currentTool === 3){
             this.updateCell({
@@ -243,17 +236,44 @@ class Game extends React.Component {
         this.setState({currentlyAdding: type});
     }
 
-    addNewRule = (cellID) => {
+    newRule = (cellType) => {
+        let rule = null;
+        switch(cellType){
+            case 1:
+                rule = {
+                    releaseFrequency: 6,
+                    points: 5,
+                    color: 0,
+                    direction: 45,
+                    visualDirection: 45,
+                    audioSample:0
+                }
+                return rule;
+            case 2:
+                rule = {
+                    points: 5,
+                    color: 0,
+                    direction: 45,
+                    visualDirection: 45,
+                    audioSample:0
+                }
+                return rule;
+            case 3:
+                rule = {
+                    goal: 5,
+                    points: 5,
+                    color: 0,
+                    direction: 45,
+                    visualDirection: 45,
+                    audioSample:0
+                }
+                return rule;
+        }
+    }
+
+    addNewRule = (cellID, cellType) => {
         const level = this.state.level.slice();
-        level[cellID].rules.push(
-            {
-                points: 5,
-                color: 0,
-                direction: 45,
-                visualDirection: 45,
-                audioSample:0
-            }
-        );
+        level[cellID].rules.push(this.newRule(cellType));
         this.setState({level: level});
     }
 
@@ -261,7 +281,6 @@ class Game extends React.Component {
         this.setState({currentTool: parseInt(toolID)});
         if(toolID !== 0){
             this.setState({selectedCell: 0});
-
         }
     }
 
@@ -324,8 +343,25 @@ class Game extends React.Component {
         this.setState({ level : level });
     }
 
+    incrementReleaseFrequency = (cellID, ruleID) => {
+        const level = this.state.level.slice();
+        let rf = level[cellID].rules[ruleID].releaseFrequency;
+        (rf > 8) ? rf = 0 : rf += 1;
+        level[cellID].rules[ruleID].releaseFrequency = rf;
+        this.setState({ level : level });
+    }
+
+    incrementTarget = (cellID, ruleID) => {
+        const level = this.state.level.slice();
+        let goal = level[cellID].rules[ruleID].goal;
+        (goal > 8) ? goal = 1 : goal += 1;
+        console.log(goal);
+        level[cellID].rules[ruleID].goal = goal;
+        this.setState({ level : level });
+    }
+
     //rule click functions
-    onGateRuleClicked = (cellID, ruleID, elementID) => {
+    onRuleClicked = (cellID, ruleID, elementID) => {
         //shape
         switch(elementID) {
             case 0:
@@ -344,6 +380,14 @@ class Game extends React.Component {
                 //sound clicked
                 this.incrementSound(cellID, ruleID);
                 break;
+            case 4:
+                //release frequency
+                this.incrementReleaseFrequency(cellID, ruleID);
+                break;
+            case 5:
+                //goal target
+                this.incrementTarget(cellID, ruleID);
+                break;
             default:
                 //nothing clicked
                 break;
@@ -353,6 +397,7 @@ class Game extends React.Component {
     render() {
       return (
         <div className="wrapper">
+            <LLOutput />
             <div className="game">
                 <div className="level-editor">
                     <Toolbox
@@ -379,11 +424,11 @@ class Game extends React.Component {
                 </div>
                 
                 <RuleEditor
-                    level = {this.state.level}
+                    cell = {this.state.level[this.state.selectedCell]}
                     cellID = {this.state.selectedCell}
                     colorList = {this.state.colorList}
-                    onGateRuleClicked = {(cellID, ruleID, elementID) => this.onGateRuleClicked(cellID, ruleID, elementID)}
-                    addNewRule = {(cellID, ruleID) => this.addNewRule(cellID, ruleID)}
+                    onRuleClicked = {(cellID, ruleID, elementID) => this.onRuleClicked(cellID, ruleID, elementID)}
+                    addNewRule = {(cellID, cellType) => this.addNewRule(cellID, cellType)}
                 ></RuleEditor>
             </div>
         </div>

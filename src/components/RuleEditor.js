@@ -42,6 +42,16 @@ class DirectionPicker extends React.Component {
     }
 }
 
+class IntPicker extends React.Component {
+    render() {
+        return (
+            <span className="int-picker" onClick={() => this.props.onClick(this.props.cellID, this.props.ruleID)}>
+                {this.props.value}
+            </span>
+        );
+    }
+}
+
 class SamplePicker extends React.Component {
     samplePosition = (value) => {
         var xGrid = (value % 3) * 14.5 + 4;
@@ -108,7 +118,14 @@ function EmitterRule (props) {
     const cellID = props.cellID;
     return (
         <span className="rule">
-            <p>Every (int picker) beats, </p>
+            <span className="editor-label">every</span>        
+            <IntPicker
+                value = {props.rule.releaseFrequency}
+                onClick = {() => props.onClick(cellID, index, 4)}
+                cellID = {cellID}
+                ruleID = {index}
+            />
+            <span className="editor-label">beats</span><br />
             <span className="editor-label">make a new</span>
             <PolyPicker
                 points = {props.rule.points}
@@ -125,7 +142,7 @@ function EmitterRule (props) {
             ></ColorPicker>
             <span className="editor-label">, </span>
             <br />
-            <span className="editor-label">and push it</span>
+            <span className="editor-label">push it</span>
             <DirectionPicker
                 direction = {props.rule.direction}
                 visualDirection = {props.rule.visualDirection}
@@ -133,8 +150,6 @@ function EmitterRule (props) {
                 cellID = {cellID}
                 ruleID = {index}
             ></DirectionPicker>
-            <span className="editor-label">, </span>
-            <br />
             <span className="editor-label">and play a sound</span>
             <SamplePicker
                 audioSample = {props.rule.audioSample}
@@ -193,8 +208,13 @@ function GoalRule (props) {
     const index = props.index;
     const cellID = props.cellID;
     return (<span className="rule">
-        <p>I need to get to (int editor)</p>
-        <span className="editor-label">If a</span>
+        <span className="editor-label">I need</span>
+            <IntPicker 
+                value = {props.rule.goal}
+                onClick = {() => props.onClick(cellID, index, 5)}
+                cellID = {cellID}
+                ruleID = {index}
+            />
             <ColorPicker
                 color = {props.rule.color}
                 colorList={props.colorList}
@@ -208,11 +228,10 @@ function GoalRule (props) {
                 cellID = {cellID}
                 ruleID = {index}
             ></PolyPicker>
-            <span className="editor-label">hits me, </span>
             <br />
-            <span className="editor-label">Add (int editor) to my goal,</span>
+            <span className="editor-label">when one hits me, </span>
             <br />
-            <span className="editor-label">and play a sound</span>
+            <span className="editor-label">play a sound</span>
             <SamplePicker
                 audioSample = {props.rule.audioSample}
                 onClick = {() => props.onClick(cellID, index, 3)}
@@ -235,7 +254,7 @@ function RenderRule (props) {
                         key={index}
                         index={index}
                         cellID={props.cellID}
-                        onClick={props.onGateRuleClicked}
+                        onClick={props.onRuleClicked}
                         colorList={props.colorList}
                     />
                 );
@@ -251,7 +270,7 @@ function RenderRule (props) {
                         key={index}
                         index={index}
                         cellID={props.cellID}
-                        onClick={props.onGateRuleClicked}
+                        onClick={props.onRuleClicked}
                         colorList={props.colorList}
                     />
                 );
@@ -266,7 +285,7 @@ function RenderRule (props) {
                             key={index}
                             index={index}
                             cellID={props.cellID}
-                            onClick={props.onGateRuleClicked}
+                            onClick={props.onRuleClicked}
                             colorList={props.colorList}
                         />
                 );
@@ -279,7 +298,7 @@ function RenderRule (props) {
 
 class RuleEditor extends React.Component {
     render() {
-        const cell = this.props.level[this.props.cellID];
+        const cell = this.props.cell;
         let rules = cell.rules ? cell.rules : [];
         return(
             <div className="rule-editor">
@@ -287,13 +306,13 @@ class RuleEditor extends React.Component {
                     cellType = {cell.type}
                     rules = {cell.rules}
                     cellID = {this.props.cellID}
-                    onGateRuleClicked = {this.props.onGateRuleClicked}
+                    onRuleClicked = {this.props.onRuleClicked}
                     colorList = {this.props.colorList}
                 />
                 <div className="rule-button-container">
                     <button
                         className = {classNames({ 'hidden': rules.length < 1 }, "new-rule-button")}
-                        onClick = {() => this.props.addNewRule(this.props.cellID)}
+                        onClick = {() => this.props.addNewRule(this.props.cellID, this.props.cell.type)}
                     >new rule</button>
                 </div>
             </div>
