@@ -12,6 +12,7 @@
     width: 100%;
     cursor: pointer;
     user-select: none;
+    background: #fff;
 }
 
 .toolbox li button:focus {

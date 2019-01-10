@@ -108,8 +108,8 @@ function EmitterRule (props) {
     const cellID = props.cellID;
     return (
         <span className="rule">
-            <p>Every (int picker) beats</p>
-            <span className="editor-label">Make a new</span>
+            <p>Every (int picker) beats, </p>
+            <span className="editor-label">make a new</span>
             <PolyPicker
                 points = {props.rule.points}
                 onClick = {() => props.onClick(cellID, index, 0)}
@@ -142,6 +142,7 @@ function EmitterRule (props) {
                 cellID = {cellID}
                 ruleID = {index}
             ></SamplePicker>
+            <span className="editor-label">.</span>
         </span>
     );
 }
@@ -151,14 +152,7 @@ function RouterRule (props) {
     const cellID = props.cellID;
     return (
         <span key={index} className="rule">
-            <span className="editor-label">if</span>
-            <PolyPicker
-                points = {props.rule.points}
-                onClick = {() => props.onClick(cellID, index, 0)}
-                cellID = {cellID}
-                ruleID = {index}
-            ></PolyPicker>
-            <span className="editor-label">and</span>
+            <span className="editor-label">if a</span>
             <ColorPicker
                 color = {props.rule.color}
                 colorList={props.colorList}
@@ -166,9 +160,15 @@ function RouterRule (props) {
                 cellID = {cellID}
                 ruleID = {index}
             ></ColorPicker>
-            <span className="editor-label">, </span>
+            <PolyPicker
+                points = {props.rule.points}
+                onClick = {() => props.onClick(cellID, index, 0)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></PolyPicker>
+            <span className="editor-label">hits me, </span>
             <br />
-            <span className="editor-label">then</span>
+            <span className="editor-label">then push it</span>
             <DirectionPicker
                 direction = {props.rule.direction}
                 visualDirection = {props.rule.visualDirection}
@@ -176,13 +176,15 @@ function RouterRule (props) {
                 cellID = {cellID}
                 ruleID = {index}
             ></DirectionPicker>
-            <span className="editor-label">and</span>
+            <br />
+            <span className="editor-label">and play a sound</span>
             <SamplePicker
                 audioSample = {props.rule.audioSample}
                 onClick = {() => props.onClick(cellID, index, 3)}
                 cellID = {cellID}
                 ruleID = {index}
             ></SamplePicker>
+            <span className="editor-label">.</span>
         </span>
     );
 }
@@ -191,15 +193,8 @@ function GoalRule (props) {
     const index = props.index;
     const cellID = props.cellID;
     return (<span className="rule">
-        <p>Target (int editor)</p>
-        <span className="editor-label">If</span>
-            <PolyPicker
-                points = {props.rule.points}
-                onClick = {() => props.onClick(cellID, index, 0)}
-                cellID = {cellID}
-                ruleID = {index}
-            ></PolyPicker>
-            <span className="editor-label">and</span>
+        <p>I need to get to (int editor)</p>
+        <span className="editor-label">If a</span>
             <ColorPicker
                 color = {props.rule.color}
                 colorList={props.colorList}
@@ -207,16 +202,24 @@ function GoalRule (props) {
                 cellID = {cellID}
                 ruleID = {index}
             ></ColorPicker>
+            <PolyPicker
+                points = {props.rule.points}
+                onClick = {() => props.onClick(cellID, index, 0)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></PolyPicker>
+            <span className="editor-label">hits me, </span>
             <br />
-            <span className="editor-label">Add (int editor) to target,</span>
+            <span className="editor-label">Add (int editor) to my goal,</span>
             <br />
-            <span className="editor-label">and play</span>
+            <span className="editor-label">and play a sound</span>
             <SamplePicker
                 audioSample = {props.rule.audioSample}
                 onClick = {() => props.onClick(cellID, index, 3)}
                 cellID = {cellID}
                 ruleID = {index}
             ></SamplePicker>
+            <span className="editor-label">.</span>
     </span>);
 }
 
