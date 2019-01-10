@@ -1,14 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 
-// class RuleOutput extends React.Component {
-//     render() {
-//         return (
-//             <div>{this.props.points}, {this.props.color}, {this.props.direction}, {this.props.audioSample}</div>
-//         );
-//     }
-// }
-
 class ColorPicker extends React.Component {    
     render() {
         const colorList = this.props.colorList || ['#cccccc'];
@@ -111,95 +103,196 @@ class PolyPicker extends React.Component {
     }
 }
 
-class RuleEditor extends React.Component {  
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         pointsLabel: this.shapeToString(parseInt(this.props.points)),
-    //         directionLabel: this.angleToCompass(this.props.direction),
-    //         // visualDirection: this.props.direction || 90,
-    //     };
-    // }
+function EmitterRule (props) {
+    const index = props.index;
+    const cellID = props.cellID;
+    return (
+        <span className="rule">
+            <p>Every (int picker) beats</p>
+            <span className="editor-label">Make a new</span>
+            <PolyPicker
+                points = {props.rule.points}
+                onClick = {() => props.onClick(cellID, index, 0)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></PolyPicker>
+            <ColorPicker
+                color = {props.rule.color}
+                colorList={props.colorList}
+                onClick = {() => props.onClick(cellID, index, 1)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></ColorPicker>
+            <span className="editor-label">, </span>
+            <br />
+            <span className="editor-label">and push it</span>
+            <DirectionPicker
+                direction = {props.rule.direction}
+                visualDirection = {props.rule.visualDirection}
+                onClick = {() => props.onClick(cellID, index, 2)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></DirectionPicker>
+            <span className="editor-label">, </span>
+            <br />
+            <span className="editor-label">and play a sound</span>
+            <SamplePicker
+                audioSample = {props.rule.audioSample}
+                onClick = {() => props.onClick(cellID, index, 3)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></SamplePicker>
+        </span>
+    );
+}
 
-    shapeToString = (points) => {
-        let shapeLabel;
-        if(points === 3){
-            shapeLabel = "triangle";
-        }else if(points === 4){
-            shapeLabel = "square";
-        }else if(points === 5){
-            shapeLabel = "pentagon";
-        }else if(points === 6){
-            shapeLabel = "hexagon";
-        }else if(points === 7){
-            shapeLabel = "heptagon";
-        }
-        return shapeLabel;
+function RouterRule (props) {
+    const index = props.index;
+    const cellID = props.cellID;
+    return (
+        <span key={index} className="rule">
+            <span className="editor-label">if</span>
+            <PolyPicker
+                points = {props.rule.points}
+                onClick = {() => props.onClick(cellID, index, 0)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></PolyPicker>
+            <span className="editor-label">and</span>
+            <ColorPicker
+                color = {props.rule.color}
+                colorList={props.colorList}
+                onClick = {() => props.onClick(cellID, index, 1)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></ColorPicker>
+            <span className="editor-label">, </span>
+            <br />
+            <span className="editor-label">then</span>
+            <DirectionPicker
+                direction = {props.rule.direction}
+                visualDirection = {props.rule.visualDirection}
+                onClick = {() => props.onClick(cellID, index, 2)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></DirectionPicker>
+            <span className="editor-label">and</span>
+            <SamplePicker
+                audioSample = {props.rule.audioSample}
+                onClick = {() => props.onClick(cellID, index, 3)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></SamplePicker>
+        </span>
+    );
+}
+
+function GoalRule (props) {
+    const index = props.index;
+    const cellID = props.cellID;
+    return (<span className="rule">
+        <p>Target (int editor)</p>
+        <span className="editor-label">If</span>
+            <PolyPicker
+                points = {props.rule.points}
+                onClick = {() => props.onClick(cellID, index, 0)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></PolyPicker>
+            <span className="editor-label">and</span>
+            <ColorPicker
+                color = {props.rule.color}
+                colorList={props.colorList}
+                onClick = {() => props.onClick(cellID, index, 1)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></ColorPicker>
+            <br />
+            <span className="editor-label">Add (int editor) to target,</span>
+            <br />
+            <span className="editor-label">and play</span>
+            <SamplePicker
+                audioSample = {props.rule.audioSample}
+                onClick = {() => props.onClick(cellID, index, 3)}
+                cellID = {cellID}
+                ruleID = {index}
+            ></SamplePicker>
+    </span>);
+}
+
+function RenderRule (props) {
+    switch(parseInt(props.cellType)){
+        case 1:
+            //emitter
+            const emitterRulesOutput = [];
+            props.rules.forEach((rule, index) => {
+                emitterRulesOutput.push(
+                    <EmitterRule 
+                        rule={rule}
+                        key={index}
+                        index={index}
+                        cellID={props.cellID}
+                        onClick={props.onGateRuleClicked}
+                        colorList={props.colorList}
+                    />
+                );
+            });
+            return (<span>{emitterRulesOutput}</span>);
+        case 2:
+            //router
+            const routerRulesOutput = [];
+            props.rules.forEach((rule, index) => {
+                routerRulesOutput.push(
+                    <RouterRule 
+                        rule={rule}
+                        key={index}
+                        index={index}
+                        cellID={props.cellID}
+                        onClick={props.onGateRuleClicked}
+                        colorList={props.colorList}
+                    />
+                );
+            });
+            return (<span>{routerRulesOutput}</span>);
+        case 3:
+            //goal
+            const goalRulesOutput = [];
+            props.rules.forEach((rule, index) => {
+                goalRulesOutput.push(<GoalRule
+                            rule={rule}
+                            key={index}
+                            index={index}
+                            cellID={props.cellID}
+                            onClick={props.onGateRuleClicked}
+                            colorList={props.colorList}
+                        />
+                );
+            });
+            return goalRulesOutput;
+        default:
+            return <span>no rules</span>;
     }
+}
 
-    // angleToCompass = (angle) => {
-    //     let compassLabels = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-    //     return compassLabels[Math.floor(angle / 45)];
-    // }
-
+class RuleEditor extends React.Component {
     render() {
-        const cell = this.props.level[this.props.cell];
+        const cell = this.props.level[this.props.cellID];
         let rules = cell.rules ? cell.rules : [];
-
-        const ruleEditors = [];
-        rules.forEach((rule, index) => {
-            ruleEditors.push(
-                <span key = {index} className = "rule">
-                    <span className="editor-label">if</span>
-                    <PolyPicker
-                        points = {rule.points}
-                        onClick = {() => this.props.onPolyClick(this.props.cell, index)}
-                        cellID = {this.props.cell}
-                        ruleID = {index}
-                    ></PolyPicker>
-                    <span className="editor-label">and</span>
-                    <ColorPicker
-                        color = {rule.color}
-                        colorList={this.props.colorList}
-                        onClick = {() => this.props.onColorPickerClick(this.props.cell, index)}
-                        cellID = {this.props.cell}
-                        ruleID = {index}
-                    ></ColorPicker>
-                    <span className="editor-label">then</span>
-                    <DirectionPicker
-                        direction = {rule.direction}
-                        visualDirection = {rule.visualDirection}
-                        onClick = {() => this.props.onDirectionPickerClick(this.props.cell, index)}
-                        cellID = {this.props.cell}
-                        ruleID = {index}
-                    ></DirectionPicker>
-                    <span className="editor-label">and</span>
-                    <SamplePicker
-                        audioSample = {rule.audioSample}
-                        onClick = {() => this.props.onSamplePickerClick(this.props.cell, index)}
-                        cellID = {this.props.cell}
-                        ruleID = {index}
-                    ></SamplePicker>
-                </span>
-            )
-        });
-        
-
         return(
             <div className="rule-editor">
-                {ruleEditors}
+                <RenderRule 
+                    cellType = {cell.type}
+                    rules = {cell.rules}
+                    cellID = {this.props.cellID}
+                    onGateRuleClicked = {this.props.onGateRuleClicked}
+                    colorList = {this.props.colorList}
+                />
                 <div className="rule-button-container">
-                <button
-                    className = {classNames({ 'hidden': rules.length < 1 }, "new-rule-button")}
-                    onClick = {() => this.props.addNewRule(this.props.cell)}
-                >new rule</button>
+                    <button
+                        className = {classNames({ 'hidden': rules.length < 1 }, "new-rule-button")}
+                        onClick = {() => this.props.addNewRule(this.props.cellID)}
+                    >new rule</button>
                 </div>
-                {/* <RuleOutput
-                    points = {this.state.pointsLabel}
-                    color = {this.state.color}
-                    direction = {this.state.directionLabel}
-                    audioSample = {this.state.audioSample}
-                ></RuleOutput> */}
             </div>
         );
     }

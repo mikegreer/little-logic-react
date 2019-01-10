@@ -22,7 +22,7 @@ class Toolbox extends React.Component {
                         onClick = {() => this.props.onClick("2")}
                     >create</button></li>
                 <li> <ToolboxCreate
-                    hidden = {this.props.selected != 2}
+                    hidden = {this.props.selected !== 2}
                     cellTypes = {this.props.cellTypes}
                     currentlyAdding = {this.props.currentlyAdding}
                     onClick = {(type) => this.props.setCreateType(type)}

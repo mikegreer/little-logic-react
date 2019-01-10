@@ -18,7 +18,11 @@ class ToolboxCreate extends React.Component {
             );
         });
         return(
-            <div className="paintbox" className={this.props.hidden ? 'hidden' : ''}>
+            <div
+                className={
+                    classNames({hidden: this.props.hidden, "create-menu":true})
+                }
+            >
                 {/* <p style={{textAlign: "center"}}>create</p> */}
                 <ul className="toolbox">{buttons}</ul>
             </div>

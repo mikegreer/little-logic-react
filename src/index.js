@@ -243,51 +243,6 @@ class Game extends React.Component {
         this.setState({currentlyAdding: type});
     }
 
-    //TODO: merge poly, color, direction, and sample click handlers into one?
-    polyClick = (cellID, ruleID) => {
-        const level = this.state.level.slice();
-        let points = level[cellID].rules[ruleID].points;
-        if(points + 1 > 7){
-            points = 3;
-        }else{
-            points +=1;
-        }
-        level[cellID].rules[ruleID].points = points;
-        this.setState({level: level});
-    }
-
-    colorPickerClick = (cellID, ruleID) => {
-        const level = this.state.level.slice();
-        let colorIndex = level[cellID].rules[ruleID].color;
-        if(colorIndex + 1 >= this.state.colorList.length){
-            colorIndex = 0;
-        }else{
-            colorIndex ++;
-        }
-        level[cellID].rules[ruleID].color = colorIndex;
-        this.setState({ level : level });
-    }
-
-    directionPickerClick = (cellID, ruleID) => {
-        //TODO: direction object with direction, visualDirection, and direction label
-        const level = this.state.level.slice();
-        let direction = level[cellID].rules[ruleID].direction;
-        direction = (direction + 45) % 360;
-        let visualDirection = level[cellID].rules[ruleID].visualDirection + 45;
-        level[cellID].rules[ruleID].direction = direction;
-        level[cellID].rules[ruleID].visualDirection = visualDirection;
-        this.setState({ level : level });
-    }
-
-    samplePickerClick = (cellID, ruleID) => {
-        const level = this.state.level.slice();
-        let audioSample = level[cellID].rules[ruleID].audioSample;
-        audioSample += 1;
-        if(audioSample > 8) audioSample = 0;
-        level[cellID].rules[ruleID].audioSample = audioSample;
-        this.setState({ level : level });
-    }
-
     addNewRule = (cellID) => {
         const level = this.state.level.slice();
         level[cellID].rules.push(
@@ -304,7 +259,7 @@ class Game extends React.Component {
 
     toolboxClick = (toolID) => {
         this.setState({currentTool: parseInt(toolID)});
-        if(toolID != 0){
+        if(toolID !== 0){
             this.setState({selectedCell: 0});
 
         }
@@ -322,49 +277,115 @@ class Game extends React.Component {
 
     loadLevel = () => {
         const levels = JSON.parse(localStorage.getItem('levels'));
-        this.state = Object.assign(this.state, levels[levels.length]);
+        this.setState({level: levels[0]});
+    }
+
+    // edit rule functions
+    incrementShape = (cellID, ruleID) => {
+        const level = this.state.level.slice();
+        let points = level[cellID].rules[ruleID].points;
+        if(points + 1 > 7){
+            points = 3;
+        }else{
+            points +=1;
+        }
+        level[cellID].rules[ruleID].points = points;
+        this.setState({level: level});
+    }
+
+    incrementColor = (cellID, ruleID) => {
+        const level = this.state.level.slice();
+        let colorIndex = level[cellID].rules[ruleID].color;
+        if(colorIndex + 1 >= this.state.colorList.length){
+            colorIndex = 0;
+        }else{
+            colorIndex ++;
+        }
+        level[cellID].rules[ruleID].color = colorIndex;
+        this.setState({ level : level });
+    }
+
+    incrementDirection = (cellID, ruleID) => {
+        const level = this.state.level.slice();
+        let direction = level[cellID].rules[ruleID].direction;
+        direction = (direction + 45) % 360;
+        let visualDirection = level[cellID].rules[ruleID].visualDirection + 45;
+        level[cellID].rules[ruleID].direction = direction;
+        level[cellID].rules[ruleID].visualDirection = visualDirection;
+        this.setState({ level : level });
+    }
+
+    incrementSound = (cellID, ruleID) => {
+        const level = this.state.level.slice();
+        let audioSample = level[cellID].rules[ruleID].audioSample;
+        audioSample += 1;
+        if(audioSample > 8) audioSample = 0;
+        level[cellID].rules[ruleID].audioSample = audioSample;
+        this.setState({ level : level });
+    }
+
+    //rule click functions
+    onGateRuleClicked = (cellID, ruleID, elementID) => {
+        //shape
+        switch(elementID) {
+            case 0:
+                //shape clicked
+                this.incrementShape(cellID, ruleID);
+                break;
+            case 1:
+                //color clicked
+                this.incrementColor(cellID, ruleID);
+                break;
+            case 2:
+                //direction clicked
+                this.incrementDirection(cellID, ruleID);
+                break;
+            case 3:
+                //sound clicked
+                this.incrementSound(cellID, ruleID);
+                break;
+            default:
+                //nothing clicked
+                break;
+        }
     }
 
     render() {
       return (
         <div className="wrapper">
-        <div className="game">
-            <div className="level-editor">
-                <Toolbox
-                    onClick = {(toolID) => this.toolboxClick(toolID)}
-                    selected = {this.state.currentTool}
-                    cellTypes = {this.state.cellTypes}
-                    currentlyAdding = {this.state.currentlyAdding}
-                    setCreateType = {(type) => this.setCreateType(type)}
-                ></Toolbox>
-               <button onClick={() => this.saveLevel(this.state.level)}>save</button>
-               <button onClick={() => this.loadLevel()}>load</button>
-            </div>
+            <div className="game">
+                <div className="level-editor">
+                    <Toolbox
+                        onClick = {(toolID) => this.toolboxClick(toolID)}
+                        selected = {this.state.currentTool}
+                        cellTypes = {this.state.cellTypes}
+                        currentlyAdding = {this.state.currentlyAdding}
+                        setCreateType = {(type) => this.setCreateType(type)}
+                    ></Toolbox>
+                <button onClick={() => this.saveLevel(this.state.level)}>save</button>
+                <button onClick={() => this.loadLevel()}>load</button>
+                </div>
 
-            <div className="level">
-                <LogicGrid
+                <div className="level">
+                    <LogicGrid
+                        level = {this.state.level}
+                        emitters = {this.state.emitters}
+                        onMouseDown = {(cellID) => this.cellClick(cellID)}
+                        onHover = {(cellID) => this.cellHover(cellID)}
+                        onMouseUp = {(cellID) => this.cellMouseUp(cellID)}
+                        currentlyAdding = {this.state.currentlyAdding}
+                        currentTool = {this.state.currentTool}
+                    ></LogicGrid>
+                </div>
+                
+                <RuleEditor
                     level = {this.state.level}
-                    emitters = {this.state.emitters}
-                    onMouseDown = {(cellID) => this.cellClick(cellID)}
-                    onHover = {(cellID) => this.cellHover(cellID)}
-                    onMouseUp = {(cellID) => this.cellMouseUp(cellID)}
-                    currentlyAdding = {this.state.currentlyAdding}
-                    currentTool = {this.state.currentTool}
-                ></LogicGrid>
+                    cellID = {this.state.selectedCell}
+                    colorList = {this.state.colorList}
+                    onGateRuleClicked = {(cellID, ruleID, elementID) => this.onGateRuleClicked(cellID, ruleID, elementID)}
+                    addNewRule = {(cellID, ruleID) => this.addNewRule(cellID, ruleID)}
+                ></RuleEditor>
             </div>
-            
-            
-            <RuleEditor 
-                level = {this.state.level}
-                cell = {this.state.selectedCell}
-                colorList = {this.state.colorList}
-                addNewRule = {(cellID, ruleID) => this.addNewRule(cellID, ruleID)}
-                onPolyClick = {(cellID, ruleID) => this.polyClick(cellID, ruleID)}
-                onColorPickerClick = {(cellID, ruleID) => this.colorPickerClick(cellID, ruleID)}
-                onDirectionPickerClick = {(cellID, ruleID) => this.directionPickerClick(cellID, ruleID)}
-                onSamplePickerClick = {(cellID, ruleID) => this.samplePickerClick(cellID, ruleID)}
-            ></RuleEditor>
-        </div>
         </div>
       );
     }
