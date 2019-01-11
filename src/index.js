@@ -138,6 +138,7 @@ class Game extends React.Component {
             ],
             emitters: [],
             colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
+            pulses: [],
         };
     }
 
@@ -268,6 +269,8 @@ class Game extends React.Component {
                     audioSample:0
                 }
                 return rule;
+            default:
+                break;
         }
     }
 
@@ -394,10 +397,20 @@ class Game extends React.Component {
         }
     }
 
+    addPulse = (props) => {
+        const pulses = this.state.pulses.slice();
+        pulses.push(props);
+        this.setState({pulses: pulses});
+        console.log('a');
+    }
+
     render() {
       return (
         <div className="wrapper">
-            <LLOutput />
+            <LLOutput
+                pulses = {this.state.pulses}
+                addPulse = {(props) => this.addPulse(props)}
+            />
             <div className="game">
                 <div className="level-editor">
                     <Toolbox
