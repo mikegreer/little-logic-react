@@ -122,7 +122,7 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            level: this.constructLevel(10, 10, []),
+            level: this.constructLevel(10, 10),
             currentTool: 0,
             selectedCell: 0,
             hoverCell: 0,
@@ -142,7 +142,7 @@ class Game extends React.Component {
         };
     }
 
-    constructLevel = (width, height, emitters) => {
+    constructLevel = (width, height) => {
         const level = [];
         // level.length = width * height;
         for(let i = 0; i < width * height; i ++){
@@ -153,9 +153,6 @@ class Game extends React.Component {
                 selected: false,
             })
         }
-        emitters.forEach((emitter, index) => {
-            level[emitter.cellIndex].type = 1;
-        });
         return level;
     }
 
@@ -219,18 +216,19 @@ class Game extends React.Component {
     }
 
     cellHover = (cellID) => {
-        if(this.state.currentTool === 2){
-            this.updateCell({
-                hover: true,
-            }, cellID);
+        //disabling. Shouldn't update whole state on cell hover!
+        // if(this.state.currentTool === 2){
+        //     this.updateCell({
+        //         hover: true,
+        //     }, cellID);
 
-            if(this.state.hoverCell || this.state.hoverCell === 0){
-                this.updateCell({
-                    hover: null,
-                }, this.state.hoverCell);
-            }
-            this.setState({hoverCell: cellID});
-        }  
+        //     if(this.state.hoverCell || this.state.hoverCell === 0){
+        //         this.updateCell({
+        //             hover: null,
+        //         }, this.state.hoverCell);
+        //     }
+        //     this.setState({hoverCell: cellID});
+        // }  
     }
     
     setCreateType = (type) => {
@@ -397,20 +395,16 @@ class Game extends React.Component {
         }
     }
 
-    addPulse = (props) => {
-        const pulses = this.state.pulses.slice();
-        pulses.push(props);
-        this.setState({pulses: pulses});
-        console.log('a');
-    }
+    // addPulse = (props) => {
+    //     const pulses = this.state.pulses.slice();
+    //     pulses.push(props);
+    //     console.log(pulses);
+    //     this.setState({pulses: pulses});
+    // }
 
     render() {
       return (
         <div className="wrapper">
-            <LLOutput
-                pulses = {this.state.pulses}
-                addPulse = {(props) => this.addPulse(props)}
-            />
             <div className="game">
                 <div className="level-editor">
                     <Toolbox
@@ -420,10 +414,11 @@ class Game extends React.Component {
                         currentlyAdding = {this.state.currentlyAdding}
                         setCreateType = {(type) => this.setCreateType(type)}
                     ></Toolbox>
-                <button onClick={() => this.saveLevel(this.state.level)}>save</button>
-                <button onClick={() => this.loadLevel()}>load</button>
+                    <button onClick={() => this.saveLevel(this.state.level)}>save</button>
+                    <button onClick={() => this.loadLevel()}>load</button>
                 </div>
 
+                
                 <div className="level">
                     <LogicGrid
                         level = {this.state.level}
@@ -434,6 +429,14 @@ class Game extends React.Component {
                         currentlyAdding = {this.state.currentlyAdding}
                         currentTool = {this.state.currentTool}
                     ></LogicGrid>
+                    <LLOutput
+                        // pulses = {this.state.pulses}
+                        // addPulse = {(props) => this.addPulse(props)}
+                        level = {this.state.level}
+                        width = {340}
+                        height = {340}
+                        colorList = {this.state.colorList}
+                    />
                 </div>
                 
                 <RuleEditor

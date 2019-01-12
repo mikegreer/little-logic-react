@@ -5,6 +5,7 @@
   "dependencies": {
     "classnames": "^2.2.6",
     "react": "^16.7.0",
+    "react-animation-frame": "^1.0.2",
     "react-dom": "^16.7.0",
     "react-scripts": "2.1.1"
   },
