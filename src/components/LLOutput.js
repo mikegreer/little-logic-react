@@ -18,26 +18,31 @@ class LLOutput extends React.Component {
 		this.state = {
 			level: this.props.level,
 		}
-		
-		// for(var i = 0; i < 10; i ++) {
-		// 	this.pulses.push({
-		// 		x: Math.random()*this.props.width,
-		// 		y: Math.random()*this.props.height,
-		// 		shape: "circle",
-		// 		color: "red",
-		// 		dx: Math.random()*10,
-		// 		dy: Math.random()*10,
-		// 		w: 20,
-		// 		h: 20,
-		// 		id: i,
-		// 	});
-		// }
 	}
 
+	componentDidMount() {
+		this.ctx = this.canvas.current.getContext("2d");
+	}
  
+	idToCoordinates(id) {
+		const cellSize = 34;
+		const coordinates = {
+			x: id % 10 * cellSize + (cellSize / 2),
+			y: (Math.floor((id / 10) % 10) * cellSize) + (cellSize / 2),
+		}
+		return coordinates;
+	}
+
+	angleToDirection(angle, speed){
+		const radians = (angle - 90) * (Math.PI / 180);
+		const direction = {
+			dx: (Math.cos(radians)),
+			dy: (Math.sin(radians)),
+		}
+		return direction;
+	}
+
 	drawShape(shape, x, y, w, h, color) {
-		// const canvas = this.refs.canvas;
-		// const ctx = this.canvas.current.getContext("2d");
 		this.ctx.beginPath();
 		this.ctx.fillStyle = color;
 		if(color === 'red'){
@@ -67,10 +72,6 @@ class LLOutput extends React.Component {
 		}
 		this.ctx.fill();
 	};
-  
-	componentDidMount() {
-		this.ctx = this.canvas.current.getContext("2d");
-	}
 
 	updatePulse(pulse) {
 		if(pulse.x + pulse.dx > this.props.width || pulse.x + pulse.dx < 0){
@@ -83,24 +84,6 @@ class LLOutput extends React.Component {
 		pulse.y += pulse.dy;
 		
 		return pulse;
-	}
-
-	idToCoordinates(id) {
-		const cellSize = 34;
-		const coordinates = {
-			x: id % 10 * cellSize + (cellSize / 2),
-			y: (Math.floor((id / 10) % 10) * cellSize) + (cellSize / 2),
-		}
-		return coordinates;
-	}
-
-	angleToDirection(angle, speed){
-		const radians = (angle - 90) * (Math.PI / 180);
-		const direction = {
-			dx: (Math.cos(radians)),
-			dy: (Math.sin(radians)),
-		}
-		return direction;
 	}
 
 	emitParticle(emitter, rule) {
@@ -122,7 +105,7 @@ class LLOutput extends React.Component {
 		this.ctx.clearRect(0, 0, this.props.width, this.props.height);
 
 		//add new pulses from emitters
-		let currentBeat =  Math.floor(time / this.time.beatLength) % this.time.barLength;
+		let currentBeat = Math.floor(time / this.time.beatLength) % this.time.barLength;
 		if(currentBeat !== this.time.previousBeat) {
 			this.time.previousBeat = currentBeat;
 			this.time.currentBeat = currentBeat;
@@ -142,8 +125,6 @@ class LLOutput extends React.Component {
 			this.drawShape(pulse.shape, pulse.x, pulse.y, pulse.w, pulse.h, pulse.color);
 			pulse = this.updatePulse(pulse);
 		});
-		// this.drawShape("circle", time, 100, 20, 20, "red");
-		// 
 	}
 
 	render() {
@@ -153,11 +134,8 @@ class LLOutput extends React.Component {
 				this.emitters.push(cell);
 			}
 		});
-		console.log(this.emitters);
 		return(
-			<div>
 			<canvas ref={this.canvas} width={this.props.width} height={this.props.height} />
-			</div>
 		)
 	}
 }

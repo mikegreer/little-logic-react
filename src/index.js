@@ -300,99 +300,91 @@ class Game extends React.Component {
         this.setState({level: levels[0]});
     }
 
+    getRule = (cellID, ruleID) => {
+        const level = this.state.level.slice();
+        return(level[cellID].rules[ruleID]);
+    }
+
+    updateRule = (newRule, cellID, ruleID) => {
+        const level = this.state.level.slice();
+        level[cellID].rules[ruleID] = newRule;
+        this.setState({ level : level });
+    }
+
     // edit rule functions
-    incrementShape = (cellID, ruleID) => {
-        const level = this.state.level.slice();
-        let points = level[cellID].rules[ruleID].points;
-        if(points + 1 > 7){
-            points = 3;
+    incrementShape = (rule) => {
+        if(rule.points + 1 > 7){
+            rule.points = 3;
         }else{
-            points +=1;
+            rule.points +=1;
         }
-        level[cellID].rules[ruleID].points = points;
-        this.setState({level: level});
+        return rule;
     }
 
-    incrementColor = (cellID, ruleID) => {
-        const level = this.state.level.slice();
-        let colorIndex = level[cellID].rules[ruleID].color;
-        if(colorIndex + 1 >= this.state.colorList.length){
-            colorIndex = 0;
+    incrementColor = (rule) => {
+        if(rule.color + 1 >= this.state.colorList.length){
+            rule.color = 0;
         }else{
-            colorIndex ++;
+            rule.color ++;
         }
-        level[cellID].rules[ruleID].color = colorIndex;
-        this.setState({ level : level });
+        return rule;
     }
 
-    incrementDirection = (cellID, ruleID) => {
-        const level = this.state.level.slice();
-        let direction = level[cellID].rules[ruleID].direction;
-        direction = (direction + 45) % 360;
-        let visualDirection = level[cellID].rules[ruleID].visualDirection + 45;
-        level[cellID].rules[ruleID].direction = direction;
-        level[cellID].rules[ruleID].visualDirection = visualDirection;
-        this.setState({ level : level });
+    incrementDirection = (rule) => {
+        rule.direction = (rule.direction + 45) % 360;
+        rule.visualDirection += 45;
+        return rule;
     }
 
-    incrementSound = (cellID, ruleID) => {
-        const level = this.state.level.slice();
-        let audioSample = level[cellID].rules[ruleID].audioSample;
-        audioSample += 1;
-        if(audioSample > 8) audioSample = 0;
-        level[cellID].rules[ruleID].audioSample = audioSample;
-        this.setState({ level : level });
+    incrementSound = (rule) => {
+        rule.audioSample += 1;
+        if(rule.audioSample > 8) rule.audioSample = 0;
+        return rule;
     }
 
-    incrementReleaseFrequency = (cellID, ruleID) => {
-        const level = this.state.level.slice();
-        let rf = level[cellID].rules[ruleID].releaseFrequency;
-        (rf > 8) ? rf = 0 : rf += 1;
-        level[cellID].rules[ruleID].releaseFrequency = rf;
-        this.setState({ level : level });
+    incrementReleaseFrequency = (rule) => {
+        (rule.releaseFrequency > 8) ? rule.releaseFrequency = 0 : rule.releaseFrequency += 1;
+        return rule;
     }
 
-    incrementTarget = (cellID, ruleID) => {
-        const level = this.state.level.slice();
-        let goal = level[cellID].rules[ruleID].goal;
-        (goal > 8) ? goal = 1 : goal += 1;
-        console.log(goal);
-        level[cellID].rules[ruleID].goal = goal;
-        this.setState({ level : level });
+    incrementTarget = (rule) => {
+        (rule.goal > 8) ? rule.goal = 1 : rule.goal += 1;
+        return rule;
     }
 
     //rule click functions
     onRuleClicked = (cellID, ruleID, elementID) => {
-        //shape
+        let rule = this.getRule(cellID, ruleID);
         switch(elementID) {
             case 0:
                 //shape clicked
-                this.incrementShape(cellID, ruleID);
+                rule = this.incrementShape(rule);
                 break;
             case 1:
                 //color clicked
-                this.incrementColor(cellID, ruleID);
+                rule = this.incrementColor(rule);
                 break;
             case 2:
                 //direction clicked
-                this.incrementDirection(cellID, ruleID);
+                rule = this.incrementDirection(rule);
                 break;
             case 3:
                 //sound clicked
-                this.incrementSound(cellID, ruleID);
+                rule = this.incrementSound(rule);
                 break;
             case 4:
                 //release frequency
-                this.incrementReleaseFrequency(cellID, ruleID);
+                rule = this.incrementReleaseFrequency(rule);
                 break;
             case 5:
                 //goal target
-                this.incrementTarget(cellID, ruleID);
+                rule = this.incrementTarget(rule);
                 break;
             default:
                 //nothing clicked
                 break;
         }
+        this.updateRule(rule, cellID, ruleID);
     }
 
     // addPulse = (props) => {
