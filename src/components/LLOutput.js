@@ -8,7 +8,6 @@ class LLOutput extends React.Component {
 		this.ctx = null;
 		this.pulses = [];
 		this.emitters = [];
-		// this.currentBeat = 0;
 		this.time = {
 			currentBeat: 0,
 			previousBeat: 0,
@@ -16,7 +15,7 @@ class LLOutput extends React.Component {
 			barLength: 10,
 		}
 		this.state = {
-			level: this.props.level,
+			paused: false,
 		}
 	}
 
@@ -73,11 +72,16 @@ class LLOutput extends React.Component {
 		this.ctx.fill();
 	};
 
+	restart() {
+		this.pulses = [];
+		this.ctx.clearRect(0, 0, this.props.width, this.props.height);
+	}
+
 	updatePulse(pulse) {
-		if(pulse.x + pulse.dx > this.props.width || pulse.x + pulse.dx < 0){
+		if(pulse.x + pulse.dx + (pulse.w/2) > this.props.width || pulse.x + pulse.dx - (pulse.w/2) < 0){
 			pulse.dx *= -1;
 		}
-		if(pulse.y + pulse.dy > this.props.height || pulse.y + pulse.dy < 0){
+		if(pulse.y + pulse.dy + (pulse.h/2) > this.props.height || pulse.y + pulse.dy - (pulse.h/2) < 0){
 			pulse.dy *= -1;
 		}
 		pulse.x += pulse.dx;
@@ -96,46 +100,57 @@ class LLOutput extends React.Component {
 			color: rule.color,
 			dx: direction.dx,
 			dy: direction.dy,
-			w: 20,
-			h: 20,
+			w: 34,
+			h: 34,
 		});
 	}
 
 	onAnimationFrame(time) {
-		this.ctx.clearRect(0, 0, this.props.width, this.props.height);
+		//TODO: add pausing into the timer too (save current timestamp when pause is pressed?)
+		if(!this.state.paused){
+			this.ctx.clearRect(0, 0, this.props.width, this.props.height);
 
-		//add new pulses from emitters
-		let currentBeat = Math.floor(time / this.time.beatLength) % this.time.barLength;
-		if(currentBeat !== this.time.previousBeat) {
-			this.time.previousBeat = currentBeat;
-			this.time.currentBeat = currentBeat;
-
-			let beatCount = Math.floor(time / this.time.beatLength);
-			this.emitters.forEach((emitter, index) => {
-				emitter.rules.forEach((rule) => {
-					if(beatCount % rule.releaseFrequency === 0){
-						this.emitParticle(emitter, rule);
-					}
+			//add new pulses from emitters
+			let currentBeat = Math.floor(time / this.time.beatLength) % this.time.barLength;
+			if(currentBeat !== this.time.previousBeat) {
+				this.time.previousBeat = currentBeat;
+				this.time.currentBeat = currentBeat;
+	
+				let beatCount = Math.floor(time / this.time.beatLength);
+				this.emitters.forEach((emitter, index) => {
+					emitter.rules.forEach((rule) => {
+						if(beatCount % rule.releaseFrequency === 0){
+							this.emitParticle(emitter, rule);
+						}
+					});
 				});
+			}
+	
+			//update pulses
+			this.pulses.forEach(pulse => {
+				this.drawShape(pulse.shape, pulse.x, pulse.y, pulse.w, pulse.h, pulse.color);
+				pulse = this.updatePulse(pulse);
 			});
-		}
+		}	
+	}
 
-		//update pulses
-		this.pulses.forEach(pulse => {
-			this.drawShape(pulse.shape, pulse.x, pulse.y, pulse.w, pulse.h, pulse.color);
-			pulse = this.updatePulse(pulse);
-		});
+	pausePlay() {
+		this.setState({paused: !this.state.paused});
 	}
 
 	render() {
 		this.emitters = [];
-		this.state.level.forEach((cell, index) => {
+		this.props.level.forEach((cell, index) => {
 			if(cell.type === 1){
 				this.emitters.push(cell);
 			}
 		});
 		return(
-			<canvas ref={this.canvas} width={this.props.width} height={this.props.height} />
+			<div>
+				<canvas ref={this.canvas} width={this.props.width} height={this.props.height} />
+				<button onClick={() => this.restart()}>restart</button>
+				<button onClick={() => this.pausePlay()}>{this.state.paused ? "play" : "pause"}</button>
+			</div>
 		)
 	}
 }
