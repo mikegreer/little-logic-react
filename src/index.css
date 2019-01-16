@@ -60,7 +60,6 @@ body {
   flex: row;
   width: 340px;
   height: 340px;
-  border: 1px solid #ccc;
 }
 
 /*game board --------------------------------------*/
@@ -74,6 +73,16 @@ body {
   text-align: center;
   width: 35px;
   height: 35px;
+}
+
+.hex{
+  stroke: #dddddd;
+  fill:#fff;
+  fill-opacity:0;
+  box-sizing: border-box;
+}
+.hex.selected{
+  stroke: #ff00ff;
 }
 
 .square * {

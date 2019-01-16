@@ -23,14 +23,19 @@ class LLOutput extends React.Component {
 		this.ctx = this.canvas.current.getContext("2d");
 	}
  
-	idToCoordinates(id) {
-		const cellSize = 34;
-		const coordinates = {
-			x: id % 10 * cellSize + (cellSize / 2),
-			y: (Math.floor((id / 10) % 10) * cellSize) + (cellSize / 2),
-		}
-		return coordinates;
-	}
+	// idToCoordinates(id) {
+	// 	const cellSize = this.props.cellSize;
+
+	// 	const cellHeight = ((cellSize * 2) / 4) * 3 ;
+	// 	const cellWidth = Math.sqrt(3) * this.props.cellSize;
+
+	// 	const coordinates = {
+	// 		x: id % 8 * cellWidth + (cellWidth),
+	// 		y: Math.floor((id / 8) % 8) * cellHeight,
+	// 	}
+	// 	console.log(coordinates);
+	// 	return coordinates;
+	// }
 
 	angleToDirection(angle, speed){
 		const radians = (angle - 90) * (Math.PI / 180);
@@ -41,7 +46,7 @@ class LLOutput extends React.Component {
 		return direction;
 	}
 
-	drawShape(shape, x, y, w, h, color) {
+	drawShape(pointCount, x, y, w, h, color) {
 		this.ctx.beginPath();
 		this.ctx.fillStyle = color;
 		if(color === 'red'){
@@ -53,8 +58,27 @@ class LLOutput extends React.Component {
 		
 		this.ctx.fillStyle = this.props.colorList[color];
 
-		//temporary. Add shape rendering in.
-		switch(shape){
+		const angleUnit = (360/pointCount) * Math.PI / 180;
+		let pointAngle = 0;
+		this.ctx.beginPath();
+		this.ctx.moveTo(x - w/2, y - h/2);
+		// this.ctx.rect(x - w/2, y - h/2, w, h);
+		for(var i = 1; i <= pointCount; i++){
+			// if(i < shape){
+			// 	ctx.lineTo();
+			// 	pointAngle = angleUnit * i + rotationOffset;
+			// }else{
+			pointAngle = angleUnit * pointCount;
+			// }
+			let px = Math.cos(pointAngle) * w + 10;
+			let py = Math.sin(pointAngle) * w + 10;
+			this.ctx.lineTo(px, py);
+			// console.log(px, py);
+		}
+		this.ctx.closePath();
+		this.ctx.fill();
+		// temporary. Add shape rendering in.
+		switch(pointCount){
 			case 3:
 				this.ctx.rect(x - w/2, y - h/2, w, h);
 				break;
@@ -66,11 +90,37 @@ class LLOutput extends React.Component {
 				this.ctx.ellipse(x, y, r, r, 45 * Math.PI/180, 0, 2 * Math.PI);
 				break;
 			default:
-				console.log(shape);
+				console.log(pointCount);
 				break;
 		}
 		this.ctx.fill();
 	};
+
+	// drawShape(pointCount, x, y, w, h, color) {
+	// 	this.ctx.beginPath();
+	// 	this.ctx.fillStyle = color;
+	// 	if(color === 'red'){
+	// 		this.ctx.fillStyle = '#c0392b';
+	// 	}
+	// 	if(color === 'blue'){
+	// 		this.ctx.fillStyle = '#2980b9';
+	// 	}
+		
+	// 	this.ctx.fillStyle = this.props.colorList[color];
+	// 	const angleUnit = (360/pointCount) * Math.PI / 180;
+	// 	let pointAngle = 0;
+	// 	this.ctx.beginPath();
+	// 	this.ctx.moveTo(x - w/2, y - h/2);
+	// 	for(var i = 1; i <= pointCount; i++){
+	// 		pointAngle = angleUnit * pointCount;
+	// 		let px = Math.cos(pointAngle) * w + 10;
+	// 		let py = Math.sin(pointAngle) * w + 10;
+	// 		this.ctx.lineTo(px, py);
+	// 		console.log(px, py);
+	// 	}
+	// 	this.ctx.closePath();
+	// 	this.ctx.fill();
+	// };
 
 	restart() {
 		this.pulses = [];
@@ -78,12 +128,13 @@ class LLOutput extends React.Component {
 	}
 
 	updatePulse(pulse) {
-		if(pulse.x + pulse.dx + (pulse.w/2) > this.props.width || pulse.x + pulse.dx - (pulse.w/2) < 0){
-			pulse.dx *= -1;
-		}
-		if(pulse.y + pulse.dy + (pulse.h/2) > this.props.height || pulse.y + pulse.dy - (pulse.h/2) < 0){
-			pulse.dy *= -1;
-		}
+		//TODO: update to remove pulses that have left the canvas 
+		// if(pulse.x + pulse.dx + (pulse.w/2) > this.props.width || pulse.x + pulse.dx - (pulse.w/2) < 0){
+		// 	pulse.dx *= -1;
+		// }
+		// if(pulse.y + pulse.dy + (pulse.h/2) > this.props.height || pulse.y + pulse.dy - (pulse.h/2) < 0){
+		// 	pulse.dy *= -1;
+		// }
 		pulse.x += pulse.dx;
 		pulse.y += pulse.dy;
 		
@@ -91,11 +142,18 @@ class LLOutput extends React.Component {
 	}
 
 	emitParticle(emitter, rule) {
-		const coordinates = this.idToCoordinates(emitter.id);
+		console.log(emitter.row, emitter.column);
+		// const coordinates = this.idToCoordinates(emitter.id);
 		const direction = this.angleToDirection(rule.direction);
+
+		//TODO: change to use scale property
+		const cellSize = 22;
+		const cellHeight = (cellSize * 2) * .75;
+		const cellWidth = Math.sqrt(3) * cellSize;
+		
 		this.pulses.push({
-			x: coordinates.x,
-			y: coordinates.y,
+			x: emitter.row % 2 ? emitter.column * cellWidth + (cellWidth/2): emitter.column * cellWidth + cellWidth,
+			y: emitter.row * cellHeight + cellHeight / 2,
 			shape: rule.points,
 			color: rule.color,
 			dx: direction.dx,

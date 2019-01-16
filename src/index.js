@@ -14,38 +14,33 @@ serviceWorker.unregister();
 
 class Emitter extends React.Component {
     render() {
+        const hexWidth = Math.sqrt(3) * this.props.hexScale;
         return (
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 46 46">
-                <g>
-                    <path className="st0" d="M45.2,39.6c0,3.1-2.6,5.7-5.7,5.7H7.1c-3.1,0-5.7-2.6-5.7-5.7V7.1c0-3.1,2.6-5.7,5.7-5.7h32.4
-                        c3.1,0,5.7,2.6,5.7,5.7V39.6z"/>
-                </g>
-            </svg>
+            <g>
+                <circle cx={hexWidth/2} cy="0" r={this.props.hexScale/2} stroke="black" fill="none" strokeWidth="10"  />
+            </g>
         );
     }
 }
 
 class Router extends React.Component {
     render() {
+        const hexWidth = Math.sqrt(3) * this.props.hexScale;
         return (
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="10px" y="10px" viewBox="-10 -10 66 66">
-                <g>
-                    <path className="st0" d="M45.2,39.6c0,3.1-2.6,5.7-5.7,5.7H7.1c-3.1,0-5.7-2.6-5.7-5.7V7.1c0-3.1,2.6-5.7,5.7-5.7h32.4
-                        c3.1,0,5.7,2.6,5.7,5.7V39.6z"/>
-                </g>
-            </svg>
+            <g>
+                <circle cx={hexWidth/2} cy="0" r={this.props.hexScale/2} stroke="red" fill="none" strokeWidth="5"  />
+            </g>
         );
     }
 }
 
 class Goal extends React.Component {
     render() {
+        const hexWidth = Math.sqrt(3) * this.props.hexScale;
         return (
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="10px" y="10px" viewBox="0 0 100 100">
-                <g>
-                    <circle cx="50" cy="50" r="40" stroke="black" fill="none" strokeWidth="10"  />
-                </g>
-            </svg>
+            <g>
+                <circle cx={hexWidth/2} cy="0" r={this.props.hexScale/2} stroke="blue" fill="none" strokeWidth="10"  />
+            </g>
         );
     }
 }
@@ -62,46 +57,91 @@ class Ghost extends React.Component {
     }
 }
 
-class Square extends React.Component {
-    render() {
-        return (
-            <button
+class Hexagon extends React.Component {
+    render () {
+        const scale = this.props.hexScale;
+        const width = Math.sqrt(3) * scale;
+        const hexPoints = [
+            {x: width, y: (scale/2)*-1},
+            {x: width, y: scale/2},
+            {x: width/2, y: scale},
+            {x: 0, y: scale/2},
+            {x: 0, y: (scale/2)*-1},
+            {x: width/2, y: scale*-1}
+        ];
+
+        let points = "";
+        hexPoints.forEach(point => {
+            points += point.x + "," + point.y + " ";
+        });
+        
+        const center = this.props.coordinates;
+        return(
+            <g style = { 
+                {transform: "translate(" + center.x + "px, " + center.y + "px)"}
+            }>
+            <polygon
+                points={points}
+                stroke="#eeeeee" 
+                fill="none" 
+                strokeWidth="1"
+                // gridCoordinates={this.props.gridCoordinates}
                 className={classNames(
                     { 'selected': this.props.selected },
                     { 'hover': this.props.hover },
-                    "square")}
+                    "hex")}
                 style={
                     {cursor: this.props.currentTool === 1 ? 'move':'default'}
                 }
                 onMouseDown={(cellIndex) => this.props.onMouseDown(this.props.cellIndex)}
-                onMouseOver={(cellIndex) => this.props.onHover(this.props.cellIndex)}
+                // onMouseOver={(cellIndex) => this.props.onHover(this.props.cellIndex)}
                 onMouseUp={(cellIndex) => this.props.onMouseUp(this.props.cellIndex)}
             >
                 {this.props.hover ? <Ghost currentlyAdding={this.props.currentlyAdding}></Ghost> : null}
-                {this.props.cellType === 1 ? <Emitter></Emitter> : null}
-                {this.props.cellType === 2 ? <Router></Router> : null}
-                {this.props.cellType === 3 ? <Goal></Goal> : null}
-            </button>
+            ></polygon>
+            {this.props.cellType === 1 ? <Emitter hexScale={scale}></Emitter> : null}
+            {this.props.cellType === 2 ? <Router hexScale={scale}></Router> : null}
+            {this.props.cellType === 3 ? <Goal hexScale={scale}></Goal> : null}
+            </g>
         );
     }
 }
 
 class LogicGrid extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            hexScale: this.props.cellSize,
+        }
+    }
+
     render() {
-        const grid = [];
-        this.props.level.forEach((cell, index) => {
-            grid.push(<Square 
+        // const grid = this.generateGrid(8, 10, 22);
+        // const gridDimensions = {
+        //     width: 8,
+        //     height: 10
+        // }
+        const hexGrid = [];
+        // const cellHeight = (this.state.hexScale * 2) * .75;
+        // const cellWidth = Math.sqrt(3) * this.state.hexScale;
+
+        this.props.level.forEach((hex, index) => {
+            const cell = this.props.level[index];
+
+            hexGrid.push(<Hexagon
                 key={index}
                 cellIndex={index}
+                hexScale={this.state.hexScale}
+                coordinates = {{x: hex.gridX, y: hex.gridY}}
                 cellType={cell.type}
-                onMouseDown={(cellID) => this.props.onMouseDown(cellID)}
-                onHover={(cellID) => this.props.onHover(cellID)}
-                onMouseUp={(cellID) => this.props.onMouseUp(cellID)}
+                onMouseDown={(i) => this.props.onMouseDown(i)}
+                // onHover={(cellID) => this.props.onHover(cellID)}
+                onMouseUp={(i) => this.props.onMouseUp(i)}
                 selected={cell.selected}
-                hover={cell.hover}
+                // hover={cell.hover}
                 currentlyAdding={this.props.currentlyAdding}
                 currentTool={this.props.currentTool}
-                ></Square>);
+            />);
         });
         const emitters = [];
         this.props.emitters.forEach((emitter, index) => {
@@ -112,8 +152,13 @@ class LogicGrid extends React.Component {
                     releaseRules={emitter.releaseRules}
                 ></Emitter>)
         });
+
         return(
-            <div className="grid">{grid}</div>
+            <div className="grid">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" width="350" height="350">
+                    {hexGrid}
+                </svg>
+            </div>
         );
     }
 }
@@ -122,7 +167,7 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            level: this.constructLevel(10, 10),
+            level: this.generateGrid(10, 8, 22),
             currentTool: 0,
             selectedCell: 0,
             hoverCell: 0,
@@ -136,24 +181,32 @@ class Game extends React.Component {
                 {id: 2, label: "router"},
                 {id: 3, label: "goal"},
             ],
+            cellSize: 22,
             emitters: [],
             colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
-            pulses: [],
         };
     }
 
-    constructLevel = (width, height) => {
-        const level = [];
-        // level.length = width * height;
-        for(let i = 0; i < width * height; i ++){
-            level.push({
+    generateGrid = (cols, rows, cellSize) => {
+        const grid = [];
+        const cellHeight = (cellSize * 2) * .75;
+        const cellWidth = Math.sqrt(3) * cellSize;
+
+        for(let i = 0; i < cols * rows; i ++) {
+            const column = i % 8;
+            const row = Math.floor(i / 8);
+            grid.push({
                 id: i,
                 type: 0,
                 rules: [],
                 selected: false,
-            })
+                column: column,
+                row: row,
+                gridX: row % 2 ? column * cellWidth : column * cellWidth + (cellWidth / 2),
+                gridY: row * cellHeight + cellHeight / 2,
+            });
         }
-        return level;
+        return grid;
     }
 
     //helper function to update cell
@@ -163,8 +216,6 @@ class Game extends React.Component {
         level[cellID] = updatedCell;
         this.setState({level: level});
     }
-
-    //TODO: helper function to update rule within cell
 
     cellMouseUp = (cellID) => {
         if(this.state.currentTool === 1){
@@ -184,7 +235,7 @@ class Game extends React.Component {
             this.updateCell({
                 selected: true,
             }, cellID);
-
+            
             if(this.state.selectedCell || this.state.selectedCell === 0){
                 this.updateCell({
                     selected: null,
@@ -243,8 +294,8 @@ class Game extends React.Component {
                     releaseFrequency: 6,
                     points: 5,
                     color: 0,
-                    direction: 45,
-                    visualDirection: 45,
+                    direction: 60,
+                    visualDirection: 60,
                     audioSample:0
                 }
                 return rule;
@@ -252,8 +303,8 @@ class Game extends React.Component {
                 rule = {
                     points: 5,
                     color: 0,
-                    direction: 45,
-                    visualDirection: 45,
+                    direction: 60,
+                    visualDirection: 60,
                     audioSample:0
                 }
                 return rule;
@@ -262,8 +313,8 @@ class Game extends React.Component {
                     goal: 5,
                     points: 5,
                     color: 0,
-                    direction: 45,
-                    visualDirection: 45,
+                    direction: 60,
+                    visualDirection: 60,
                     audioSample:0
                 }
                 return rule;
@@ -331,8 +382,8 @@ class Game extends React.Component {
     }
 
     incrementDirection = (rule) => {
-        rule.direction = (rule.direction + 45) % 360;
-        rule.visualDirection += 45;
+        rule.direction = (rule.direction + 60) % 360;
+        rule.visualDirection += 60;
         return rule;
     }
 
@@ -387,13 +438,6 @@ class Game extends React.Component {
         this.updateRule(rule, cellID, ruleID);
     }
 
-    // addPulse = (props) => {
-    //     const pulses = this.state.pulses.slice();
-    //     pulses.push(props);
-    //     console.log(pulses);
-    //     this.setState({pulses: pulses});
-    // }
-
     render() {
       return (
         <div className="wrapper">
@@ -420,14 +464,14 @@ class Game extends React.Component {
                         onMouseUp = {(cellID) => this.cellMouseUp(cellID)}
                         currentlyAdding = {this.state.currentlyAdding}
                         currentTool = {this.state.currentTool}
+                        cellSize = {this.state.cellSize}
                     ></LogicGrid>
                     <LLOutput
-                        // pulses = {this.state.pulses}
-                        // addPulse = {(props) => this.addPulse(props)}
                         level = {this.state.level}
                         width = {340}
                         height = {340}
                         colorList = {this.state.colorList}
+                        cellSize = {this.state.cellSize}
                     />
                 </div>
                 
