@@ -85,7 +85,6 @@ class Hexagon extends React.Component {
                 stroke="#eeeeee" 
                 fill="none" 
                 strokeWidth="1"
-                // gridCoordinates={this.props.gridCoordinates}
                 className={classNames(
                     { 'selected': this.props.selected },
                     { 'hover': this.props.hover },
@@ -116,18 +115,9 @@ class LogicGrid extends React.Component {
     }
 
     render() {
-        // const grid = this.generateGrid(8, 10, 22);
-        // const gridDimensions = {
-        //     width: 8,
-        //     height: 10
-        // }
         const hexGrid = [];
-        // const cellHeight = (this.state.hexScale * 2) * .75;
-        // const cellWidth = Math.sqrt(3) * this.state.hexScale;
-
         this.props.level.forEach((hex, index) => {
             const cell = this.props.level[index];
-
             hexGrid.push(<Hexagon
                 key={index}
                 cellIndex={index}
@@ -217,16 +207,20 @@ class Game extends React.Component {
         this.setState({level: level});
     }
 
+    moveCell = (cellID, newLocationID) => {
+        const level = this.state.level.slice();
+        const cellMoving = level[cellID];
+        const newLocation = level[newLocationID];
+        newLocation.type = cellMoving.type;
+        newLocation.rules = cellMoving.rules;
+        cellMoving.type = 0;
+        cellMoving.rules = [];
+        this.setState({level: level});
+    }
+
     cellMouseUp = (cellID) => {
         if(this.state.currentTool === 1){
-            const originID = this.state.cellDragging.draggingCellID;
-            const level = this.state.level.slice();
-            const cellMoving = level[originID];
-            this.updateCell(cellMoving, cellID);
-            this.updateCell({
-                type: 0,
-                rules: [],
-            }, originID);
+            this.moveCell(this.state.cellDragging.draggingCellID, cellID)
         }
     }
 
@@ -294,8 +288,8 @@ class Game extends React.Component {
                     releaseFrequency: 6,
                     points: 5,
                     color: 0,
-                    direction: 60,
-                    visualDirection: 60,
+                    direction: 30,
+                    visualDirection: 30,
                     audioSample:0
                 }
                 return rule;
@@ -303,8 +297,8 @@ class Game extends React.Component {
                 rule = {
                     points: 5,
                     color: 0,
-                    direction: 60,
-                    visualDirection: 60,
+                    direction: 210,
+                    visualDirection: 210,
                     audioSample:0
                 }
                 return rule;
@@ -313,8 +307,6 @@ class Game extends React.Component {
                     goal: 5,
                     points: 5,
                     color: 0,
-                    direction: 60,
-                    visualDirection: 60,
                     audioSample:0
                 }
                 return rule;

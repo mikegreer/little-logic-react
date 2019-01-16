@@ -96,32 +96,6 @@ class LLOutput extends React.Component {
 		this.ctx.fill();
 	};
 
-	// drawShape(pointCount, x, y, w, h, color) {
-	// 	this.ctx.beginPath();
-	// 	this.ctx.fillStyle = color;
-	// 	if(color === 'red'){
-	// 		this.ctx.fillStyle = '#c0392b';
-	// 	}
-	// 	if(color === 'blue'){
-	// 		this.ctx.fillStyle = '#2980b9';
-	// 	}
-		
-	// 	this.ctx.fillStyle = this.props.colorList[color];
-	// 	const angleUnit = (360/pointCount) * Math.PI / 180;
-	// 	let pointAngle = 0;
-	// 	this.ctx.beginPath();
-	// 	this.ctx.moveTo(x - w/2, y - h/2);
-	// 	for(var i = 1; i <= pointCount; i++){
-	// 		pointAngle = angleUnit * pointCount;
-	// 		let px = Math.cos(pointAngle) * w + 10;
-	// 		let py = Math.sin(pointAngle) * w + 10;
-	// 		this.ctx.lineTo(px, py);
-	// 		console.log(px, py);
-	// 	}
-	// 	this.ctx.closePath();
-	// 	this.ctx.fill();
-	// };
-
 	restart() {
 		this.pulses = [];
 		this.ctx.clearRect(0, 0, this.props.width, this.props.height);
@@ -142,8 +116,6 @@ class LLOutput extends React.Component {
 	}
 
 	emitParticle(emitter, rule) {
-		console.log(emitter.row, emitter.column);
-		// const coordinates = this.idToCoordinates(emitter.id);
 		const direction = this.angleToDirection(rule.direction);
 
 		//TODO: change to use scale property
