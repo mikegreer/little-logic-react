@@ -6,7 +6,7 @@ class Emitter extends React.Component {
         const hexWidth = Math.sqrt(3) * this.props.hexScale;
         return (
             <g>
-                <circle cx={hexWidth/2} cy="0" r={this.props.hexScale/2} stroke="black" fill="none" strokeWidth="10"  />
+                <circle cx={hexWidth/2} cy="0" r={this.props.hexScale/2} stroke="black" fill="none" strokeWidth="1"  />
             </g>
         );
     }
@@ -63,6 +63,8 @@ class Hexagon extends React.Component {
             points += point.x + "," + point.y + " ";
         });
         const center = this.props.coordinates;
+        center.x += 1;
+        center.y += 6;
         return(
             <g style = { 
                 {transform: "translate(" + center.x + "px, " + center.y + "px)"}
@@ -96,8 +98,11 @@ class Hexagon extends React.Component {
 class HexGrid extends React.Component {
     constructor(props) {
         super(props);
+        const settings = this.props.settings;
         this.state = {
-            hexScale: this.props.cellSize,
+            hexScale: settings.cellSize,
+            width: Math.sqrt(3) * settings.cellSize * (settings.cols + 0.5) + 2,
+            height: 0.75 * settings.cellSize * (settings.rows + 0.5) * 2 + 2,
         }
     }
 
@@ -120,19 +125,10 @@ class HexGrid extends React.Component {
                 currentTool={this.props.currentTool}
             />);
         });
-        const emitters = [];
-        this.props.emitters.forEach((emitter, index) => {
-            emitters.push(
-                <Emitter
-                    cellID={emitter.cellID}
-                    releaseFrequency={emitter.releaseFrequency}
-                    releaseRules={emitter.releaseRules}
-                ></Emitter>)
-        });
 
         return(
             <div className="grid">
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" width="350" height="350">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" width={this.state.width} height={this.state.height}>
                     {hexGrid}
                 </svg>
             </div>

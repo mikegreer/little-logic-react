@@ -298,7 +298,8 @@ function RenderRule (props) {
 
 class RuleEditor extends React.Component {
     render() {
-        const cell = this.props.cell;
+        const currentCell = this.props.cell ? this.props.cell : 0;
+        const cell = currentCell;
         let rules = cell.rules ? cell.rules : [];
         return(
             <div className="rule-editor">

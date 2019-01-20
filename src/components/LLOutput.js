@@ -23,21 +23,7 @@ class LLOutput extends React.Component {
 		this.ctx = this.canvas.current.getContext("2d");
 	}
  
-	// idToCoordinates(id) {
-	// 	const cellSize = this.props.cellSize;
-
-	// 	const cellHeight = ((cellSize * 2) / 4) * 3 ;
-	// 	const cellWidth = Math.sqrt(3) * this.props.cellSize;
-
-	// 	const coordinates = {
-	// 		x: id % 8 * cellWidth + (cellWidth),
-	// 		y: Math.floor((id / 8) % 8) * cellHeight,
-	// 	}
-	// 	console.log(coordinates);
-	// 	return coordinates;
-	// }
-
-	angleToDirection(angle, speed){
+	angleToDirection(angle){
 		const radians = (angle - 90) * (Math.PI / 180);
 		const direction = {
 			dx: (Math.cos(radians)),
@@ -48,13 +34,13 @@ class LLOutput extends React.Component {
 
 	drawShape(pointCount, x, y, w, h, color) {
 		this.ctx.beginPath();
-		this.ctx.fillStyle = color;
-		if(color === 'red'){
-			this.ctx.fillStyle = '#c0392b';
-		}
-		if(color === 'blue'){
-			this.ctx.fillStyle = '#2980b9';
-		}
+		// this.ctx.fillStyle = color;
+		// if(color === 'red'){
+		// 	this.ctx.fillStyle = '#c0392b';
+		// }
+		// if(color === 'blue'){
+		// 	this.ctx.fillStyle = '#2980b9';
+		// }
 		
 		this.ctx.fillStyle = this.props.colorList[color];
 
@@ -70,8 +56,8 @@ class LLOutput extends React.Component {
 			// }else{
 			pointAngle = angleUnit * pointCount;
 			// }
-			let px = Math.cos(pointAngle) * w + 10;
-			let py = Math.sin(pointAngle) * w + 10;
+			let px = Math.cos(pointAngle) * w;
+			let py = Math.sin(pointAngle) * w;
 			this.ctx.lineTo(px, py);
 			// console.log(px, py);
 		}
@@ -102,36 +88,52 @@ class LLOutput extends React.Component {
 	}
 
 	updatePulse(pulse) {
-		//TODO: update to remove pulses that have left the canvas 
-		// if(pulse.x + pulse.dx + (pulse.w/2) > this.props.width || pulse.x + pulse.dx - (pulse.w/2) < 0){
-		// 	pulse.dx *= -1;
-		// }
-		// if(pulse.y + pulse.dy + (pulse.h/2) > this.props.height || pulse.y + pulse.dy - (pulse.h/2) < 0){
-		// 	pulse.dy *= -1;
-		// }
 		pulse.x += pulse.dx;
 		pulse.y += pulse.dy;
 		
 		return pulse;
 	}
 
+	// removePulse(pulseID){
+	// 	this.pulses.splice(pulseID, 1);
+	// }
+
+	checkBounds(pulse, i){
+		//check if pulse is off left or right
+		if(
+			pulse.x + pulse.dx + (pulse.w/2) > this.props.width || 
+			pulse.x + pulse.dx - (pulse.w/2) < 0 ||
+			pulse.y + pulse.dy + (pulse.h/2) > this.props.height ||
+			pulse.y + pulse.dy - (pulse.h/2) < 0
+		){
+			// this.removePulse(i);  
+			return true;
+		}
+	}
+
+	centerPoint(gridX, gridY, cellSize){
+		let posX = gridX + (cellSize * Math.sqrt(3) / 2);
+		let posY = gridY + ((cellSize * 2)/8);
+		return {
+			posX: posX,
+			posY: posY,
+		}
+	}
+
 	emitParticle(emitter, rule) {
 		const direction = this.angleToDirection(rule.direction);
 
 		//TODO: change to use scale property
-		const cellSize = 22;
-		const cellHeight = (cellSize * 2) * .75;
-		const cellWidth = Math.sqrt(3) * cellSize;
-		
+		const centerPoint = this.centerPoint(emitter.gridX, emitter.gridY, 22);
 		this.pulses.push({
-			x: emitter.row % 2 ? emitter.column * cellWidth + (cellWidth/2): emitter.column * cellWidth + cellWidth,
-			y: emitter.row * cellHeight + cellHeight / 2,
+			x: centerPoint.posX,
+			y: centerPoint.posY,
 			shape: rule.points,
 			color: rule.color,
 			dx: direction.dx,
 			dy: direction.dy,
-			w: 34,
-			h: 34,
+			w: 15,
+			h: 15,
 		});
 	}
 
@@ -156,11 +158,55 @@ class LLOutput extends React.Component {
 				});
 			}
 	
-			//update pulses
-			this.pulses.forEach(pulse => {
+			//update and draw pulses
+			const pulsesToRemove = [];
+			// this.emitters.forEach((emitter, i) => {
+			// 	const cellSize = 22;
+			// 	const cellHeight = (cellSize * 2) * .75;
+			// 	const cellWidth = Math.sqrt(3) * cellSize;
+			// 	let pulseX = emitter.gridX + (cellSize * Math.sqrt(3) / 2); //emitter.column * cellWidth;
+			// 	// pulseX += emitter.row % 2 ? cellWidth / 2 : cellWidth;
+			// 	let pulseY = emitter.gridY + ((cellSize * 2)/8); //emitter.row * cellHeight + cellHeight / 2; //+6
+			// 	this.centerPoint(pulseX, pulseY, 22);
+			// });
+			this.pulses.forEach((pulse, i) => {			
+				//check pulses against routers
+				//TODO: factor in pulse speed
+				const hitBoxSize = 1;
+				for(var j = 0; j < this.routers.length; j ++) {
+					const routerPosition = this.centerPoint(this.routers[j].gridX, this.routers[j].gridY, 22);
+					if(
+						pulse.x > routerPosition.posX - hitBoxSize &&
+						pulse.x < routerPosition.posX + hitBoxSize &&
+						pulse.y > routerPosition.posY - hitBoxSize &&
+						pulse.y < routerPosition.posY + hitBoxSize
+					) {
+						if(!pulse.currentlyRouting){
+							pulse.x = routerPosition.posX;
+							pulse.y = routerPosition.posY;
+							pulse.currentlyRouting = true;
+							const direction = this.angleToDirection(this.routers[j].rules[0].direction);
+							pulse.dx = direction.dx;
+							pulse.dy = direction.dy;
+						}else{
+							pulse.currentlyRouting = false;
+						}
+						
+					}
+				}
+
+				if(this.checkBounds(pulse, i)){
+					pulsesToRemove.push(i);
+				};
 				this.drawShape(pulse.shape, pulse.x, pulse.y, pulse.w, pulse.h, pulse.color);
 				pulse = this.updatePulse(pulse);
 			});
+
+			//remove dead pulses
+			pulsesToRemove.sort(function(a,b){ return b - a; });
+			for (var i = 0; i < pulsesToRemove.length; i++) {
+				this.pulses.splice(pulsesToRemove[i], 1);
+			}
 		}	
 	}
 
@@ -170,9 +216,23 @@ class LLOutput extends React.Component {
 
 	render() {
 		this.emitters = [];
+		this.routers = [];
+		this.goals = [];
 		this.props.level.forEach((cell, index) => {
-			if(cell.type === 1){
-				this.emitters.push(cell);
+			switch(cell.type){
+				case 0:
+					break;
+				case 1:
+					this.emitters.push(cell);
+					break;
+				case 2:
+					this.routers.push(cell);
+					break;
+				case 3:
+					this.goals.push(cell);
+					break;
+				default:
+					break;
 			}
 		});
 		return(

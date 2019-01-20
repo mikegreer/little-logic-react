@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import classNames from 'classnames';
 import RuleEditor from './components/RuleEditor';
 import Toolbox from './components/Toolbox';
 import LLOutput from './components/LLOutput';
@@ -14,12 +13,14 @@ ReactDOM.render(<App />, document.getElementById('root'));
 serviceWorker.unregister();
 
 class Game extends React.Component {
+    //TODO: separate state to prevent entire game rerendering on a change.
+    //grid shouldn't handle the emitters, etc.
     constructor(props) {
         super(props);
         this.state = {
             level: this.generateGrid(10, 8, 22),
             currentTool: 0,
-            selectedCell: 0,
+            selectedCell: null,
             hoverCell: 0,
             currentlyAdding: 1,
             cellDragging: {
@@ -31,9 +32,13 @@ class Game extends React.Component {
                 {id: 2, label: "router"},
                 {id: 3, label: "goal"},
             ],
-            cellSize: 22,
             emitters: [],
             colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
+            settings: {
+                cols: 8,
+                rows: 10,
+                cellSize: 22,
+            },
         };
     }
 
@@ -80,7 +85,7 @@ class Game extends React.Component {
 
     cellMouseUp = (cellID) => {
         if(this.state.currentTool === 1){
-            this.moveCell(this.state.cellDragging.draggingCellID, cellID)
+            this.moveCell(this.state.cellDragging.draggingCellID, cellID);
         }
     }
 
@@ -90,7 +95,7 @@ class Game extends React.Component {
                 selected: true,
             }, cellID);
             
-            if(this.state.selectedCell || this.state.selectedCell === 0){
+            if(this.state.selectedCell !== null){
                 this.updateCell({
                     selected: null,
                 }, this.state.selectedCell);
@@ -184,7 +189,12 @@ class Game extends React.Component {
     toolboxClick = (toolID) => {
         this.setState({currentTool: parseInt(toolID)});
         if(toolID !== 0){
-            this.setState({selectedCell: 0});
+            if(this.state.selectedCell !== null){
+                this.updateCell({
+                    selected: null,
+                }, this.state.selectedCell);
+                this.setState({selectedCell: null});
+            }
         }
     }
 
@@ -310,13 +320,12 @@ class Game extends React.Component {
                 <div className="level">
                     <HexGrid
                         level = {this.state.level}
-                        emitters = {this.state.emitters}
                         onMouseDown = {(cellID) => this.cellClick(cellID)}
                         onHover = {(cellID) => this.cellHover(cellID)}
                         onMouseUp = {(cellID) => this.cellMouseUp(cellID)}
                         currentlyAdding = {this.state.currentlyAdding}
                         currentTool = {this.state.currentTool}
-                        cellSize = {this.state.cellSize}
+                        settings = {this.state.settings}
                     ></HexGrid>
                     <LLOutput
                         level = {this.state.level}

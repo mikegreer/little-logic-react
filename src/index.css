@@ -35,13 +35,11 @@ body {
 }
 
 .rule-editor {
-  border: 1px solid #CCC;
   padding: 0;
   /* border-radius: 4px; */
   user-select: none;
   max-height: 100%;
   min-width: 315px;
-  overflow-y: scroll;
   position: relative;
 }
 .rule-editor .rule {
@@ -51,15 +49,13 @@ body {
 }
 
 .level{
-  width: 340px;
+  width: 350px;
   margin: 1px 20px 0 20px;
 }
 .grid{
   position: relative;
   z-index: 2;
   flex: row;
-  width: 340px;
-  height: 340px;
 }
 
 /*game board --------------------------------------*/
