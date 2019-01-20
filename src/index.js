@@ -7,6 +7,7 @@ import Toolbox from './components/Toolbox';
 import LLOutput from './components/LLOutput';
 import * as serviceWorker from './serviceWorker';
 import HexGrid from './components/HexGrid';
+
 // import ToolboxCreate from './components/ToolboxCreate';
 
 ReactDOM.render(<App />, document.getElementById('root'));
@@ -155,7 +156,7 @@ class Game extends React.Component {
                     color: 0,
                     direction: 30,
                     visualDirection: 30,
-                    audioSample:0
+                    audioSample:0,
                 }
                 return rule;
             case 2:
@@ -164,7 +165,7 @@ class Game extends React.Component {
                     color: 0,
                     direction: 210,
                     visualDirection: 210,
-                    audioSample:0
+                    audioSample:0,
                 }
                 return rule;
             case 3:
@@ -172,7 +173,7 @@ class Game extends React.Component {
                     goal: 5,
                     points: 5,
                     color: 0,
-                    audioSample:0
+                    audioSample:0,
                 }
                 return rule;
             default:
@@ -301,7 +302,7 @@ class Game extends React.Component {
     }
 
     render() {
-      return (
+        return (
         <div className="wrapper">
             <div className="game">
                 <div className="level-editor">
@@ -345,7 +346,7 @@ class Game extends React.Component {
                 ></RuleEditor>
             </div>
         </div>
-      );
+        );
     }
 }
   

@@ -10,7 +10,8 @@
     "react-animation-frame": "^1.0.2",
     "react-dom": "^16.7.0",
     "react-scripts": "2.1.1",
-    "svg.js": "^2.7.1"
+    "svg.js": "^2.7.1",
+    "tone": "^13.4.9"
   },
   "scripts": {
     "start": "react-scripts start",

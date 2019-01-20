@@ -4267,6 +4267,13 @@ homedir-polyfill@^1.0.1:
   dependencies:
     parse-passwd "^1.0.0"
 
+honeycomb-grid@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.2.tgz#485d2df7fb7b0c73ad49e17de26169eb4c544543"
+  integrity sha512-bxevQ78zVoY0TeHEG65lG0QUqtqXKQDErpZmtPKrAUpHOzzNs6oSfeSrNC/irJF6BQE57A+3O1NTHpq84rEdNw==
+  dependencies:
+    axis.js "1.2.1"
+
 hoopy@^0.1.2:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/hoopy/-/hoopy-0.1.4.tgz#609207d661100033a9a9402ad3dea677381c1b1d"
@@ -9021,6 +9028,11 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     extend-shallow "^3.0.2"
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
+
+tone@^13.4.9:
+  version "13.4.9"
+  resolved "https://registry.yarnpkg.com/tone/-/tone-13.4.9.tgz#c5e9f69d0cdea6d2fa03e108766b10d5f9185dde"
+  integrity sha512-jU3MJOzt9wcGbo57TIzgAQe13EgwvdC7N6N/cA6ZkGYHH8gop+L6a87NRP3LIBCcJxVps6I6i/39ZUJI2aCWUA==
 
 topo@2.x.x:
   version "2.0.2"

@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactAnimationFrame from 'react-animation-frame';
+import Tone from 'tone';
 
 class LLOutput extends React.Component {
 	constructor(props) {
@@ -16,7 +17,10 @@ class LLOutput extends React.Component {
 		}
 		this.state = {
 			paused: false,
-		}
+		};
+		//maintain an array of audio contexts, and pass cells reference.
+		//prevents contexts being stored on state / level saves
+		this.audioContexts = [];
 	}
 
 	componentDidMount() {
@@ -153,6 +157,40 @@ class LLOutput extends React.Component {
 					emitter.rules.forEach((rule) => {
 						if(beatCount % rule.releaseFrequency === 0){
 							this.emitParticle(emitter, rule);
+							const ctx = this.audioContexts[rule.audioCtx];
+							//play a middle 'C' for the duration of an 8th note
+							switch(rule.audioSample){
+								case 0:
+									ctx.triggerAttackRelease("C3", "8n", '+0.05');
+									break;
+								case 1:
+									ctx.triggerAttackRelease("Eb3", "8n", '+0.05');
+									break;
+								case 2:
+									ctx.triggerAttackRelease("G3", "8n", '+0.05');
+									break;
+								case 3:
+									ctx.triggerAttackRelease("Bb3", "8n", '+0.05');
+									break;
+								case 4:
+									ctx.triggerAttackRelease("G2", "8n", '+0.05');
+									break;
+								case 5:
+									ctx.triggerAttackRelease("Bb2", "8n", '+0.05');
+									break;
+								case 6:
+									ctx.triggerAttackRelease("D2", "8n", '+0.05');
+									break;
+								case 7:
+									ctx.triggerAttackRelease("E2", "8n", '+0.05');
+									break;
+								case 8:
+									ctx.triggerAttackRelease("F2", "8n", '+0.05');
+									break;
+								default:
+									break;
+								
+							}
 						}
 					});
 				});
@@ -182,12 +220,51 @@ class LLOutput extends React.Component {
 						pulse.y < routerPosition.posY + hitBoxSize
 					) {
 						if(!pulse.currentlyRouting){
+							const routerRules = this.routers[j].rules;
+							for(var k = 0; k < routerRules.length; k++){
+								const rule = routerRules[k];
+								const ctx = this.audioContexts[rule.audioCtx];
+							//play a middle 'C' for the duration of an 8th note
+								switch(rule.audioSample){
+									case 0:
+										ctx.triggerAttackRelease("C3", "8n", '+0.05');
+										break;
+									case 1:
+										ctx.triggerAttackRelease("Eb3", "8n", '+0.05');
+										break;
+									case 2:
+										ctx.triggerAttackRelease("G3", "8n", '+0.05');
+										break;
+									case 3:
+										ctx.triggerAttackRelease("Bb3", "8n", '+0.05');
+										break;
+									case 4:
+										ctx.triggerAttackRelease("G2", "8n", '+0.05');
+										break;
+									case 5:
+										ctx.triggerAttackRelease("Bb2", "8n", '+0.05');
+										break;
+									case 6:
+										ctx.triggerAttackRelease("D2", "8n", '+0.05');
+										break;
+									case 7:
+										ctx.triggerAttackRelease("E2", "8n", '+0.05');
+										break;
+									case 8:
+										ctx.triggerAttackRelease("F2", "8n", '+0.05');
+										break;
+									default:
+										break;
+									
+								}
+							}
 							pulse.x = routerPosition.posX;
 							pulse.y = routerPosition.posY;
 							pulse.currentlyRouting = true;
 							const direction = this.angleToDirection(this.routers[j].rules[0].direction);
 							pulse.dx = direction.dx;
 							pulse.dy = direction.dy;
+							
 						}else{
 							pulse.currentlyRouting = false;
 						}
@@ -217,6 +294,10 @@ class LLOutput extends React.Component {
 	render() {
 		this.emitters = [];
 		this.routers = [];
+		this.audioContexts = [];
+		// Tone.context.close();
+		// Tone.context = new AudioContext();
+
 		this.goals = [];
 		this.props.level.forEach((cell, index) => {
 			switch(cell.type){
@@ -235,6 +316,21 @@ class LLOutput extends React.Component {
 					break;
 			}
 		});
+		//add to local instance of state to prevent these being saved onto save files / main context.
+		this.emitters.forEach((emitter) => {
+			emitter.rules.forEach((rule) => {
+				this.audioContexts.push(new Tone.Synth().toMaster());
+				rule.audioCtx = this.audioContexts.length - 1;
+			});
+		});
+		this.routers.forEach((router) => {
+			router.rules.forEach((rule) => {
+				this.audioContexts.push(new Tone.Synth().toMaster());
+				rule.audioCtx = this.audioContexts.length - 1;
+			});
+		});
+		console.log('num routers:', this.routers.length);
+		console.log('audio context count:', this.audioContexts.length);
 		return(
 			<div>
 				<canvas ref={this.canvas} width={this.props.width} height={this.props.height} />
