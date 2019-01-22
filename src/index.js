@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import RuleEditor from './components/RuleEditor';
 import Toolbox from './components/Toolbox';
+import LevelList from './components/LevelList';
 import LLOutput from './components/LLOutput';
 import * as serviceWorker from './serviceWorker';
 import HexGrid from './components/HexGrid';
@@ -209,9 +210,10 @@ class Game extends React.Component {
         localStorage.setItem('levels', JSON.stringify(levels));
     }
 
-    loadLevel = () => {
+    loadLevel = (ID) => {
+        console.log(ID);
         const levels = JSON.parse(localStorage.getItem('levels'));
-        this.setState({level: levels[0]});
+        this.setState({level: levels[ID]});
     }
 
     getRule = (cellID, ruleID) => {
@@ -313,8 +315,11 @@ class Game extends React.Component {
                         currentlyAdding = {this.state.currentlyAdding}
                         setCreateType = {(type) => this.setCreateType(type)}
                     ></Toolbox>
+                    <LevelList 
+                        onClick = {(levelID) => this.loadLevel(levelID)}
+                    />
                     <button onClick={() => this.saveLevel(this.state.level)}>save</button>
-                    <button onClick={() => this.loadLevel()}>load</button>
+                    <button onClick={(ID) => this.loadLevel(0)}>load</button>
                 </div>
 
                 

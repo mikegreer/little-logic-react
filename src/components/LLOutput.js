@@ -141,134 +141,123 @@ class LLOutput extends React.Component {
 		});
 	}
 
+	playSound(soundID, ctx) {
+		switch(soundID){
+			case 0:
+				ctx.triggerAttackRelease("C3", "8n", '+0.05');
+				break;
+			case 1:
+				ctx.triggerAttackRelease("Eb3", "8n", '+0.05');
+				break;
+			case 2:
+				ctx.triggerAttackRelease("G3", "8n", '+0.05');
+				break;
+			case 3:
+				ctx.triggerAttackRelease("Bb3", "8n", '+0.05');
+				break;
+			case 4:
+				ctx.triggerAttackRelease("G2", "8n", '+0.05');
+				break;
+			case 5:
+				ctx.triggerAttackRelease("Bb2", "8n", '+0.05');
+				break;
+			case 6:
+				ctx.triggerAttackRelease("D2", "8n", '+0.05');
+				break;
+			case 7:
+				ctx.triggerAttackRelease("E2", "8n", '+0.05');
+				break;
+			case 8:
+				ctx.triggerAttackRelease("F2", "8n", '+0.05');
+				break;
+			default:
+				break;
+			
+		}
+	}
+
+	isColliding(pulse, cell) {
+		const hitBoxSize = 1;
+		const cellPosition = this.centerPoint(cell.gridX, cell.gridY, 22);
+		if(
+			pulse.x > cellPosition.posX - hitBoxSize &&
+			pulse.x < cellPosition.posX + hitBoxSize &&
+			pulse.y > cellPosition.posY - hitBoxSize &&
+			pulse.y < cellPosition.posY + hitBoxSize
+		) {
+			return true;
+		} else{
+			return false;
+		}
+	}
+
+	checkRule(pulse, rule) {
+		console.log(pulse, rule);
+		// if(rule.color) {
+			if(rule.color === pulse.color) {
+				return true;
+			}
+		// }
+	}
+
 	onAnimationFrame(time) {
 		//TODO: add pausing into the timer too (save current timestamp when pause is pressed?)
 		if(!this.state.paused){
 			this.ctx.clearRect(0, 0, this.props.width, this.props.height);
 
-			//add new pulses from emitters
+			//add new pulses from emitters on beat
 			let currentBeat = Math.floor(time / this.time.beatLength) % this.time.barLength;
 			if(currentBeat !== this.time.previousBeat) {
 				this.time.previousBeat = currentBeat;
 				this.time.currentBeat = currentBeat;
-	
 				let beatCount = Math.floor(time / this.time.beatLength);
 				this.emitters.forEach((emitter, index) => {
 					emitter.rules.forEach((rule) => {
 						if(beatCount % rule.releaseFrequency === 0){
 							this.emitParticle(emitter, rule);
 							const ctx = this.audioContexts[rule.audioCtx];
-							//play a middle 'C' for the duration of an 8th note
-							switch(rule.audioSample){
-								case 0:
-									ctx.triggerAttackRelease("C3", "8n", '+0.05');
-									break;
-								case 1:
-									ctx.triggerAttackRelease("Eb3", "8n", '+0.05');
-									break;
-								case 2:
-									ctx.triggerAttackRelease("G3", "8n", '+0.05');
-									break;
-								case 3:
-									ctx.triggerAttackRelease("Bb3", "8n", '+0.05');
-									break;
-								case 4:
-									ctx.triggerAttackRelease("G2", "8n", '+0.05');
-									break;
-								case 5:
-									ctx.triggerAttackRelease("Bb2", "8n", '+0.05');
-									break;
-								case 6:
-									ctx.triggerAttackRelease("D2", "8n", '+0.05');
-									break;
-								case 7:
-									ctx.triggerAttackRelease("E2", "8n", '+0.05');
-									break;
-								case 8:
-									ctx.triggerAttackRelease("F2", "8n", '+0.05');
-									break;
-								default:
-									break;
-								
-							}
+							this.playSound(rule.audioSample, ctx);
 						}
 					});
 				});
 			}
 	
-			//update and draw pulses
+			//pulse loop
 			const pulsesToRemove = [];
-			// this.emitters.forEach((emitter, i) => {
-			// 	const cellSize = 22;
-			// 	const cellHeight = (cellSize * 2) * .75;
-			// 	const cellWidth = Math.sqrt(3) * cellSize;
-			// 	let pulseX = emitter.gridX + (cellSize * Math.sqrt(3) / 2); //emitter.column * cellWidth;
-			// 	// pulseX += emitter.row % 2 ? cellWidth / 2 : cellWidth;
-			// 	let pulseY = emitter.gridY + ((cellSize * 2)/8); //emitter.row * cellHeight + cellHeight / 2; //+6
-			// 	this.centerPoint(pulseX, pulseY, 22);
-			// });
-			this.pulses.forEach((pulse, i) => {			
+			this.pulses.forEach((pulse, i) => {		
 				//check pulses against routers
-				//TODO: factor in pulse speed
-				const hitBoxSize = 1;
+				// const hitBoxSize = 1;
 				for(var j = 0; j < this.routers.length; j ++) {
-					const routerPosition = this.centerPoint(this.routers[j].gridX, this.routers[j].gridY, 22);
-					if(
-						pulse.x > routerPosition.posX - hitBoxSize &&
-						pulse.x < routerPosition.posX + hitBoxSize &&
-						pulse.y > routerPosition.posY - hitBoxSize &&
-						pulse.y < routerPosition.posY + hitBoxSize
-					) {
+					if(this.isColliding(pulse, this.routers[j])){
 						if(!pulse.currentlyRouting){
 							const routerRules = this.routers[j].rules;
 							for(var k = 0; k < routerRules.length; k++){
 								const rule = routerRules[k];
-								const ctx = this.audioContexts[rule.audioCtx];
-							//play a middle 'C' for the duration of an 8th note
-								switch(rule.audioSample){
-									case 0:
-										ctx.triggerAttackRelease("C3", "8n", '+0.05');
-										break;
-									case 1:
-										ctx.triggerAttackRelease("Eb3", "8n", '+0.05');
-										break;
-									case 2:
-										ctx.triggerAttackRelease("G3", "8n", '+0.05');
-										break;
-									case 3:
-										ctx.triggerAttackRelease("Bb3", "8n", '+0.05');
-										break;
-									case 4:
-										ctx.triggerAttackRelease("G2", "8n", '+0.05');
-										break;
-									case 5:
-										ctx.triggerAttackRelease("Bb2", "8n", '+0.05');
-										break;
-									case 6:
-										ctx.triggerAttackRelease("D2", "8n", '+0.05');
-										break;
-									case 7:
-										ctx.triggerAttackRelease("E2", "8n", '+0.05');
-										break;
-									case 8:
-										ctx.triggerAttackRelease("F2", "8n", '+0.05');
-										break;
-									default:
-										break;
-									
+								if(this.checkRule(pulse, rule)) {
+									const ctx = this.audioContexts[rule.audioCtx];
+									this.playSound(rule.audioSample, ctx);
+									//snap to center to ensure pulses stay on track					
+									const routerPosition = this.centerPoint(this.routers[j].gridX, this.routers[j].gridY, 22);
+									pulse.x = routerPosition.posX;
+									pulse.y = routerPosition.posY;
+									pulse.currentlyRouting = true;
+									const direction = this.angleToDirection(rule.direction);
+									pulse.dx = direction.dx;
+									pulse.dy = direction.dy;
 								}
-							}
-							pulse.x = routerPosition.posX;
-							pulse.y = routerPosition.posY;
-							pulse.currentlyRouting = true;
-							const direction = this.angleToDirection(this.routers[j].rules[0].direction);
-							pulse.dx = direction.dx;
-							pulse.dy = direction.dy;
-							
+							}						
 						}else{
 							pulse.currentlyRouting = false;
 						}
-						
+					}
+				}
+				for(var k = 0; k < this.goals.length; k ++) {
+					const goal = this.goals[k];
+					if(this.isColliding(pulse, goal)){
+						goal.rules.forEach((rule) => {
+							this.playSound(rule.audioSample, this.audioContexts[rule.audioCtx]);
+							pulsesToRemove.push(i);
+						});
 					}
 				}
 
@@ -294,6 +283,7 @@ class LLOutput extends React.Component {
 	render() {
 		this.emitters = [];
 		this.routers = [];
+		this.goals = [];
 		this.audioContexts = [];
 		// Tone.context.close();
 		// Tone.context = new AudioContext();
@@ -325,6 +315,12 @@ class LLOutput extends React.Component {
 		});
 		this.routers.forEach((router) => {
 			router.rules.forEach((rule) => {
+				this.audioContexts.push(new Tone.Synth().toMaster());
+				rule.audioCtx = this.audioContexts.length - 1;
+			});
+		});
+		this.goals.forEach((goal) => {
+			goal.rules.forEach((rule) => {
 				this.audioContexts.push(new Tone.Synth().toMaster());
 				rule.audioCtx = this.audioContexts.length - 1;
 			});

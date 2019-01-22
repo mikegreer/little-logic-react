@@ -1,0 +1,12 @@
+.level-button{
+    padding: 10px;
+    cursor: pointer;
+}
+
+.level-button:hover{
+    background-color: #ffff00;
+}
+
+.level-button:active{
+    background-color: #00ffff;
+}
