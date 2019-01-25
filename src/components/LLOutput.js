@@ -12,12 +12,18 @@ class LLOutput extends React.Component {
 		this.time = {
 			currentBeat: 0,
 			previousBeat: 0,
-			beatLength: 500,
-			barLength: 10,
+			beatLength: 100,
+			barLength: 24,
 		}
+		
+		this.cellHeight = (this.props.cellSize * 2) * .75;
+		this.cellWidth = Math.sqrt(3) * this.props.cellSize;
 		this.state = {
 			paused: false,
+			width: this.cellWidth * this.props.cols + (this.cellWidth / 2),
+			height: this.cellHeight * this.props.rows + (this.cellHeight / 4),
 		};
+		
 		//maintain an array of audio contexts, and pass cells reference.
 		//prevents contexts being stored on state / level saves
 		this.audioContexts = [];
@@ -26,65 +32,17 @@ class LLOutput extends React.Component {
 	componentDidMount() {
 		this.ctx = this.canvas.current.getContext("2d");
 	}
- 
-	angleToDirection(angle){
-		const radians = (angle - 90) * (Math.PI / 180);
-		const direction = {
-			dx: (Math.cos(radians)),
-			dy: (Math.sin(radians)),
-		}
-		return direction;
-	}
 
-	drawShape(pointCount, x, y, w, h, color) {
+	drawPulseOnHex(col, row, color) {
+		let x = row % 2 ? col * this.cellWidth : col * this.cellWidth + (this.cellWidth / 2);
+		x += this.cellWidth / 2;
+		let y = row * this.cellHeight + this.cellHeight / 2;
+		y += this.cellHeight * .25;
 		this.ctx.beginPath();
-		// this.ctx.fillStyle = color;
-		// if(color === 'red'){
-		// 	this.ctx.fillStyle = '#c0392b';
-		// }
-		// if(color === 'blue'){
-		// 	this.ctx.fillStyle = '#2980b9';
-		// }
-		
 		this.ctx.fillStyle = this.props.colorList[color];
-
-		const angleUnit = (360/pointCount) * Math.PI / 180;
-		let pointAngle = 0;
-		this.ctx.beginPath();
-		this.ctx.moveTo(x - w/2, y - h/2);
-		// this.ctx.rect(x - w/2, y - h/2, w, h);
-		for(var i = 1; i <= pointCount; i++){
-			// if(i < shape){
-			// 	ctx.lineTo();
-			// 	pointAngle = angleUnit * i + rotationOffset;
-			// }else{
-			pointAngle = angleUnit * pointCount;
-			// }
-			let px = Math.cos(pointAngle) * w;
-			let py = Math.sin(pointAngle) * w;
-			this.ctx.lineTo(px, py);
-			// console.log(px, py);
-		}
-		this.ctx.closePath();
+		this.ctx.ellipse(x, y, this.props.cellSize/2, this.props.cellSize/2, 45 * Math.PI/180, 0, 2 * Math.PI);
 		this.ctx.fill();
-		// temporary. Add shape rendering in.
-		switch(pointCount){
-			case 3:
-				this.ctx.rect(x - w/2, y - h/2, w, h);
-				break;
-			case 4:
-				this.ctx.rect(x - w/2, y - h/2, w, h);
-				break;
-			case 5:
-				const r = w/2;
-				this.ctx.ellipse(x, y, r, r, 45 * Math.PI/180, 0, 2 * Math.PI);
-				break;
-			default:
-				console.log(pointCount);
-				break;
-		}
-		this.ctx.fill();
-	};
+	}
 
 	restart() {
 		this.pulses = [];
@@ -92,9 +50,41 @@ class LLOutput extends React.Component {
 	}
 
 	updatePulse(pulse) {
-		pulse.x += pulse.dx;
-		pulse.y += pulse.dy;
-		
+		switch(pulse.direction){
+			case 0:
+				pulse.gridY -= 1;
+				if(pulse.gridY % 2){
+					pulse.gridX += 1;
+				}
+				break;
+			case 1:
+				pulse.gridX += 1;
+				break;
+			case 2:		
+				pulse.gridY += 1;
+				if(pulse.gridY % 2){
+					pulse.gridX += 1;
+				}
+				break;
+			case 3:
+				pulse.gridY += 1;
+				if(pulse.gridY % 2 === 0){
+					pulse.gridX -= 1;
+				}
+				break;
+			case 4:
+				pulse.gridX -= 1;
+				break;
+			case 5:
+				pulse.gridY -= 1;
+				if(pulse.gridY % 2 === 0){
+					pulse.gridX -= 1;
+				}
+				break;
+			default:
+				break;
+		}
+		// console.log(pulse);
 		return pulse;
 	}
 
@@ -102,42 +92,23 @@ class LLOutput extends React.Component {
 	// 	this.pulses.splice(pulseID, 1);
 	// }
 
-	checkBounds(pulse, i){
+	checkBounds(pulse){
 		//check if pulse is off left or right
 		if(
-			pulse.x + pulse.dx + (pulse.w/2) > this.props.width || 
-			pulse.x + pulse.dx - (pulse.w/2) < 0 ||
-			pulse.y + pulse.dy + (pulse.h/2) > this.props.height ||
-			pulse.y + pulse.dy - (pulse.h/2) < 0
+			pulse.col > this.props.cols || pulse.cols < 0 ||
+			pulse.row > this.props.rows || pulse.row < 0
 		){
-			// this.removePulse(i);  
 			return true;
 		}
 	}
 
-	centerPoint(gridX, gridY, cellSize){
-		let posX = gridX + (cellSize * Math.sqrt(3) / 2);
-		let posY = gridY + ((cellSize * 2)/8);
-		return {
-			posX: posX,
-			posY: posY,
-		}
-	}
-
 	emitParticle(emitter, rule) {
-		const direction = this.angleToDirection(rule.direction);
-
 		//TODO: change to use scale property
-		const centerPoint = this.centerPoint(emitter.gridX, emitter.gridY, 22);
 		this.pulses.push({
-			x: centerPoint.posX,
-			y: centerPoint.posY,
-			shape: rule.points,
+			gridX: emitter.column,
+			gridY: emitter.row,
 			color: rule.color,
-			dx: direction.dx,
-			dy: direction.dy,
-			w: 15,
-			h: 15,
+			direction: rule.direction
 		});
 	}
 
@@ -172,27 +143,10 @@ class LLOutput extends React.Component {
 				break;
 			default:
 				break;
-			
-		}
-	}
-
-	isColliding(pulse, cell) {
-		const hitBoxSize = 1;
-		const cellPosition = this.centerPoint(cell.gridX, cell.gridY, 22);
-		if(
-			pulse.x > cellPosition.posX - hitBoxSize &&
-			pulse.x < cellPosition.posX + hitBoxSize &&
-			pulse.y > cellPosition.posY - hitBoxSize &&
-			pulse.y < cellPosition.posY + hitBoxSize
-		) {
-			return true;
-		} else{
-			return false;
 		}
 	}
 
 	checkRule(pulse, rule) {
-		console.log(pulse, rule);
 		// if(rule.color) {
 			if(rule.color === pulse.color) {
 				return true;
@@ -200,78 +154,76 @@ class LLOutput extends React.Component {
 		// }
 	}
 
+	advancePulsePositions() {
+		const pulsesToRemove = [];
+		this.ctx.clearRect(0, 0, this.state.width, this.state.height);
+
+		this.pulses.forEach((pulse, i) => {
+			//check router collisions
+			this.routers.forEach((router) => {
+				if(pulse.gridX === router.column && pulse.gridY === router.row) {
+					router.rules.forEach((rule) => {
+						if(this.checkRule(pulse, rule)) {
+							const ctx = this.audioContexts[rule.audioCtx];
+							this.playSound(rule.audioSample, ctx);
+							pulse.direction = rule.direction;
+						}
+					});
+				}
+			});
+			//check goal collisions
+			for(var k = 0; k < this.goals.length; k ++) {
+				const goal = this.goals[k];
+				if(pulse.gridX === goal.column && pulse.gridY === goal.row){
+					goal.rules.forEach((rule) => {
+						const ctx = this.audioContexts[rule.audioCtx];
+						this.playSound(rule.audioSample, ctx);
+						pulsesToRemove.push(i);
+					});
+				}
+			}
+
+			if(this.checkBounds(pulse, i)){
+				pulsesToRemove.push(i);
+			};
+			// const pulseLocation = this.centerPoint(pulse.gridX, pulse.gridY, 22);
+			// this.drawShape(pulseLocation.x, pulseLocation.y, pulse.r, pulse.color);
+			this.drawPulseOnHex(pulse.gridX, pulse.gridY, pulse.color);
+			pulse = this.updatePulse(pulse);
+		});
+
+		//remove dead pulses
+		pulsesToRemove.sort(function(a,b){ return b - a; });
+		for (var i = 0; i < pulsesToRemove.length; i++) {
+			console.log('removing', i);
+			this.pulses.splice(pulsesToRemove[i], 1);
+		}
+	}
+
 	onAnimationFrame(time) {
 		//TODO: add pausing into the timer too (save current timestamp when pause is pressed?)
 		if(!this.state.paused){
-			this.ctx.clearRect(0, 0, this.props.width, this.props.height);
-
-			//add new pulses from emitters on beat
-			let currentBeat = Math.floor(time / this.time.beatLength) % this.time.barLength;
-			if(currentBeat !== this.time.previousBeat) {
+			//on beat
+			let currentBeat = Math.floor(time / this.time.beatLength) % this.time.barLength - 1;
+			if(currentBeat !== this.time.previousBeat) {			
 				this.time.previousBeat = currentBeat;
 				this.time.currentBeat = currentBeat;
-				let beatCount = Math.floor(time / this.time.beatLength);
+				let beatCount = Math.floor(time / this.time.beatLength) % this.time.barLength;
+				// console.log(beatCount, beatCount % this.time.barLength);
+
+				//emitters
 				this.emitters.forEach((emitter, index) => {
 					emitter.rules.forEach((rule) => {
-						if(beatCount % rule.releaseFrequency === 0){
+						if(beatCount === rule.releaseOnBeat){
 							this.emitParticle(emitter, rule);
 							const ctx = this.audioContexts[rule.audioCtx];
 							this.playSound(rule.audioSample, ctx);
 						}
 					});
 				});
-			}
-	
-			//pulse loop
-			const pulsesToRemove = [];
-			this.pulses.forEach((pulse, i) => {		
-				//check pulses against routers
-				// const hitBoxSize = 1;
-				for(var j = 0; j < this.routers.length; j ++) {
-					if(this.isColliding(pulse, this.routers[j])){
-						if(!pulse.currentlyRouting){
-							const routerRules = this.routers[j].rules;
-							for(var k = 0; k < routerRules.length; k++){
-								const rule = routerRules[k];
-								if(this.checkRule(pulse, rule)) {
-									const ctx = this.audioContexts[rule.audioCtx];
-									this.playSound(rule.audioSample, ctx);
-									//snap to center to ensure pulses stay on track					
-									const routerPosition = this.centerPoint(this.routers[j].gridX, this.routers[j].gridY, 22);
-									pulse.x = routerPosition.posX;
-									pulse.y = routerPosition.posY;
-									pulse.currentlyRouting = true;
-									const direction = this.angleToDirection(rule.direction);
-									pulse.dx = direction.dx;
-									pulse.dy = direction.dy;
-								}
-							}						
-						}else{
-							pulse.currentlyRouting = false;
-						}
-					}
-				}
-				for(var k = 0; k < this.goals.length; k ++) {
-					const goal = this.goals[k];
-					if(this.isColliding(pulse, goal)){
-						goal.rules.forEach((rule) => {
-							this.playSound(rule.audioSample, this.audioContexts[rule.audioCtx]);
-							pulsesToRemove.push(i);
-						});
-					}
-				}
-
-				if(this.checkBounds(pulse, i)){
-					pulsesToRemove.push(i);
-				};
-				this.drawShape(pulse.shape, pulse.x, pulse.y, pulse.w, pulse.h, pulse.color);
-				pulse = this.updatePulse(pulse);
-			});
-
-			//remove dead pulses
-			pulsesToRemove.sort(function(a,b){ return b - a; });
-			for (var i = 0; i < pulsesToRemove.length; i++) {
-				this.pulses.splice(pulsesToRemove[i], 1);
+				
+				//move pulses along a cell
+				this.advancePulsePositions();
 			}
 		}	
 	}
@@ -281,6 +233,7 @@ class LLOutput extends React.Component {
 	}
 
 	render() {
+		//TODO: prevent having to rebuild audio contexts on rule change. (Only needs to add when level is edited.)
 		this.emitters = [];
 		this.routers = [];
 		this.goals = [];
@@ -306,7 +259,7 @@ class LLOutput extends React.Component {
 					break;
 			}
 		});
-		//add to local instance of state to prevent these being saved onto save files / main context.
+		//add to local instance of state to prevent them being saved onto save files / main context.
 		this.emitters.forEach((emitter) => {
 			emitter.rules.forEach((rule) => {
 				this.audioContexts.push(new Tone.Synth().toMaster());
@@ -325,11 +278,11 @@ class LLOutput extends React.Component {
 				rule.audioCtx = this.audioContexts.length - 1;
 			});
 		});
-		console.log('num routers:', this.routers.length);
-		console.log('audio context count:', this.audioContexts.length);
+		// console.log('num routers:', this.routers.length);
+		// console.log('audio context count:', this.audioContexts.length);
 		return(
 			<div>
-				<canvas ref={this.canvas} width={this.props.width} height={this.props.height} />
+				<canvas ref={this.canvas} width={this.state.width} height={this.state.height} />
 				<button onClick={() => this.restart()}>restart</button>
 				<button onClick={() => this.pausePlay()}>{this.state.paused ? "play" : "pause"}</button>
 			</div>

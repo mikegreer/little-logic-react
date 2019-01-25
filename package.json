@@ -3,14 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@svgdotjs/svg.js": "^3.0.10",
     "classnames": "^2.2.6",
-    "honeycomb-grid": "^1.4.2",
     "react": "^16.7.0",
     "react-animation-frame": "^1.0.2",
     "react-dom": "^16.7.0",
     "react-scripts": "2.1.1",
-    "svg.js": "^2.7.1",
     "tone": "^13.4.9"
   },
   "scripts": {

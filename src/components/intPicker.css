@@ -1,0 +1,20 @@
+.int-picker {
+
+}
+
+.int {
+    font-size: 16px;
+    font-weight: normal;
+    padding: 2px;
+    margin: 0 4px;
+    width: 12px;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+}
+
+.int-picker .selected {
+    /* color: yellow; */
+
+    transform: scale(2, 2) translate(0px,-1px);
+}
