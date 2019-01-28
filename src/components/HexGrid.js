@@ -5,7 +5,7 @@ class Emitter extends React.Component {
     render() {
         const hexWidth = Math.sqrt(3) * this.props.hexScale;
         return (
-            <g>
+            <g className="emitter">
                 <circle cx={hexWidth/2} cy="0" r={this.props.hexScale/2} stroke="black" fill="none" strokeWidth="1"  />
             </g>
         );
@@ -16,7 +16,7 @@ class Router extends React.Component {
     render() {
         const hexWidth = Math.sqrt(3) * this.props.hexScale;
         return (
-            <g>
+            <g className="router">
                 <circle cx={hexWidth/2} cy="0" r={this.props.hexScale/2} stroke="red" fill="none" strokeWidth="5"  />
             </g>
         );
@@ -27,7 +27,7 @@ class Goal extends React.Component {
     render() {
         const hexWidth = Math.sqrt(3) * this.props.hexScale;
         return (
-            <g>
+            <g className="goal">
                 <circle cx={hexWidth/2} cy="0" r={this.props.hexScale/2} stroke="blue" fill="none" strokeWidth="10"  />
             </g>
         );
@@ -108,18 +108,30 @@ class HexGrid extends React.Component {
 
     render() {
         const hexGrid = [];
+
+        //TODO: part of below temp moving calcs
+        const cellHeight = (this.state.hexScale * 2) * .75;
+        const cellWidth = Math.sqrt(3) * this.state.hexScale;
+
         this.props.level.forEach((hex, index) => {
             const cell = this.props.level[index];
+            
+            //TODO: temporary: trying calculating this here instead of at root to remove data from main state
+            const column = hex.id % this.props.settings.cols;
+            const row = Math.floor(hex.id / this.props.settings.cols);
+           
+            const gridX = row % 2 ? column * cellWidth : column * cellWidth + (cellWidth / 2);
+            const gridY = row * cellHeight + cellHeight / 2;
             hexGrid.push(<Hexagon
                 key={index}
                 cellIndex={index}
                 hexScale={this.state.hexScale}
-                coordinates = {{x: hex.gridX, y: hex.gridY}}
+                coordinates = {{x: gridX, y: gridY}}
                 cellType={cell.type}
                 onMouseDown={(i) => this.props.onMouseDown(i)}
+                selected={this.props.selected === index ? true : false}
                 // onHover={(cellID) => this.props.onHover(cellID)}
                 onMouseUp={(i) => this.props.onMouseUp(i)}
-                selected={cell.selected}
                 // hover={cell.hover}
                 currentlyAdding={this.props.currentlyAdding}
                 currentTool={this.props.currentTool}

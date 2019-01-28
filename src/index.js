@@ -15,12 +15,12 @@ ReactDOM.render(<App />, document.getElementById('root'));
 serviceWorker.unregister();
 
 class Game extends React.Component {
-    //TODO: separate state to prevent entire game rerendering on a change.
-    //grid shouldn't handle the emitters, etc.
     constructor(props) {
         super(props);
         this.state = {
             level: [],
+            grid: [],
+            rules: [],
             currentTool: 0,
             selectedCell: null,
             hoverCell: 0,
@@ -35,33 +35,42 @@ class Game extends React.Component {
                 {id: 3, label: "goal"},
             ],
             emitters: [],
-            colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
+            ruleOptions: {
+                colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
+                sampleList: ['C', 'D', 'E', 'F', 'G', 'A'],
+            },
             settings: {
                 cols: 16,
                 rows: 16,
                 cellSize: 16,
             },
+            saveFiles: [],
         };
-        this.state.level = this.generateGrid(this.state.settings.cols, this.state.settings.rows, this.state.settings.cellSize);
+        this.state.level = this.generateLevel(this.state.settings.cols * this.state.settings.rows);
+        this.state.grid = this.generateGrid(this.state.settings.cols, this.state.settings.rows);
     }
 
-    generateGrid = (cols, rows, cellSize) => {
-        const grid = [];
-        const cellHeight = (cellSize * 2) * .75;
-        const cellWidth = Math.sqrt(3) * cellSize;
+    generateLevel = (numCells) => {
+        const level = [];
+        for(let i = 0; i < numCells; i ++) {
+            level.push({
+                id: i,
+                type: 0,
+                rulesById: [],
+            });
+        }
+        return level;
+    }
 
+    generateGrid = (cols, rows) => {
+        const grid = [];
         for(let i = 0; i < cols * rows; i ++) {
             const column = i % cols;
             const row = Math.floor(i / cols);
             grid.push({
                 id: i,
-                type: 0,
-                rules: [],
-                selected: false,
                 column: column,
                 row: row,
-                gridX: row % 2 ? column * cellWidth : column * cellWidth + (cellWidth / 2),
-                gridY: row * cellHeight + cellHeight / 2,
             });
         }
         return grid;
@@ -80,9 +89,9 @@ class Game extends React.Component {
         const cellMoving = level[cellID];
         const newLocation = level[newLocationID];
         newLocation.type = cellMoving.type;
-        newLocation.rules = cellMoving.rules;
+        newLocation.rulesById = cellMoving.rulesById;
         cellMoving.type = 0;
-        cellMoving.rules = [];
+        cellMoving.rulesById = [];
         this.setState({level: level});
     }
 
@@ -94,10 +103,6 @@ class Game extends React.Component {
 
     cellClick = (cellID) => {
         if(this.state.currentTool === 0){
-            this.updateCell({
-                selected: true,
-            }, cellID);
-            
             if(this.state.selectedCell !== null){
                 this.updateCell({
                     selected: null,
@@ -116,7 +121,8 @@ class Game extends React.Component {
         if(this.state.currentTool === 2){
             this.updateCell({
                 type: this.state.currentlyAdding,
-                rules: [this.newRule(this.state.currentlyAdding)],
+                //setRule and return ID?
+                rulesById: [this.newRule(this.state.currentlyAdding)],
             }, cellID);
         }else if(this.state.currentTool === 3){
             this.updateCell({
@@ -153,31 +159,41 @@ class Game extends React.Component {
         switch(cellType){
             case 1:
                 rule = {
-                    releaseOnBeat: 1,
-                    points: 5,
-                    color: 0,
-                    direction: 0,
-                    visualDirection: 30,
-                    audioSample:0,
+                    id: this.state.rules.length,
+                    rule: {
+                        releaseOnBeat: 1,
+                        points: 5,
+                        color: 0,
+                        direction: 0,
+                        audioSample:0,
+                    }
                 }
-                return rule;
+                this.state.rules.push(rule);
+                return this.state.rules.length - 1;
             case 2:
                 rule = {
-                    points: 5,
-                    color: 0,
-                    direction: 3,
-                    visualDirection: 210,
-                    audioSample:0,
+                    id: this.state.rules.length,
+                    rule: {
+                        points: 5,
+                        color: 0,
+                        direction: 0,
+                        audioSample:0,
+                    }
                 }
-                return rule;
+                this.state.rules.push(rule);
+                return this.state.rules.length - 1;
             case 3:
                 rule = {
-                    goal: 5,
-                    points: 5,
-                    color: 0,
-                    audioSample:0,
+                    id: this.state.rules.length,
+                    rule: {
+                        goal: 5,
+                        points: 5,
+                        color: 0,
+                        audioSample:0,
+                    }
                 }
-                return rule;
+                this.state.rules.push(rule);
+                return this.state.rules.length - 1;
             default:
                 break;
         }
@@ -185,7 +201,7 @@ class Game extends React.Component {
 
     addNewRule = (cellID, cellType) => {
         const level = this.state.level.slice();
-        level[cellID].rules.push(this.newRule(cellType));
+        level[cellID].rulesById.push(this.newRule(cellType));
         this.setState({level: level});
     }
 
@@ -202,116 +218,88 @@ class Game extends React.Component {
     }
 
     saveLevel = (level) => {
-        let levels = JSON.parse(localStorage.getItem('levels'));
-        if(levels === null){
-            levels = [];
-            localStorage.setItem('levels', JSON.stringify(levels));
+        //get existing saved files from local stoarge, and parse back to a list
+        let saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
+        const newSave = {
+            grid: this.state.grid,
+            level: this.state.level,
+            rules: this.state.rules,
+            settings: this.state.settings,
         }
-        levels.push(level);
-        localStorage.setItem('levels', JSON.stringify(levels));
+        if(saveFiles === null){
+            saveFiles = [];
+        }    
+        saveFiles.push(newSave);
+        localStorage.setItem('saveFiles', JSON.stringify(saveFiles));
+        this.setState({saveFiles: saveFiles});
     }
 
     loadLevel = (ID) => {
-        console.log(ID);
-        const levels = JSON.parse(localStorage.getItem('levels'));
-        this.setState({level: levels[ID]});
+        const saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
+        this.setState({grid: saveFiles[ID].grid});
+        this.setState({level: saveFiles[ID].level});
+        this.setState({rules: saveFiles[ID].rules});
+        this.setState({settings: saveFiles[ID].settings});
     }
 
     getRule = (cellID, ruleID) => {
-        const level = this.state.level.slice();
-        return(level[cellID].rules[ruleID]);
+        const rules = this.state.rules.slice();
+        return(rules[ruleID]);
     }
 
-    updateRule = (newRule, cellID, ruleID) => {
-        const level = this.state.level.slice();
-        level[cellID].rules[ruleID] = newRule;
-        this.setState({ level : level });
+    updateRule = (newRule, ruleID) => {
+        const rules = this.state.rules.slice();
+        rules[ruleID].rule = newRule;
+        this.setState({ rules : rules });
     }
 
     // edit rule functions
-    incrementColor = (rule) => {
-        if(rule.color + 1 >= this.state.colorList.length){
-            rule.color = 0;
-        }else{
-            rule.color ++;
-        }
-        return rule;
-    }
-
-    incrementDirection = (rule) => {
-        rule.direction = (rule.direction + 1) % 6;
-        rule.visualDirection += 60;
-        return rule;
-    }
-
-    incrementSound = (rule) => {
-        rule.audioSample += 1;
-        if(rule.audioSample > 8) rule.audioSample = 0;
-        return rule;
-    }
-
-    // incrementReleaseBeat = (rule) => {
-    //     //TODO: use number of beats in bar instead of 12
-    //     (rule.releaseOnBeat > 12) ? rule.releaseOnBeat = 0 : rule.releaseOnBeat += 1;
+    // incrementColor = (rule) => {
+    //     if(rule.color + 1 >= this.state.ruleOptions.colorList.length){
+    //         rule.color = 0;
+    //     }else{
+    //         rule.color ++;
+    //     }
     //     return rule;
     // }
-    setReleaseBeat = (rule, value) => {
-        //TODO: use number of beats in bar instead of 12
-        rule.releaseOnBeat = value;
-        return rule;
-    }
 
-    incrementTarget = (rule) => {
-        (rule.goal > 8) ? rule.goal = 1 : rule.goal += 1;
-        return rule;
-    }
+    // incrementDirection = (rule) => {
+    //     rule.direction = (rule.direction + 1) % 6;
+    //     rule.visualDirection += 60;
+    //     return rule;
+    // }
 
-    //rule click functions
-    onRuleClicked = (cellID, ruleID, elementID, value) => {
-        console.log(cellID, ruleID, elementID, value);
-        let rule = this.getRule(cellID, ruleID);
-        console.log(cellID, ruleID, elementID, value);
-        switch(elementID) {
-            // case 0:
-            //     //shape clicked
-            //     rule = this.incrementShape(rule);
-            //     break;
-            case 1:
-                //color clicked
-                rule = this.incrementColor(rule);
-                break;
-            case 2:
-                //direction clicked
-                rule = this.incrementDirection(rule);
-                break;
-            case 3:
-                //sound clicked
-                rule = this.incrementSound(rule);
-                break;
-            case 4:
-                //release frequency    
-                // console.log(value);
-                rule = this.setReleaseBeat(rule, value);
-                // rule = this.incrementReleaseBeat(rule);
-                break;
-            case 5:
-                //goal target
-                rule = this.incrementTarget(rule);
-                break;
-            default:
-                //nothing clicked
-                break;
-        }
-        this.updateRule(rule, cellID, ruleID);
-    }
+    // incrementSound = (rule) => {
+    //     rule.audioSample += 1;
+    //     if(rule.audioSample > 8) rule.audioSample = 0;
+    //     return rule;
+    // }
+
+    // setReleaseBeat = (rule, value) => {
+    //     //TODO: use number of beats in bar instead of 12
+    //     rule.releaseOnBeat = value;
+    //     return rule;
+    // }
+
+    // incrementTarget = (rule) => {
+    //     (rule.goal > 8) ? rule.goal = 1 : rule.goal += 1;
+    //     return rule;
+    // }
 
     render() {
-        const levels = JSON.parse(localStorage.getItem('levels'));
-        if(levels === null){
-            // if(levels.length === 0){
-            this.saveLevel(this.state.level);
-            // }
+        this.state.saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
+        if(this.state.saveFiles === null){
+            this.saveLevel();
         }
+
+        const rulesInEditor = [];
+        if(this.state.selectedCell){
+            const selectedRulesById = this.state.level[this.state.selectedCell].rulesById;
+            selectedRulesById.forEach((ruleId)=>{
+                rulesInEditor.push(this.state.rules[ruleId]);
+            });
+        }
+      
         return (
         <div className="wrapper">
             <div className="game">
@@ -324,6 +312,7 @@ class Game extends React.Component {
                         setCreateType = {(type) => this.setCreateType(type)}
                     ></Toolbox>
                     <LevelList 
+                        saveFiles = {this.state.saveFiles}
                         onClick = {(levelID) => this.loadLevel(levelID)}
                     />
                     <button onClick={() => this.saveLevel(this.state.level)}>save</button>
@@ -333,9 +322,9 @@ class Game extends React.Component {
                 
                 <div className="level">
                     <HexGrid
+                        selected = {this.state.selectedCell}
                         level = {this.state.level}
                         onMouseDown = {(cellID) => this.cellClick(cellID)}
-                        onHover = {(cellID) => this.cellHover(cellID)}
                         onMouseUp = {(cellID) => this.cellMouseUp(cellID)}
                         currentlyAdding = {this.state.currentlyAdding}
                         currentTool = {this.state.currentTool}
@@ -343,19 +332,21 @@ class Game extends React.Component {
                     ></HexGrid>
                     <LLOutput
                         level = {this.state.level}
+                        grid = {this.state.grid}
+                        rules = {this.state.rules}
+                        colorList = {this.state.ruleOptions.colorList}
                         cols = {this.state.settings.cols}
                         rows = {this.state.settings.rows}
-                        colorList = {this.state.colorList}
                         cellSize = {this.state.settings.cellSize}
                     />
                 </div>
                 
                 <RuleEditor
-                    cell = {this.state.level[this.state.selectedCell]}
-                    cellID = {this.state.selectedCell}
-                    colorList = {this.state.colorList}
-                    onRuleClicked = {(cellID, ruleID, elementID, newValue) => this.onRuleClicked(cellID, ruleID, elementID, newValue)}
-                    addNewRule = {(cellID, cellType) => this.addNewRule(cellID, cellType)}
+                    rules = {rulesInEditor}
+                    ruleOptions = {this.state.ruleOptions}
+                    cellId = {this.state.selectedCell}
+                    onClick = {(rule, ruleId) => this.updateRule(rule, ruleId)}
+                    // addNewRule = {(cellID, cellType) => this.addNewRule(cellID, cellType)}
                 ></RuleEditor>
             </div>
         </div>

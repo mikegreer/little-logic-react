@@ -1,6 +1,11 @@
 .level-button{
-    padding: 10px;
     cursor: pointer;
+    display: inline-block;
+    line-height: 35px;
+    text-align: center;
+    vertical-align: middle;
+    width: 35px;
+    height: 35px;
 }
 
 .level-button:hover{

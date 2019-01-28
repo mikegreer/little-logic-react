@@ -74,6 +74,9 @@ body {
   fill-opacity:0;
   box-sizing: border-box;
 }
+.emitter, .router, .goal{
+  pointer-events: none;
+}
 .hex.selected{
   stroke: #ff00ff;
 }

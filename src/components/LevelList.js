@@ -13,23 +13,25 @@ class LevelButton extends React.Component {
     }
 }
 class LevelList extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            levels: JSON.parse(localStorage.getItem('levels')),
-        };
-    }
+    // constructor(props) {
+        // super(props);
+        // this.state = {
+        //     levels: JSON.parse(localStorage.getItem('levels')),
+        // };
+    // }
     render () {
         const levelButtons = [];
-        this.state.levels.forEach((level, i) => {
-            levelButtons.push(
-                <LevelButton 
-                    levelLabel={i}
-                    key={i}
-                    onClick={(ID) => this.props.onClick(i)}
-                />
-            );
-        });
+        if(this.props.saveFiles){
+            this.props.saveFiles.forEach((file, i) => {
+                levelButtons.push(
+                    <LevelButton 
+                        levelLabel={i}
+                        key={i}
+                        onClick={(ID) => this.props.onClick(i)}
+                    />
+                );
+            });
+        }
         return (
             <span>
                 <h4>Load</h4>

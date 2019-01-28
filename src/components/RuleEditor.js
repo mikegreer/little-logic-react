@@ -5,16 +5,12 @@ import classNames from 'classnames';
 
 class ColorPicker extends React.Component {    
     render() {
-        const colorList = this.props.colorList || ['#cccccc'];
+        const options = this.props.options || ['#cccccc'];
         const style = {
-            fill: colorList[this.props.color],
+            fill: options[this.props.value],
         }
         return (
-            <div
-                className="color-picker"
-                onClick={(cellID) => this.props.onClick(cellID, this.props.ruleID)}
-            >
-                
+            <div className="color-picker" onClick={()=>this.props.onClick("color", this.props.value + 1 < this.props.options.length ? this.props.value + 1 : 0)}>
                 <svg className="drop noselect" x="0px" y="0px" preserveAspectRatio="xMidYMid meet" viewBox="0 0 40 40">
                     <circle cx="20" cy="20" r="20" style={style} />
                 </svg>
@@ -23,13 +19,24 @@ class ColorPicker extends React.Component {
     }
 }
 
+class TargetPicker extends React.Component {
+    render() {
+        return(
+            "Target picker."
+        );
+    }
+}
 class DirectionPicker extends React.Component {
     render() {
+        const direction = (this.props.value * 60) + 30;
         let arrowStyle = {
-            transform: `rotate(${this.props.visualDirection}deg)`
+            transform: `rotate(${direction}deg)`
         }
         return (
-            <div className="direction-arrow-wrapper" onClick={() => this.props.onClick(this.props.cellID, this.props.ruleID)}>
+            <div 
+                className="direction-arrow-wrapper"
+                onClick={()=>this.props.onClick("direction", this.props.value + 1 > 5 ? 0 : this.props.value + 1)}
+            >
                 <svg style={arrowStyle} className="direction-arrow noselect" x="0px" y="0px" viewBox="0 0 46.9 46.9">
                     <g>
                         <path d="M45.8,31.2c0.6,0.7,0.3,1.3-0.6,1.3h-8.5c-0.9,0-1.7,0.8-1.7,1.7v7.3c0,0.9-0.8,1.7-1.7,1.7H13.5c-0.9,0-1.7-0.8-1.7-1.7
@@ -41,21 +48,21 @@ class DirectionPicker extends React.Component {
     }
 }
 
-class IntPickerValue extends React.Component {
+class BeatPickerValue extends React.Component {
     render() {
         return (
-            <span
+            <span 
                 className = {classNames({ 'selected': this.props.selected }, "int")}
-                onClick = {() => this.props.onClick()}
+                onClick = {this.props.onClick}
             >
                 {this.props.value}
             </span>
         );
     }
 }
-class IntPicker extends React.Component {
+class BeatPicker extends React.Component {
     handleClick(value) {
-        this.props.onClick(this.props.cellID, this.props.ruleID, 4, value);
+        this.props.onClick("releaseOnBeat", value);
     }
 
     render() {
@@ -63,7 +70,7 @@ class IntPicker extends React.Component {
         for( let i = 0; i < 25 - this.props.min; i ++ ){
             const selected = this.props.value === i ? true : false; 
             intValues.push(
-                <IntPickerValue
+                <BeatPickerValue
                     key = {i}
                     selected = {selected}
                     value = {i}
@@ -80,218 +87,119 @@ class IntPicker extends React.Component {
 }
 
 class SamplePicker extends React.Component {
-    samplePosition = (value) => {
-        var xGrid = (value % 3) * 14.5 + 4;
-        var yGrid = (Math.floor(value/3) % 3) * 14.5 + 3.5;
-        return {
-            x: xGrid,
-            y: yGrid,
-        }
-    }
-
     render() {
-        let positions = this.samplePosition(this.props.audioSample);
+        console.log("sample");
         return (
-            <span className="sample-picker" onClick={() => this.props.onClick(this.props.cellID, this.props.ruleID)}>
-                {this.props.audioSample}
+            <span 
+                className="sample-picker"
+                onClick = {() => this.props.onClick("audioSample", this.props.value + 1 > 5 ? 0 : this.props.value + 1)}
+            >
+                {this.props.value}
             </span>
         );
     }
 }
 
+class Rule extends React.Component {
+    handleClick = (component, value) => {
+        console.log(component, value);
+        this.props.rule.rule[component] = value;
+        this.props.onClick(this.props.rule);
+    }
 
-function EmitterRule (props) {
-    const index = props.index;
-    const cellID = props.cellID;
-
-    return (
-        <span className="rule">
-            <span className="rule-component">
-                <span className="editor-label">On beat</span>        
-                <IntPicker
-                    value = {props.rule.releaseOnBeat}
-                    onClick = {(cellID, index, cellType, value) => props.onClick(cellID, index, cellType, value)}
-                    cellID = {cellID}
-                    ruleID = {index}
-                    max = {12}
-                    min = {1}
-                    elementID = {4}
-                />
+    render() {
+        const rule = this.props.rule.rule;
+        const ruleComponents = [];
+        for (var key in rule) {
+            if (!rule.hasOwnProperty(key)) continue;
+            switch(key){
+                case("releaseOnBeat"):
+                    ruleComponents.push(
+                        <div className="rule-component">
+                            <BeatPicker
+                                value = {rule[key]}
+                                onClick = {(component, value) => this.handleClick(component, value)}
+                                max = {12}
+                                min = {1}
+                            />
+                        </div>
+                    );
+                    break;
+                case("color"):
+                    ruleComponents.push(
+                        <div className="rule-component">
+                            <ColorPicker 
+                                value = {rule[key]}
+                                options = {this.props.ruleOptions.colorList}
+                                onClick = {(component, value) => this.handleClick(component, value)}
+                            />
+                        </div>
+                    );
+                    break;
+                case("direction"):
+                    ruleComponents.push(
+                        <div className="rule-component">
+                            <DirectionPicker 
+                                value = {rule[key]}
+                                onClick = {(component, value) => this.handleClick(component, value)}
+                            />
+                        </div>
+                    );
+                    break;
+                case("audioSample"):
+                    ruleComponents.push(
+                        <div className="rule-component">
+                            <SamplePicker 
+                                value = {rule[key]}
+                                onClick = {(component, value) => this.handleClick(component, value)}
+                            />
+                        </div>
+                    );
+                    break;
+                case("goal"):
+                    ruleComponents.push(
+                        <div className="rule-component">
+                            <TargetPicker 
+                                value = {rule[key]}
+                                max = {12}
+                                min = {1}
+                                onClick = {(component, value) => this.handleClick(component, value)}
+                            />
+                        </div>
+                    );
+                    break;
+                default:
+                    break;
+            }
+        }
+        return(
+            <span>
+                {ruleComponents}
             </span>
-            <span className="rule-component">
-                <span className="editor-label">make a new</span>
-                <ColorPicker
-                    color = {props.rule.color}
-                    colorList={props.colorList}
-                    onClick = {() => props.onClick(cellID, index, 1)}
-                    cellID = {cellID}
-                    ruleID = {index}
-                ></ColorPicker>
-                <span className="editor-label">pulse, </span>
-            </span>
-            <span className="rule-component">
-                <span className="editor-label">push it</span>
-                <DirectionPicker
-                    direction = {props.rule.direction}
-                    visualDirection = {props.rule.visualDirection}
-                    onClick = {() => props.onClick(cellID, index, 2)}
-                    cellID = {cellID}
-                    ruleID = {index}
-                ></DirectionPicker>
-                <span className="editor-label">and play a sound</span>
-                <SamplePicker
-                    audioSample = {props.rule.audioSample}
-                    onClick = {() => props.onClick(cellID, index, 3)}
-                    cellID = {cellID}
-                    ruleID = {index}
-                ></SamplePicker>
-            </span>
-        </span>
-    );
-}
-
-function RouterRule (props) {
-    const index = props.index;
-    const cellID = props.cellID;
-    return (
-        <span key={index} className="rule">
-            <span className="rule-component">
-                <span className="editor-label">if a</span>
-                <ColorPicker
-                    color = {props.rule.color}
-                    colorList={props.colorList}
-                    onClick = {() => props.onClick(cellID, index, 1)}
-                    cellID = {cellID}
-                    ruleID = {index}
-                ></ColorPicker>
-                <span className="editor-label">hits me, </span>
-            </span>
-            <span className="rule-component">
-                <span className="editor-label">then push it</span>
-                <DirectionPicker
-                    direction = {props.rule.direction}
-                    visualDirection = {props.rule.visualDirection}
-                    onClick = {() => props.onClick(cellID, index, 2)}
-                    cellID = {cellID}
-                    ruleID = {index}
-                ></DirectionPicker>
-            </span>
-            <span className="rule-component">
-                <span className="editor-label">and play a sound</span>
-                <SamplePicker
-                    audioSample = {props.rule.audioSample}
-                    onClick = {() => props.onClick(cellID, index, 3)}
-                    cellID = {cellID}
-                    ruleID = {index}
-                ></SamplePicker>
-            </span>
-        </span>
-    );
-}
-
-function GoalRule (props) {
-    const index = props.index;
-    const cellID = props.cellID;
-    return (<span className="rule">
-        <span className="editor-label">I need</span>
-            <IntPicker 
-                value = {props.rule.goal}
-                onClick = {() => props.onClick(cellID, index, 5)}
-                cellID = {cellID}
-                ruleID = {index}
-            />
-            <ColorPicker
-                color = {props.rule.color}
-                colorList={props.colorList}
-                onClick = {() => props.onClick(cellID, index, 1)}
-                cellID = {cellID}
-                ruleID = {index}
-            ></ColorPicker>
-            <br />
-            <span className="editor-label">when one hits me, </span>
-            <br />
-            <span className="editor-label">play a sound</span>
-            <SamplePicker
-                audioSample = {props.rule.audioSample}
-                onClick = {() => props.onClick(cellID, index, 3)}
-                cellID = {cellID}
-                ruleID = {index}
-            ></SamplePicker>
-    </span>);
-}
-
-function RenderRule (props) {
-    //TODO: stop cellType being stored as a string.
-    switch(parseInt(props.cellType)){
-        case 1:
-            //emitter
-            const emitterRulesOutput = [];
-            props.rules.forEach((rule, index) => {
-                emitterRulesOutput.push(
-                    <EmitterRule 
-                        rule={rule}
-                        key={index}
-                        index={index}
-                        cellID={props.cellID}
-                        onClick={props.onRuleClicked}
-                        colorList={props.colorList}
-                    />
-                );
-            });
-            return (<span>{emitterRulesOutput}</span>);
-        case 2:
-            //router
-            const routerRulesOutput = [];
-            props.rules.forEach((rule, index) => {
-                routerRulesOutput.push(
-                    <RouterRule 
-                        rule={rule}
-                        key={index}
-                        index={index}
-                        cellID={props.cellID}
-                        onClick={props.onRuleClicked}
-                        colorList={props.colorList}
-                    />
-                );
-            });
-            return (<span>{routerRulesOutput}</span>);
-        case 3:
-            //goal
-            const goalRulesOutput = [];
-            props.rules.forEach((rule, index) => {
-                goalRulesOutput.push(<GoalRule
-                            rule={rule}
-                            key={index}
-                            index={index}
-                            cellID={props.cellID}
-                            onClick={props.onRuleClicked}
-                            colorList={props.colorList}
-                        />
-                );
-            });
-            return goalRulesOutput;
-        default:
-            return <span>no rules</span>;
+        ); 
     }
 }
 
 class RuleEditor extends React.Component {
+    handleClick = (rule) => {
+        console.log(rule);
+        this.props.onClick(rule.rule, rule.id);
+    }
     render() {
-        const currentCell = this.props.cell ? this.props.cell : 0;
-        const cell = currentCell;
-        let rules = cell.rules ? cell.rules : [];
+        const output = [];
+        this.props.rules.forEach((rule, id) => {
+            output.push(<Rule 
+                rule = {rule}
+                ruleOptions = {this.props.ruleOptions}
+                onClick = {(rule) => this.handleClick(rule)}
+            />)
+        });
         return(
             <div className="rule-editor">
-                <RenderRule 
-                    cellType = {cell.type}
-                    rules = {cell.rules}
-                    cellID = {this.props.cellID}
-                    onRuleClicked = {this.props.onRuleClicked}
-                    colorList = {this.props.colorList}
-                />
+                {output}
                 <div className="rule-button-container">
                     <button
-                        className = {classNames({ 'hidden': rules.length < 1 }, "new-rule-button")}
+                        className = {classNames({ 'hidden': this.props.rules.length < 1 }, "new-rule-button")}
                         onClick = {() => this.props.addNewRule(this.props.cellID, this.props.cell.type)}
                     >new rule</button>
                 </div>
