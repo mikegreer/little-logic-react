@@ -4,30 +4,32 @@ import './levelbutton.css';
 class LevelButton extends React.Component {
     render () {
         return (
-            <div className="level-button"
-                onClick={(ID) => this.props.onClick(this.props.levelLabel)}
-            >
-                {this.props.levelLabel}
+            <div className="level-button">  
+                <span className="label"
+                    onClick={() => this.props.loadLevel()}
+                >
+                    {this.props.levelId}
+                </span>
+                <span className="delete"
+                    onClick={() => this.props.deleteSave()}
+                >
+                    x
+                </span>
             </div>
         );
     }
 }
 class LevelList extends React.Component {
-    // constructor(props) {
-        // super(props);
-        // this.state = {
-        //     levels: JSON.parse(localStorage.getItem('levels')),
-        // };
-    // }
     render () {
         const levelButtons = [];
         if(this.props.saveFiles){
             this.props.saveFiles.forEach((file, i) => {
                 levelButtons.push(
                     <LevelButton 
-                        levelLabel={i}
+                        levelId={i}
                         key={i}
-                        onClick={(ID) => this.props.onClick(i)}
+                        loadLevel={(id) => this.props.loadLevel(i)}
+                        deleteSave={(id) => this.props.deleteSave(i)}
                     />
                 );
             });

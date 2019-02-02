@@ -12,20 +12,15 @@ class LLOutput extends React.Component {
 		this.time = {
 			currentBeat: 0,
 			previousBeat: 0,
-			beatLength: 100,
-			barLength: 24,
+			beatLength: 200,
+			barLength: 12,
 		}
-		
 		this.cellHeight = (this.props.cellSize * 2) * .75;
 		this.cellWidth = Math.sqrt(3) * this.props.cellSize;
-		this.state = {
-			paused: false,
-			width: this.cellWidth * this.props.cols + (this.cellWidth / 2),
-			height: this.cellHeight * this.props.rows + (this.cellHeight / 4),
-		};
-		
-		//maintain an array of audio contexts, and pass cells reference.
-		//prevents contexts being stored on state / level saves
+		this.paused = false;
+		this.width = this.cellWidth * this.props.cols + (this.cellWidth / 2);
+		this.height = this.cellHeight * this.props.rows + (this.cellHeight / 4);
+		//maintain an array of audio contexts, and pass cells reference
 		this.audioContexts = [];
 	}
 
@@ -46,7 +41,7 @@ class LLOutput extends React.Component {
 
 	restart() {
 		this.pulses = [];
-		this.ctx.clearRect(0, 0, this.props.width, this.props.height);
+		this.ctx.clearRect(0, 0, this.width, this.height);
 	}
 
 	updatePulse(pulse) {
@@ -149,7 +144,7 @@ class LLOutput extends React.Component {
 
 	advancePulsePositions() {
 		const pulsesToRemove = [];
-		this.ctx.clearRect(0, 0, this.state.width, this.state.height);
+		this.ctx.clearRect(0, 0, this.width, this.height);
 
 		this.pulses.forEach((pulse, i) => {
 			//check router collisions
@@ -196,7 +191,7 @@ class LLOutput extends React.Component {
 
 	onAnimationFrame(time) {
 		//TODO: add pausing into the timer too (save current timestamp when pause is pressed?)
-		if(!this.state.paused){
+		if(!this.paused){
 			//on beat
 			let currentBeat = Math.floor(time / this.time.beatLength) % this.time.barLength;
 			if(currentBeat !== this.time.previousBeat) {			
@@ -223,17 +218,25 @@ class LLOutput extends React.Component {
 	}
 
 	pausePlay() {
-		this.setState({paused: !this.state.paused});
+		this.paused = !this.paused;
+		// this.setState({paused: !this.paused});
 	}
 
 	render() {
+		console.log('LLOutput Render');
 		//TODO: prevent having to rebuild audio contexts on rule change. (Only needs to add when level is edited.)
 		this.emitters = [];
 		this.routers = [];
 		this.goals = [];
 		this.audioContexts = [];
+		this.cellHeight = (this.props.cellSize * 2) * .75;
+		this.cellWidth = Math.sqrt(3) * this.props.cellSize;
+		this.width = this.cellWidth * this.props.cols + (this.cellWidth / 2);
+		this.height = this.cellHeight * this.props.rows + (this.cellHeight / 4);
 		// Tone.context.close();
 		// Tone.context = new AudioContext();
+		
+		console.log(this.cellHeight);
 
 		this.goals = [];
 		this.props.level.forEach((cell, index) => {
@@ -285,10 +288,12 @@ class LLOutput extends React.Component {
 			});
 		});
 		return(
-			<div>
-				<canvas ref={this.canvas} width={this.state.width} height={this.state.height} />
-				<button onClick={() => this.restart()}>restart</button>
-				<button onClick={() => this.pausePlay()}>{this.state.paused ? "play" : "pause"}</button>
+			<div className="output-player">
+				<div className="toolbar">
+					<button onClick={() => this.pausePlay()}>{this.paused ? "play" : "pause"}</button>
+					<button onClick={() => this.restart()}>restart</button>
+				</div>
+				<canvas ref={this.canvas} width={this.width} height={this.height} />
 			</div>
 		)
 	}

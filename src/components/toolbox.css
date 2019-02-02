@@ -1,17 +1,31 @@
 .toolbox{
-    margin-top: 0;
+    margin: 0;
+    padding: 0;
     list-style: none;
-    border: 1px solid #CCC;
-    padding: 8px 8px;
+    height: 70px;
+    background: #fff;
+    position: absolute;
+    bottom: 0;
+    border-radius: 0 0 4px 4px;
+    width: 375px;
+}
+
+.level .toolbox li{
+    display: inline-block;
+    margin: 5px 9px 0 0;
 }
 
 .toolbox li button{
-    border: none;
+    font-size: 9px;
+    border: 1px solid #fff;
+    border-radius: 4px;
     padding: 10px 0;
     display: block;
     width: 100%;
     cursor: pointer;
     user-select: none;
+    width: 50px;
+    height: 59px;
     background: #fff;
 }
 
@@ -20,8 +34,13 @@
   }
 
 .toolbox li button:hover{
-    background-color: #ffff00;
+    background-color: rgba(5, 5, 5, 0.05);
 }
 .toolbox li button.selected{
-    background-color: #00ffff;
+    /* background-color: #00ffff; */
+    border-color: #e6007e;
+    cursor: default;
+}
+.toolbox li button.selected:hover{
+    background: none;
 }

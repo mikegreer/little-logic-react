@@ -1,4 +1,4 @@
-.level-button{
+.level-button .label{
     cursor: pointer;
     display: inline-block;
     line-height: 35px;
@@ -8,10 +8,24 @@
     height: 35px;
 }
 
-.level-button:hover{
+.level-button .label:hover{
     background-color: #ffff00;
 }
 
 .level-button:active{
     background-color: #00ffff;
+}
+
+.level-button .delete{
+    display: inline-block;
+    line-height: 35px;
+    text-align: center;
+    vertical-align: middle;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+.level-button .delete:hover{
+    background-color: #ff6666;
+    color: #fff;
 }

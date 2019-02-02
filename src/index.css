@@ -1,7 +1,18 @@
+@font-face {
+  font-family: "Routed Gothic";
+  src: url("/fonts/routed-gothic.ttf") format("ttf")
+}
+
 body {
   /* font: 14px "Century Gothic", Futura, sans-serif; */
   font: 400 11px system-ui;
   margin: 0;
+  background-color: #333333;
+  font-family: "Routed Gothic";
+}
+
+button{
+  font-family: "Routed Gothic";
 }
 
 /* top level layout --------------------------------------*/
@@ -9,14 +20,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 85vh;
+    height: 100vh;
 }
 
 .game {
   display: flex;
   flex-direction: row;
   position: relative;
-  max-height: 340px;
 }
 
 .level-editor{
@@ -25,51 +35,45 @@ body {
 }
 
 .level{
+  border-radius: 4px;
+  width: 375px;
+  height: 667px;
+  background-color: #20d5f2;
   position: relative;
-  margin: 1px 20px 0 20px;
+  z-index: 10;
 }
-.level canvas{
+
+.level .output-player{
   position: absolute;
   top: 0;
   left: 0;
   z-index: 1;
 }
-
-.rule-editor {
-  padding: 0;
-  /* border-radius: 4px; */
-  user-select: none;
-  max-height: 100%;
-  min-width: 315px;
-  position: relative;
+.level .output-player .toolbar{
+  height: 60px;
 }
-.rule-editor .rule {
-  display: block;
-  padding: 4px 20px;
-  border-bottom: 1px solid #ccc;
+.toolbar button{
+  height: 44px;
+  background-color: rgba(5, 5, 5, 0.2);
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 8px 0 8px 8px;
+}
+.level .output-player canvas{
+  margin: 42px;
 }
 
 .grid{
   position: relative;
   z-index: 2;
   flex: row;
+  margin: 102px 42px 42px 42px;
 }
 
 /*game board --------------------------------------*/
-.square {
-  background: none;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  display: inline-block;
-  float: left;
-  padding: 0;
-  margin: -1px -1px 0 0;
-  text-align: center;
-  width: 35px;
-  height: 35px;
-}
-
 .hex{
-  stroke: #dddddd;
+  stroke: #1aaac2;
   fill:#fff;
   fill-opacity:0;
   box-sizing: border-box;
@@ -78,7 +82,8 @@ body {
   pointer-events: none;
 }
 .hex.selected{
-  stroke: #ff00ff;
+  /* stroke: #ffffff; */
+  stroke-width: 10px;
 }
 
 .square * {

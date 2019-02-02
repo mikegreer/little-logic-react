@@ -1,20 +1,45 @@
-.int-picker {
-
-}
-
-.int {
-    font-size: 16px;
+.int, .drop {
+    font-size: 18px;
     font-weight: normal;
-    padding: 2px;
-    margin: 0 4px;
-    width: 12px;
+    line-height: 40px;
+    width: 40px;
     display: inline-block;
     text-align: center;
     cursor: pointer;
 }
 
-.int-picker .selected {
-    /* color: yellow; */
-
-    transform: scale(2, 2) translate(0px,-1px);
+.drop {
+    width: 20px;
+    height: 20px;
+    margin: 10px;
+    border-radius: 100%;
+    border: 5px solid #3a3a30;
 }
+
+.int-picker{
+    max-width: 240px;
+}
+
+.int-picker .selected, .drop .selected {
+    /* color: yellow; */
+    /* transform: scale(2, 2) translate(0px,-1px); */
+    background-image: url('../assets/slected-cross.svg');
+    background-size: 40px 40px;
+}
+
+.color-picker-value{
+    display: inline-block;
+    position: relative;
+}
+.cross{
+    display: none;
+    width: 40px;
+    height: 40px;
+}
+.cross.selected{
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+

@@ -3,18 +3,52 @@ import './intPicker.css';
 import './ruleEditor.css';
 import classNames from 'classnames';
 
-class ColorPicker extends React.Component {    
+class ColorPickerValue extends React.Component {
+    render() {
+        const style = {
+            backgroundColor: this.props.color,
+        }
+        return(
+            <span className="color-picker-value">
+                <div
+                    className = {classNames({ 'selected': this.props.selected }, "drop", "noselect")}
+                    onClick = {this.props.onClick}
+                    style={style}
+                />
+                <img
+                    src="images/selected-cross.svg"
+                    className = {classNames({ 'selected': this.props.selected }, "cross")}
+                />
+            </span>
+        );
+    }
+}
+class ColorPicker extends React.Component {  
+    handleClick(value) {
+        this.props.onClick("color", value);
+    }
+
     render() {
         const options = this.props.options || ['#cccccc'];
+        const optionElements = [];
+        this.props.options.forEach((option, i) => {
+            const selected = this.props.value === i ? true : false; 
+            optionElements.push(
+                <ColorPickerValue 
+                    selected = {selected}
+                    className="color-option"
+                    onClick={() => {this.handleClick(i)}}
+                    color = {option}
+                />
+            );
+        });
         const style = {
             fill: options[this.props.value],
         }
         return (
-            <div className="color-picker" onClick={()=>this.props.onClick("color", this.props.value + 1 < this.props.options.length ? this.props.value + 1 : 0)}>
-                <svg className="drop noselect" x="0px" y="0px" preserveAspectRatio="xMidYMid meet" viewBox="0 0 40 40">
-                    <circle cx="20" cy="20" r="20" style={style} />
-                </svg>
-            </div>
+            <span>
+                {optionElements}
+            </span>
         );
     }
 }
@@ -28,7 +62,7 @@ class TargetPicker extends React.Component {
 }
 class DirectionPicker extends React.Component {
     render() {
-        const direction = (this.props.value * 60) + 30;
+        const direction = (this.props.value * 60) - 60;
         let arrowStyle = {
             transform: `rotate(${direction}deg)`
         }
@@ -37,12 +71,17 @@ class DirectionPicker extends React.Component {
                 className="direction-arrow-wrapper"
                 onClick={()=>this.props.onClick("direction", this.props.value + 1 > 5 ? 0 : this.props.value + 1)}
             >
-                <svg style={arrowStyle} className="direction-arrow noselect" x="0px" y="0px" viewBox="0 0 46.9 46.9">
+                <img src="images/dir-picker-arrow.svg" style={arrowStyle} />
+                {/* <img
+                    src="images/selected-cross.svg"
+                    className = {classNames({ 'selected': this.props.selected }, "cross")}
+                /> */}
+                {/* <svg style={arrowStyle} className="direction-arrow noselect" x="0px" y="0px" viewBox="0 0 46.9 46.9">
                     <g>
                         <path d="M45.8,31.2c0.6,0.7,0.3,1.3-0.6,1.3h-8.5c-0.9,0-1.7,0.8-1.7,1.7v7.3c0,0.9-0.8,1.7-1.7,1.7H13.5c-0.9,0-1.7-0.8-1.7-1.7
                             v-7.4c0-0.9-0.8-1.7-1.7-1.7H1.7c-0.9,0-1.2-0.6-0.6-1.3L22.3,6.3c0.6-0.7,1.6-0.7,2.2,0L45.8,31.2z"/>
                     </g>
-                </svg>
+                </svg> */}
             </div>
         );
     }
@@ -55,7 +94,7 @@ class BeatPickerValue extends React.Component {
                 className = {classNames({ 'selected': this.props.selected }, "int")}
                 onClick = {this.props.onClick}
             >
-                {this.props.value}
+                {this.props.value + 1}
             </span>
         );
     }
@@ -67,7 +106,7 @@ class BeatPicker extends React.Component {
 
     render() {
         const intValues = [];
-        for( let i = 0; i < 25 - this.props.min; i ++ ){
+        for( let i = 0; i <= 12 - this.props.min; i ++ ){
             const selected = this.props.value === i ? true : false; 
             intValues.push(
                 <BeatPickerValue
@@ -88,7 +127,6 @@ class BeatPicker extends React.Component {
 
 class SamplePicker extends React.Component {
     render() {
-        console.log("sample");
         return (
             <span 
                 className="sample-picker"
@@ -102,7 +140,6 @@ class SamplePicker extends React.Component {
 
 class Rule extends React.Component {
     handleClick = (component, value) => {
-        console.log(component, value);
         this.props.rule.rule[component] = value;
         this.props.onClick(this.props.rule);
     }
@@ -173,7 +210,7 @@ class Rule extends React.Component {
             }
         }
         return(
-            <span>
+            <span className="rule">
                 {ruleComponents}
             </span>
         ); 
@@ -182,7 +219,6 @@ class Rule extends React.Component {
 
 class RuleEditor extends React.Component {
     handleClick = (rule) => {
-        console.log(rule);
         this.props.onClick(rule.rule, rule.id);
     }
     render() {
@@ -196,13 +232,14 @@ class RuleEditor extends React.Component {
         });
         return(
             <div className="rule-editor">
-                {output}
                 <div className="rule-button-container">
                     <button
                         className = {classNames({ 'hidden': this.props.rules.length < 1 }, "new-rule-button")}
-                        onClick = {() => this.props.addNewRule(this.props.cellID, this.props.cell.type)}
+                        onClick = {() => this.props.addNewRule(this.props.cellId)}
                     >new rule</button>
                 </div>
+                {output}
+                
             </div>
         );
     }

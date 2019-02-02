@@ -71,7 +71,6 @@ class Hexagon extends React.Component {
             }>
             <polygon
                 points={points}
-                stroke="#eeeeee" 
                 fill="none" 
                 strokeWidth="1"
                 className={classNames(
@@ -84,8 +83,7 @@ class Hexagon extends React.Component {
                 onMouseDown={(cellIndex) => this.props.onMouseDown(this.props.cellIndex)}
                 // onMouseOver={(cellIndex) => this.props.onHover(this.props.cellIndex)}
                 onMouseUp={(cellIndex) => this.props.onMouseUp(this.props.cellIndex)}
-            >
-                {this.props.hover ? <Ghost currentlyAdding={this.props.currentlyAdding}></Ghost> : null}
+                // {this.props.hover ? <Ghost currentlyAdding={this.props.currentlyAdding}></Ghost> : null}
             ></polygon>
             {this.props.cellType === 1 ? <Emitter hexScale={scale}></Emitter> : null}
             {this.props.cellType === 2 ? <Router hexScale={scale}></Router> : null}
@@ -96,22 +94,16 @@ class Hexagon extends React.Component {
 }
 
 class HexGrid extends React.Component {
-    constructor(props) {
-        super(props);
-        const settings = this.props.settings;
-        this.state = {
-            hexScale: settings.cellSize,
-            width: Math.sqrt(3) * settings.cellSize * (settings.cols + 0.5) + 2,
-            height: 0.75 * settings.cellSize * (settings.rows + 0.5) * 2 + 2,
-        }
-    }
-
     render() {
+        const hexScale = this.props.settings.cellSize;
+        const width = Math.sqrt(3) * this.props.settings.cellSize * (this.props.settings.cols + 0.5) + 2;
+        const height = 0.75 * this.props.settings.cellSize * (this.props.settings.rows + 0.5) * 2 + 2;
+
         const hexGrid = [];
 
         //TODO: part of below temp moving calcs
-        const cellHeight = (this.state.hexScale * 2) * .75;
-        const cellWidth = Math.sqrt(3) * this.state.hexScale;
+        const cellHeight = (hexScale * 2) * .75;
+        const cellWidth = Math.sqrt(3) * hexScale;
 
         this.props.level.forEach((hex, index) => {
             const cell = this.props.level[index];
@@ -125,7 +117,7 @@ class HexGrid extends React.Component {
             hexGrid.push(<Hexagon
                 key={index}
                 cellIndex={index}
-                hexScale={this.state.hexScale}
+                hexScale={hexScale}
                 coordinates = {{x: gridX, y: gridY}}
                 cellType={cell.type}
                 onMouseDown={(i) => this.props.onMouseDown(i)}
@@ -140,7 +132,7 @@ class HexGrid extends React.Component {
 
         return(
             <div className="grid">
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" width={this.state.width} height={this.state.height}>
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" width={width} height={height}>
                     {hexGrid}
                 </svg>
             </div>

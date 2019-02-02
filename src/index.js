@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import RuleEditor from './components/RuleEditor';
+import SettingsEditor from './components/SettingsEditor';
 import Toolbox from './components/Toolbox';
 import LevelList from './components/LevelList';
 import LLOutput from './components/LLOutput';
@@ -36,13 +37,13 @@ class Game extends React.Component {
             ],
             emitters: [],
             ruleOptions: {
-                colorList: ['#1dd1a1','#ee5253', '#feca57', '#54a0ff'],
+                colorList: ['#ff007a','#f9ff00', '#00b7ff', '#ff9100'],
                 sampleList: ['C', 'D', 'E', 'F', 'G', 'A'],
             },
             settings: {
-                cols: 16,
-                rows: 16,
-                cellSize: 16,
+                cols: 6,
+                rows: 11,
+                cellSize: 25,
             },
             saveFiles: [],
         };
@@ -162,7 +163,6 @@ class Game extends React.Component {
                     id: this.state.rules.length,
                     rule: {
                         releaseOnBeat: 1,
-                        points: 5,
                         color: 0,
                         direction: 0,
                         audioSample:0,
@@ -174,7 +174,6 @@ class Game extends React.Component {
                 rule = {
                     id: this.state.rules.length,
                     rule: {
-                        points: 5,
                         color: 0,
                         direction: 0,
                         audioSample:0,
@@ -187,7 +186,6 @@ class Game extends React.Component {
                     id: this.state.rules.length,
                     rule: {
                         goal: 5,
-                        points: 5,
                         color: 0,
                         audioSample:0,
                     }
@@ -199,9 +197,15 @@ class Game extends React.Component {
         }
     }
 
-    addNewRule = (cellID, cellType) => {
+    getCellById = (id) => {
+        return this.state.level[id];
+    }
+
+    addNewRule = (cellId) => {
         const level = this.state.level.slice();
-        level[cellID].rulesById.push(this.newRule(cellType));
+        console.log(this.getCellById(cellId));
+        const cellType = this.getCellById(cellId).type; 
+        level[cellId].rulesById.push(this.newRule(cellType));
         this.setState({level: level});
     }
 
@@ -234,12 +238,23 @@ class Game extends React.Component {
         this.setState({saveFiles: saveFiles});
     }
 
-    loadLevel = (ID) => {
+    loadLevel = (id) => {
         const saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
-        this.setState({grid: saveFiles[ID].grid});
-        this.setState({level: saveFiles[ID].level});
-        this.setState({rules: saveFiles[ID].rules});
-        this.setState({settings: saveFiles[ID].settings});
+        this.setState({grid: saveFiles[id].grid});
+        this.setState({level: saveFiles[id].level});
+        this.setState({rules: saveFiles[id].rules});
+        this.setState({settings: saveFiles[id].settings});
+    }
+
+    deleteSave = (id) => {
+        console.log(id);
+        let saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
+        // console.log(saveFiles.splice(id, 1));
+        console.log(saveFiles);
+        const removed = saveFiles.splice(id, 1);
+        console.log(saveFiles, removed);
+        localStorage.setItem('saveFiles', JSON.stringify(saveFiles));
+        this.setState({saveFiles: saveFiles});
     }
 
     getRule = (cellID, ruleID) => {
@@ -253,40 +268,13 @@ class Game extends React.Component {
         this.setState({ rules : rules });
     }
 
-    // edit rule functions
-    // incrementColor = (rule) => {
-    //     if(rule.color + 1 >= this.state.ruleOptions.colorList.length){
-    //         rule.color = 0;
-    //     }else{
-    //         rule.color ++;
-    //     }
-    //     return rule;
-    // }
-
-    // incrementDirection = (rule) => {
-    //     rule.direction = (rule.direction + 1) % 6;
-    //     rule.visualDirection += 60;
-    //     return rule;
-    // }
-
-    // incrementSound = (rule) => {
-    //     rule.audioSample += 1;
-    //     if(rule.audioSample > 8) rule.audioSample = 0;
-    //     return rule;
-    // }
-
-    // setReleaseBeat = (rule, value) => {
-    //     //TODO: use number of beats in bar instead of 12
-    //     rule.releaseOnBeat = value;
-    //     return rule;
-    // }
-
-    // incrementTarget = (rule) => {
-    //     (rule.goal > 8) ? rule.goal = 1 : rule.goal += 1;
-    //     return rule;
-    // }
+    updateSettings = (settings) => {
+        console.log(settings, this.state.settings);
+        this.setState({ settings : settings });
+    }
 
     render() {
+        console.log('index render');
         this.state.saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
         if(this.state.saveFiles === null){
             this.saveLevel();
@@ -302,24 +290,24 @@ class Game extends React.Component {
       
         return (
         <div className="wrapper">
-            <div className="game">
+            <div className="game"> 
+            
                 <div className="level-editor">
-                    <Toolbox
-                        onClick = {(toolID) => this.toolboxClick(toolID)}
-                        selected = {this.state.currentTool}
-                        cellTypes = {this.state.cellTypes}
-                        currentlyAdding = {this.state.currentlyAdding}
-                        setCreateType = {(type) => this.setCreateType(type)}
-                    ></Toolbox>
+                    <SettingsEditor
+                        cols = {this.state.settings.cols}
+                        rows = {this.state.settings.rows}
+                        cellSize = {this.state.settings.cellSize}
+                        updateSettings = {(settings) => this.updateSettings(settings)}
+                    />
                     <LevelList 
                         saveFiles = {this.state.saveFiles}
-                        onClick = {(levelID) => this.loadLevel(levelID)}
+                        deleteSave = {(id) => this.deleteSave(id)}
+                        loadLevel = {(levelId) => this.loadLevel(levelId)}
                     />
                     <button onClick={() => this.saveLevel(this.state.level)}>save</button>
-                    <button onClick={(ID) => this.loadLevel(0)}>load</button>
+                    {/* TODO: replace with blank creation button
+                    <button onClick={(ID) => this.loadLevel(0)}>load</button> */}
                 </div>
-
-                
                 <div className="level">
                     <HexGrid
                         selected = {this.state.selectedCell}
@@ -339,6 +327,13 @@ class Game extends React.Component {
                         rows = {this.state.settings.rows}
                         cellSize = {this.state.settings.cellSize}
                     />
+                    <Toolbox
+                        onClick = {(toolID) => this.toolboxClick(toolID)}
+                        selected = {this.state.currentTool}
+                        cellTypes = {this.state.cellTypes}
+                        currentlyAdding = {this.state.currentlyAdding}
+                        setCreateType = {(type) => this.setCreateType(type)}
+                    ></Toolbox>
                 </div>
                 
                 <RuleEditor
@@ -346,7 +341,7 @@ class Game extends React.Component {
                     ruleOptions = {this.state.ruleOptions}
                     cellId = {this.state.selectedCell}
                     onClick = {(rule, ruleId) => this.updateRule(rule, ruleId)}
-                    // addNewRule = {(cellID, cellType) => this.addNewRule(cellID, cellType)}
+                    addNewRule = {(cellID, cellType) => this.addNewRule(cellID, cellType)}
                 ></RuleEditor>
             </div>
         </div>
