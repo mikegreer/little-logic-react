@@ -16,10 +16,6 @@
     border: 5px solid #3a3a30;
 }
 
-.int-picker{
-    max-width: 240px;
-}
-
 .int-picker .selected, .drop .selected {
     /* color: yellow; */
     /* transform: scale(2, 2) translate(0px,-1px); */
@@ -43,3 +39,27 @@
     left: 5px;
 }
 
+.color-picker{
+    width: 27px;
+    cursor: pointer;
+    padding: 0 10px;
+    display: inline-block;
+    transition: .2s ease-in;
+}
+
+.color-picker-shadow {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background-image: linear-gradient(
+        to top right, 
+        #d7f0a200,
+        #d7f0a200 50%,
+        rgba(0, 0, 0, 0.2) 50%,
+        rgba(0, 0, 0, 0.2) 100%
+    );
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    pointer-events: none;
+}

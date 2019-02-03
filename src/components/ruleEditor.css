@@ -16,7 +16,6 @@
   .rule-editor .rule {
     display: block;
     padding: 4px 20px;
-    border-bottom: 1px solid #ccc;
     display: flex;
     flex-direction: column;
   }
@@ -97,14 +96,6 @@
     border: 2px solid #ff00ff;
   }
   
-  .color-picker{
-    width: 27px;
-    cursor: pointer;
-    padding: 0 10px;
-    display: inline-block;
-    transition: .2s ease-in;
-  }
-  
   .direction-arrow{
     height: 20px;
     width: 20px;
@@ -119,6 +110,7 @@
   .direction-arrow-wrapper{
     display: inline-block;
     padding: 10px;
+    /* wi */
     /* animation: wiggle 4s ease-in-out infinite;
     animation-direction: alternate; */
   }
@@ -128,8 +120,9 @@
     font-weight: bold;
     font-size: 30px;
     vertical-align: middle;
-    margin-top: -20px;
+    margin-top: 28px;
     line-height: 45px;
+    max-width: 240px;
   }
   
   .sample-picker{

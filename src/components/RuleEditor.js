@@ -1,6 +1,7 @@
 import React from 'react';
 import './intPicker.css';
 import './ruleEditor.css';
+import MultiView from './MultiView.js';
 import classNames from 'classnames';
 
 class ColorPickerValue extends React.Component {
@@ -14,6 +15,9 @@ class ColorPickerValue extends React.Component {
                     className = {classNames({ 'selected': this.props.selected }, "drop", "noselect")}
                     onClick = {this.props.onClick}
                     style={style}
+                />
+                <div
+                    className = {classNames("color-picker-shadow", "noselect")}
                 />
                 <img
                     src="images/selected-cross.svg"
@@ -60,6 +64,13 @@ class TargetPicker extends React.Component {
         );
     }
 }
+
+// class DirectionPickerValue extends React.Component {
+//     render() {
+//         return();
+//     }
+// }
+
 class DirectionPicker extends React.Component {
     render() {
         const direction = (this.props.value * 60) - 60;
@@ -71,17 +82,7 @@ class DirectionPicker extends React.Component {
                 className="direction-arrow-wrapper"
                 onClick={()=>this.props.onClick("direction", this.props.value + 1 > 5 ? 0 : this.props.value + 1)}
             >
-                <img src="images/dir-picker-arrow.svg" style={arrowStyle} />
-                {/* <img
-                    src="images/selected-cross.svg"
-                    className = {classNames({ 'selected': this.props.selected }, "cross")}
-                /> */}
-                {/* <svg style={arrowStyle} className="direction-arrow noselect" x="0px" y="0px" viewBox="0 0 46.9 46.9">
-                    <g>
-                        <path d="M45.8,31.2c0.6,0.7,0.3,1.3-0.6,1.3h-8.5c-0.9,0-1.7,0.8-1.7,1.7v7.3c0,0.9-0.8,1.7-1.7,1.7H13.5c-0.9,0-1.7-0.8-1.7-1.7
-                            v-7.4c0-0.9-0.8-1.7-1.7-1.7H1.7c-0.9,0-1.2-0.6-0.6-1.3L22.3,6.3c0.6-0.7,1.6-0.7,2.2,0L45.8,31.2z"/>
-                    </g>
-                </svg> */}
+                <img src="images/dir-picker-arrow.svg" style={arrowStyle} width="22"/>
             </div>
         );
     }
@@ -238,8 +239,9 @@ class RuleEditor extends React.Component {
                         onClick = {() => this.props.addNewRule(this.props.cellId)}
                     >new rule</button>
                 </div>
+            <MultiView>
                 {output}
-                
+            </MultiView>
             </div>
         );
     }

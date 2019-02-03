@@ -1,0 +1,13 @@
+.multiview{
+    display: block;
+    width: 100%;
+}
+
+.multiview-nav{
+    display: block;
+    width: 100%;
+    padding-left: 0;
+}
+.multiview-nav li{
+    display: inline-block;
+}
