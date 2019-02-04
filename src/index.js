@@ -58,6 +58,7 @@ class Game extends React.Component {
                 id: i,
                 type: 0,
                 rulesById: [],
+                selectedRule: 0,
             });
         }
         return level;
@@ -206,6 +207,7 @@ class Game extends React.Component {
         console.log(this.getCellById(cellId));
         const cellType = this.getCellById(cellId).type; 
         level[cellId].rulesById.push(this.newRule(cellType));
+        level[cellId].selectedRule = level[cellId].rulesById.length - 1;
         this.setState({level: level});
     }
 
@@ -273,6 +275,12 @@ class Game extends React.Component {
         this.setState({ settings : settings });
     }
 
+    updateSelectedRule = (id, cell) => {
+        const cells = this.state.level.slice();
+        cells[cell].selectedRule = id;
+        this.setState({ level : cells });
+    }
+
     render() {
         console.log('index render');
         this.state.saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
@@ -281,13 +289,15 @@ class Game extends React.Component {
         }
 
         const rulesInEditor = [];
+        let selectedRule = null;
         if(this.state.selectedCell){
             const selectedRulesById = this.state.level[this.state.selectedCell].rulesById;
             selectedRulesById.forEach((ruleId)=>{
                 rulesInEditor.push(this.state.rules[ruleId]);
             });
+            selectedRule = this.state.level[this.state.selectedCell].selectedRule;
         }
-      
+        
         return (
         <div className="wrapper">
             <div className="game"> 
@@ -338,9 +348,11 @@ class Game extends React.Component {
                 
                 <RuleEditor
                     rules = {rulesInEditor}
+                    selectedRule = {selectedRule}
                     ruleOptions = {this.state.ruleOptions}
                     cellId = {this.state.selectedCell}
                     onClick = {(rule, ruleId) => this.updateRule(rule, ruleId)}
+                    updateSelectedRule = {(id, cell) => this.updateSelectedRule(id, cell)}
                     addNewRule = {(cellID, cellType) => this.addNewRule(cellID, cellType)}
                 ></RuleEditor>
             </div>

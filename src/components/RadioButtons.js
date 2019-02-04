@@ -17,7 +17,7 @@ class RadioButtons extends React.Component {
     render () {
         const buttons = [];
         for(let i = 0; i < this.props.optionCount; i ++){
-            console.log(this.props.value === i);
+            // console.log(this.props.value);
             buttons.push(
                 <RadioButton
                     selected = {this.props.value === i}
