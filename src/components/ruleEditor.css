@@ -101,23 +101,27 @@
     border: 2px solid #ff00ff;
   }
   
-  .direction-arrow{
-    height: 20px;
-    width: 20px;
-    fill: transparent;
-    stroke: #4E77AA;
-    stroke-width: 2px;
-    cursor: pointer;
-    margin-top: 4px;
-    transition: .2s ease-in;
+  .direction-arrow-wrapper {
+    display: flex;
+    flex-direction: row;
   }
-  
-  .direction-arrow-wrapper{
+
+  .direction-arrow {
     display: inline-block;
-    padding: 10px;
-    /* wi */
-    /* animation: wiggle 4s ease-in-out infinite;
-    animation-direction: alternate; */
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+  }
+
+  .direction-arrow img{
+    padding: 16px 7px;
+  }
+
+
+  .direction-arrow.selected {
+    background-image: url('../assets/slected-cross.svg');
+    background-size: 40px 40px;
+    background-repeat: no-repeat;
   }
   
   .int-picker{
