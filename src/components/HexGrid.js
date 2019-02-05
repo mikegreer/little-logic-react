@@ -76,6 +76,7 @@ class Hexagon extends React.Component {
                 className={classNames(
                     { 'selected': this.props.selected },
                     { 'hover': this.props.hover },
+                    { 'gap' : this.props.cellType === 4},
                     "hex")}
                 style={
                     {cursor: this.props.currentTool === 1 ? 'move':'default'}

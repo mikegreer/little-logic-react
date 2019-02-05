@@ -34,11 +34,12 @@ class Game extends React.Component {
                 {id: 1, label: "emitter"},
                 {id: 2, label: "router"},
                 {id: 3, label: "goal"},
+                {id: 4, label: "hole"},
             ],
             emitters: [],
             ruleOptions: {
                 colorList: ['#ff007a','#f9ff00', '#00b7ff', '#ff9100'],
-                sampleList: ['C', 'D', 'E', 'F', 'G', 'A'],
+                sampleList: ['arp (1).wav', 'arp (2).wav', 'arp (3).wav', 'arp (4).wav', 'crash (1).wav', 'crash (2).wav'],
             },
             settings: {
                 cols: 6,
@@ -104,7 +105,7 @@ class Game extends React.Component {
     }
 
     cellClick = (cellID) => {
-        if(this.state.currentTool === 0){
+        if(this.state.currentTool === 0 || this.state.currentTool === 2){
             if(this.state.selectedCell !== null){
                 this.updateCell({
                     selected: null,
@@ -126,13 +127,12 @@ class Game extends React.Component {
                 //setRule and return ID?
                 rulesById: [this.newRule(this.state.currentlyAdding)],
             }, cellID);
-        }else if(this.state.currentTool === 3){
+        }
+        if(this.state.currentTool === 3){
             this.updateCell({
                 type: 0,
                 rules: [],
             }, cellID);
-        }else{
-            
         }
     }
 
@@ -189,6 +189,15 @@ class Game extends React.Component {
                         goal: 5,
                         color: 0,
                         audioSample:0,
+                    }
+                }
+                this.state.rules.push(rule);
+                return this.state.rules.length - 1;
+            case 4:
+                rule = {
+                    id: this.state.rules.length,
+                    rule: {
+                        damage: 5,
                     }
                 }
                 this.state.rules.push(rule);
@@ -281,8 +290,53 @@ class Game extends React.Component {
         this.setState({ level : cells });
     }
 
+    handleKeyPress = (event) => {
+        console.log(event.key);
+        switch (event.key) {
+            case 's':
+                console.log('select');
+                break;
+            case 'm':
+                console.log('move');
+                break;
+            case 'e':
+                console.log('emitter');
+                break;
+            case 'r':
+                console.log('router');
+                break;
+            case 'g':
+                console.log('goal');
+                break;
+            case 'h':
+                console.log('hole');
+                break;
+            case 'ArrowLeft':
+                console.log('arrow left');
+                break;
+            case 'ArrowRight':
+                console.log('arrow right');
+                break;
+            case 'c':
+                console.log('clear');
+                break;
+            case 'p':
+                console.log('play / pause');
+                break;
+            default:
+                console.log(event.key);
+                break;
+//             (s)elect, (m)ove, (e)mitter, (r)outer, (g)oal
+//   * jump to rule #, arrows
+//   * (p)lay / (p)ause, (c)lear
+        }
+    }
+
+    componentDidMount = () => {
+        document.addEventListener("keydown", this.handleKeyPress.bind(this));
+    }    
+    
     render() {
-        console.log('index render');
         this.state.saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
         if(this.state.saveFiles === null){
             this.saveLevel();
@@ -290,7 +344,7 @@ class Game extends React.Component {
 
         const rulesInEditor = [];
         let selectedRule = null;
-        if(this.state.selectedCell){
+        if(this.state.selectedCell || this.state.selectedCell === 0){
             const selectedRulesById = this.state.level[this.state.selectedCell].rulesById;
             selectedRulesById.forEach((ruleId)=>{
                 rulesInEditor.push(this.state.rules[ruleId]);
@@ -319,24 +373,26 @@ class Game extends React.Component {
                     <button onClick={(ID) => this.loadLevel(0)}>load</button> */}
                 </div>
                 <div className="level">
-                    <HexGrid
-                        selected = {this.state.selectedCell}
-                        level = {this.state.level}
-                        onMouseDown = {(cellID) => this.cellClick(cellID)}
-                        onMouseUp = {(cellID) => this.cellMouseUp(cellID)}
-                        currentlyAdding = {this.state.currentlyAdding}
-                        currentTool = {this.state.currentTool}
-                        settings = {this.state.settings}
-                    ></HexGrid>
                     <LLOutput
                         level = {this.state.level}
                         grid = {this.state.grid}
                         rules = {this.state.rules}
                         colorList = {this.state.ruleOptions.colorList}
+                        sampleList = {this.state.ruleOptions.sampleList}
                         cols = {this.state.settings.cols}
                         rows = {this.state.settings.rows}
                         cellSize = {this.state.settings.cellSize}
-                    />
+                    >
+                        <HexGrid
+                            selected = {this.state.selectedCell}
+                            level = {this.state.level}
+                            onMouseDown = {(cellID) => this.cellClick(cellID)}
+                            onMouseUp = {(cellID) => this.cellMouseUp(cellID)}
+                            currentlyAdding = {this.state.currentlyAdding}
+                            currentTool = {this.state.currentTool}
+                            settings = {this.state.settings}
+                        ></HexGrid>
+                    </LLOutput>
                     <Toolbox
                         onClick = {(toolID) => this.toolboxClick(toolID)}
                         selected = {this.state.currentTool}

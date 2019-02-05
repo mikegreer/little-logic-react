@@ -10,6 +10,9 @@ class Toolbox extends React.Component {
         this.props.setCreateType(createId)
         console.log(createId);
     }
+
+    
+
     render () {
         const addElementButtons = [];
         this.props.cellTypes.forEach((type, index) => {

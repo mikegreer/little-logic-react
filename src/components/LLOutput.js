@@ -1,6 +1,13 @@
 import React from 'react';
 import ReactAnimationFrame from 'react-animation-frame';
 import Tone from 'tone';
+import arp1 from '../assets/audio/gb_drums/arp (1).wav';
+import hihat from '../assets/audio/gb_drums/hihat (2).wav';
+import kick from '../assets/audio/gb_drums/kick (1).wav';
+import perc from '../assets/audio/gb_drums/perc (9).wav';
+import pulse from '../assets/audio/gb_drums/pulse (2).wav';
+import sfx from '../assets/audio/gb_drums/sfx (1).wav';
+import snare from '../assets/audio/gb_drums/snare (3).wav';
 
 class LLOutput extends React.Component {
 	constructor(props) {
@@ -22,6 +29,14 @@ class LLOutput extends React.Component {
 		this.height = this.cellHeight * this.props.rows + (this.cellHeight / 4);
 		//maintain an array of audio contexts, and pass cells reference
 		this.audioContexts = [];
+
+		//TODO: build asset loader to pre-load all the audio files passed in with sampleList
+		// this.samples = [];
+		// this.props.sampleList.forEach((sample) => {
+		// 	console.log(sample);
+		// 	const filePath = '../assets/audio/gb_drums/' + sample
+		// 	import a from filePath;
+		// });
 	}
 
 	componentDidMount() {
@@ -105,22 +120,34 @@ class LLOutput extends React.Component {
 	playSound(soundID, ctx) {
 		switch(soundID){
 			case 0:
-				ctx.triggerAttackRelease("C3", "8n", '+0.05');
+				var player = new Tone.Player(arp1).toMaster();
+				player.autostart = true;
+				// ctx.triggerAttackRelease("C3", "8n", '+0.05');
 				break;
 			case 1:
-				ctx.triggerAttackRelease("Eb3", "8n", '+0.05');
+				var player = new Tone.Player(hihat).toMaster();
+				player.autostart = true;
+				// ctx.triggerAttackRelease("Eb3", "8n", '+0.05');
 				break;
 			case 2:
-				ctx.triggerAttackRelease("G3", "8n", '+0.05');
+				var player = new Tone.Player(kick).toMaster();
+				player.autostart = true;
+				// ctx.triggerAttackRelease("G3", "8n", '+0.05');
 				break;
 			case 3:
-				ctx.triggerAttackRelease("Bb3", "8n", '+0.05');
+				var player = new Tone.Player(pulse).toMaster();
+				player.autostart = true;
+				// ctx.triggerAttackRelease("Bb3", "8n", '+0.05');
 				break;
 			case 4:
-				ctx.triggerAttackRelease("G2", "8n", '+0.05');
+				var player = new Tone.Player(perc).toMaster();
+				player.autostart = true;
+				// ctx.triggerAttackRelease("G2", "8n", '+0.05');
 				break;
 			case 5:
-				ctx.triggerAttackRelease("Bb2", "8n", '+0.05');
+				var player = new Tone.Player(snare).toMaster();
+				player.autostart = true;
+				// ctx.triggerAttackRelease("Bb2", "8n", '+0.05');
 				break;
 			case 6:
 				ctx.triggerAttackRelease("D2", "8n", '+0.05');
@@ -170,6 +197,15 @@ class LLOutput extends React.Component {
 						this.playSound(rule.audioSample, ctx);
 						pulsesToRemove.push(i);
 					});
+				}
+			}
+			//check gap collisions
+			for(var l = 0; l < this.gaps.length; l ++) {
+				const gap = this.gaps[l];
+				if(pulse.gridX === gap.column && pulse.gridY === gap.row){
+					pulsesToRemove.push(i);
+					var player = new Tone.Player(sfx).toMaster();
+					player.autostart = true;
 				}
 			}
 
@@ -223,22 +259,17 @@ class LLOutput extends React.Component {
 	}
 
 	render() {
-		console.log('LLOutput Render');
 		//TODO: prevent having to rebuild audio contexts on rule change. (Only needs to add when level is edited.)
 		this.emitters = [];
 		this.routers = [];
 		this.goals = [];
+		this.gaps = [];
 		this.audioContexts = [];
 		this.cellHeight = (this.props.cellSize * 2) * .75;
 		this.cellWidth = Math.sqrt(3) * this.props.cellSize;
 		this.width = this.cellWidth * this.props.cols + (this.cellWidth / 2);
 		this.height = this.cellHeight * this.props.rows + (this.cellHeight / 4);
-		// Tone.context.close();
-		// Tone.context = new AudioContext();
-		
-		console.log(this.cellHeight);
 
-		this.goals = [];
 		this.props.level.forEach((cell, index) => {
 			switch(cell.type){
 				case 0:
@@ -260,6 +291,12 @@ class LLOutput extends React.Component {
 					goal.column = this.props.grid[index].column;
 					goal.row = this.props.grid[index].row;
 					this.goals.push(goal);
+					break;
+				case 4:	
+					const gap = cell;
+					gap.column = this.props.grid[index].column;
+					gap.row = this.props.grid[index].row;
+					this.gaps.push(gap);
 					break;
 				default:
 					break;
@@ -294,6 +331,7 @@ class LLOutput extends React.Component {
 					<button onClick={() => this.restart()}>restart</button>
 				</div>
 				<canvas ref={this.canvas} width={this.width} height={this.height} />
+				{this.props.children}
 			</div>
 		)
 	}

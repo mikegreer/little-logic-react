@@ -43,11 +43,16 @@ button{
   z-index: 10;
 }
 
-.level .output-player{
+.grid{
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
+  top: 60px;
+  z-index: 2;
+  margin: 42px 42px;
+}
+.level .output-player canvas{
+  pointer-events: none;
+  position: relative;
+  z-index: 3;
 }
 .level .output-player .toolbar{
   height: 60px;
@@ -61,22 +66,20 @@ button{
   margin: 8px 0 8px 8px;
 }
 .level .output-player canvas{
-  margin: 42px;
-}
-
-.grid{
-  position: relative;
-  z-index: 2;
-  flex: row;
-  margin: 102px 42px 42px 42px;
+  margin: 39px 43px;
 }
 
 /*game board --------------------------------------*/
 .hex{
   stroke: #1aaac2;
-  fill:#fff;
-  fill-opacity:0;
+  pointer-events: visible; 
   box-sizing: border-box;
+}
+.hex.gap{
+  fill: #007a87;
+  fill-opacity: 1;
+  stroke: #007a87;
+  stroke-width: 1px;
 }
 .emitter, .router, .goal{
   pointer-events: none;
@@ -84,6 +87,10 @@ button{
 .hex.selected{
   /* stroke: #ffffff; */
   stroke-width: 10px;
+}
+.hex.gap.selected{
+  stroke: #ffffff;
+  stroke-width: 1px;
 }
 
 .square * {

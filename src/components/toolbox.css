@@ -8,11 +8,14 @@
     bottom: 0;
     border-radius: 0 0 4px 4px;
     width: 375px;
+    display: flex;
+    flex-direction: row;
+    display: flex;
+    justify-content: center;
 }
 
-.level .toolbox li{
-    display: inline-block;
-    margin: 5px 9px 0 0;
+.toolbox li{
+    margin: 5px 0 0 0;
 }
 
 .toolbox li button{
@@ -20,7 +23,7 @@
     border: 1px solid #fff;
     border-radius: 4px;
     padding: 10px 0;
-    display: block;
+    /* display: block; */
     width: 100%;
     cursor: pointer;
     user-select: none;

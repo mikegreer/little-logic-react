@@ -16,7 +16,7 @@
     border: 5px solid #3a3a30;
 }
 
-.int-picker .selected, .drop .selected {
+.int-picker .selected, .drop .selected, .sample-picker .selected {
     /* color: yellow; */
     /* transform: scale(2, 2) translate(0px,-1px); */
     background-image: url('../assets/slected-cross.svg');
