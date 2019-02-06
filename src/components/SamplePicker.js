@@ -25,6 +25,7 @@ class SamplePicker extends React.Component {
                     value = {i}
                     selected = {this.props.value === i}
                     onClick = {(samplePickerValue) => this.handleClick(i)}
+                    key = {i}
                 />
             );
         }

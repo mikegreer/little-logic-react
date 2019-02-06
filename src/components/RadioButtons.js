@@ -20,6 +20,7 @@ class RadioButtons extends React.Component {
             // console.log(this.props.value);
             buttons.push(
                 <RadioButton
+                    key = {i}
                     selected = {this.props.value === i}
                     onClick = {(viewID) => this.props.onClick(i)}
                 />

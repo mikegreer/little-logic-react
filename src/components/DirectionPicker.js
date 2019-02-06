@@ -12,7 +12,7 @@ class DirectionPickerValue extends React.Component {
                 className = {classNames({ 'selected': this.props.selected }, "direction-arrow")}
                 onClick={this.props.onClick}
             >
-                <img src="images/dir-picker-arrow.svg" style={arrowStyle} width="28"/>
+                <img src="images/dir-picker-arrow.svg" style={arrowStyle} width="28" alt={"set direction to "+direction} />
             </span>
         );
     }
@@ -31,12 +31,9 @@ class DirectionPicker extends React.Component {
                     onClick = {(value) => this.handleClick(i)}
                     value = {i}
                     selected = {this.props.value === i}
+                    key = {i}
                 />
             )
-        }
-        const direction = (this.props.value * 60) - 60;
-        let arrowStyle = {
-            transform: `rotate(${direction}deg)`
         }
         return (
             <span>

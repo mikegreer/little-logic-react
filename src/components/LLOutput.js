@@ -117,46 +117,33 @@ class LLOutput extends React.Component {
 		});
 	}
 
+	//TODO: remove ctx?
 	playSound(soundID, ctx) {
+		var player;
 		switch(soundID){
 			case 0:
-				var player = new Tone.Player(arp1).toMaster();
+				player = new Tone.Player(arp1).toMaster();
 				player.autostart = true;
-				// ctx.triggerAttackRelease("C3", "8n", '+0.05');
 				break;
 			case 1:
-				var player = new Tone.Player(hihat).toMaster();
+				player = new Tone.Player(hihat).toMaster();
 				player.autostart = true;
-				// ctx.triggerAttackRelease("Eb3", "8n", '+0.05');
 				break;
 			case 2:
-				var player = new Tone.Player(kick).toMaster();
+				player = new Tone.Player(kick).toMaster();
 				player.autostart = true;
-				// ctx.triggerAttackRelease("G3", "8n", '+0.05');
 				break;
 			case 3:
-				var player = new Tone.Player(pulse).toMaster();
+				player = new Tone.Player(pulse).toMaster();
 				player.autostart = true;
-				// ctx.triggerAttackRelease("Bb3", "8n", '+0.05');
 				break;
 			case 4:
-				var player = new Tone.Player(perc).toMaster();
+				player = new Tone.Player(perc).toMaster();
 				player.autostart = true;
-				// ctx.triggerAttackRelease("G2", "8n", '+0.05');
 				break;
 			case 5:
-				var player = new Tone.Player(snare).toMaster();
+				player = new Tone.Player(snare).toMaster();
 				player.autostart = true;
-				// ctx.triggerAttackRelease("Bb2", "8n", '+0.05');
-				break;
-			case 6:
-				ctx.triggerAttackRelease("D2", "8n", '+0.05');
-				break;
-			case 7:
-				ctx.triggerAttackRelease("E2", "8n", '+0.05');
-				break;
-			case 8:
-				ctx.triggerAttackRelease("F2", "8n", '+0.05');
 				break;
 			default:
 				break;
@@ -212,8 +199,6 @@ class LLOutput extends React.Component {
 			if(this.checkBounds(pulse, i)){
 				pulsesToRemove.push(i);
 			};
-			// const pulseLocation = this.centerPoint(pulse.gridX, pulse.gridY, 22);
-			// this.drawShape(pulseLocation.x, pulseLocation.y, pulse.r, pulse.color);
 			this.drawPulseOnHex(pulse.gridX, pulse.gridY, pulse.color);
 			pulse = this.updatePulse(pulse);
 		});
@@ -226,7 +211,6 @@ class LLOutput extends React.Component {
 	}
 
 	onAnimationFrame(time) {
-		//TODO: add pausing into the timer too (save current timestamp when pause is pressed?)
 		if(!this.paused){
 			//on beat
 			let currentBeat = Math.floor(time / this.time.beatLength) % this.time.barLength;
@@ -255,16 +239,13 @@ class LLOutput extends React.Component {
 
 	pausePlay() {
 		this.paused = !this.paused;
-		// this.setState({paused: !this.paused});
 	}
 
 	render() {
-		//TODO: prevent having to rebuild audio contexts on rule change. (Only needs to add when level is edited.)
 		this.emitters = [];
 		this.routers = [];
 		this.goals = [];
 		this.gaps = [];
-		this.audioContexts = [];
 		this.cellHeight = (this.props.cellSize * 2) * .75;
 		this.cellWidth = Math.sqrt(3) * this.props.cellSize;
 		this.width = this.cellWidth * this.props.cols + (this.cellWidth / 2);
@@ -301,28 +282,6 @@ class LLOutput extends React.Component {
 				default:
 					break;
 			}
-		});
-		//add to local instance of state to prevent them being saved onto save files / main context.
-		this.emitters.forEach((emitter) => {
-			emitter.rulesById.forEach((ruleId) => {
-				this.audioContexts.push(new Tone.Synth().toMaster());
-				const rule = this.props.rules[ruleId].rule;
-				rule.audioCtx = this.audioContexts.length - 1;
-			});
-		});
-		this.routers.forEach((router) => {
-			router.rulesById.forEach((ruleId) => {
-				this.audioContexts.push(new Tone.Synth().toMaster());
-				const rule = this.props.rules[ruleId].rule;
-				rule.audioCtx = this.audioContexts.length - 1;
-			});
-		});
-		this.goals.forEach((goal) => {
-			goal.rulesById.forEach((ruleId) => {
-				this.audioContexts.push(new Tone.Synth().toMaster());
-				const rule = this.props.rules[ruleId].rule;
-				rule.audioCtx = this.audioContexts.length - 1;
-			});
 		});
 		return(
 			<div className="output-player">

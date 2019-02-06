@@ -26,14 +26,16 @@ class Rule extends React.Component {
     render() {
         const rule = this.props.rule.rule;
         const ruleComponents = [];
-        for (var key in rule) {
-            if (!rule.hasOwnProperty(key)) continue;
-            switch(key){
+        let subCountKey = 0;
+        for (var subrule in rule) {
+            if (!rule.hasOwnProperty(subrule)) continue;
+            switch(subrule){
                 case("releaseOnBeat"):
+                    subCountKey ++;
                     ruleComponents.push(
-                        <div className="rule-component">
+                        <div className="rule-component" key = {subCountKey}>
                             <BeatPicker
-                                value = {rule[key]}
+                                value = {rule[subrule]}
                                 onClick = {(component, value) => this.handleClick(component, value)}
                                 max = {12}
                                 min = {1}
@@ -42,10 +44,11 @@ class Rule extends React.Component {
                     );
                     break;
                 case("color"):
+                    subCountKey ++;
                     ruleComponents.push(
-                        <div className="rule-component">
+                        <div className="rule-component" key = {subCountKey}>
                             <ColorPicker 
-                                value = {rule[key]}
+                                value = {rule[subrule]}
                                 options = {this.props.ruleOptions.colorList}
                                 onClick = {(component, value) => this.handleClick(component, value)}
                             />
@@ -53,30 +56,33 @@ class Rule extends React.Component {
                     );
                     break;
                 case("direction"):
+                    subCountKey ++;
                     ruleComponents.push(
-                        <div className="rule-component">
+                        <div className="rule-component" key = {subCountKey}>
                             <DirectionPicker 
-                                value = {rule[key]}
+                                value = {rule[subrule]}
                                 onClick = {(component, value) => this.handleClick(component, value)}
                             />
                         </div>
                     );
                     break;
                 case("audioSample"):
+                    subCountKey ++;
                     ruleComponents.push(
-                        <div className="rule-component">
+                        <div className="rule-component" key = {subCountKey}>
                             <SamplePicker 
-                                value = {rule[key]}
+                                value = {rule[subrule]}
                                 onClick = {(component, value) => this.handleClick(component, value)}
                             />
                         </div>
                     );
                     break;
                 case("goal"):
+                    subCountKey ++;
                     ruleComponents.push(
-                        <div className="rule-component">
+                        <div className="rule-component" key = {subCountKey}>
                             <TargetPicker 
-                                value = {rule[key]}
+                                value = {rule[subrule]}
                                 max = {12}
                                 min = {1}
                                 onClick = {(component, value) => this.handleClick(component, value)}
@@ -89,7 +95,7 @@ class Rule extends React.Component {
             }
         }
         return(
-            <span className="rule">
+            <span className="rule" key={this.props._key}>
                 {ruleComponents}
             </span>
         ); 
@@ -112,6 +118,8 @@ class RuleEditor extends React.Component {
             output.push(<Rule 
                 rule = {rule}
                 ruleOptions = {this.props.ruleOptions}
+                key = {id}
+                _key = {id}
                 onClick = {(rule) => this.handleClick(rule)}
             />)
         });

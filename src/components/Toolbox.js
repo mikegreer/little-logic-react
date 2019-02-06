@@ -1,7 +1,6 @@
 import React from 'react';
 import './toolbox.css';
 import classNames from 'classnames';
-import { create } from 'domain';
 
 class Toolbox extends React.Component {
     handleCreateClick = (createId) => {
@@ -10,8 +9,6 @@ class Toolbox extends React.Component {
         this.props.setCreateType(createId)
         console.log(createId);
     }
-
-    
 
     render () {
         const addElementButtons = [];
@@ -22,7 +19,6 @@ class Toolbox extends React.Component {
                         key = {type.label}
                         className={classNames({ "selected": this.props.selected === 2 && type.id === this.props.currentlyAdding})}
                         onClick={(createId)=>this.handleCreateClick(type.id)}
-                        // onClick={(createId)=>this.props.setCreateType(type.id)}
                     >
                         {type.label}
                     </button>
@@ -36,28 +32,17 @@ class Toolbox extends React.Component {
                     <button 
                         className={classNames({selected:this.props.selected === 0})}
                         onClick = {() => this.props.onClick("0")}
-                    >select</button>
+                    ><span className="hotkey-hint">s</span>elect</button>
                 </li>
                 <li><button
                         className={classNames({selected:this.props.selected === 1})}
                         onClick = {() => this.props.onClick("1")}
-                    >move</button></li>
+                    ><span className="hotkey-hint">m</span>ove</button></li>
                 {addElementButtons}
-                {/* <li><button
-                        className={classNames({selected:this.props.selected === 2})}
-                        onClick = {() => this.props.onClick("2")}
-                    >create</button></li> */}
-                {/* <li> <ToolboxCreate
-                    hidden = {this.props.selected !== 2}
-                    cellTypes = {this.props.cellTypes}
-                    currentlyAdding = {this.props.currentlyAdding}
-                    onClick = {(type) => this.props.setCreateType(type)}
-                ></ToolboxCreate></li> */}
-
                 <li><button
                         className={classNames({selected:this.props.selected === 3})}
                         onClick = {() => this.props.onClick("3")}
-                    >clear</button></li>
+                    ><span className="hotkey-hint">c</span>lear</button></li>
             </ul>
         )
     }

@@ -34,18 +34,6 @@ class Goal extends React.Component {
     }
 }
 
-class Ghost extends React.Component {
-    render() {
-        return (
-            <span className="ghostElement">
-                {this.props.currentlyAdding === 1 ? "emit":null}
-                {this.props.currentlyAdding === 2 ? "route":null}
-                {this.props.currentlyAdding === 3 ? "goal":null}
-            </span>
-        );
-    }
-}
-
 class Hexagon extends React.Component {
     render () {
         const scale = this.props.hexScale;
@@ -82,9 +70,7 @@ class Hexagon extends React.Component {
                     {cursor: this.props.currentTool === 1 ? 'move':'default'}
                 }
                 onMouseDown={(cellIndex) => this.props.onMouseDown(this.props.cellIndex)}
-                // onMouseOver={(cellIndex) => this.props.onHover(this.props.cellIndex)}
                 onMouseUp={(cellIndex) => this.props.onMouseUp(this.props.cellIndex)}
-                // {this.props.hover ? <Ghost currentlyAdding={this.props.currentlyAdding}></Ghost> : null}
             ></polygon>
             {this.props.cellType === 1 ? <Emitter hexScale={scale}></Emitter> : null}
             {this.props.cellType === 2 ? <Router hexScale={scale}></Router> : null}

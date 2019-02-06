@@ -31,10 +31,10 @@ class Game extends React.Component {
                 draggingCellID: null
             },
             cellTypes: [
-                {id: 1, label: "emitter"},
-                {id: 2, label: "router"},
-                {id: 3, label: "goal"},
-                {id: 4, label: "hole"},
+                {id: 1, label: <span><span className='hotkey-hint'>e</span>mitter</span>},
+                {id: 2, label: <span><span className='hotkey-hint'>r</span>outer</span>},
+                {id: 3, label: <span><span className='hotkey-hint'>g</span>oal</span>},
+                {id: 4, label: <span><span className='hotkey-hint'>h</span>ole</span>},
             ],
             emitters: [],
             ruleOptions: {
@@ -342,20 +342,16 @@ class Game extends React.Component {
                 }
                 break;
             default:
-                console.log(event.key);
                 break;
-//             (s)elect, (m)ove, (e)mitter, (r)outer, (g)oal
-//   * jump to rule #, arrows
-//   * (p)lay / (p)ause, (c)lear
         }
     }
 
     componentDidMount = () => {
         document.addEventListener("keydown", this.handleKeyPress.bind(this));
+        this.setState({saveFiles: JSON.parse(localStorage.getItem('saveFiles'))});
     }    
     
     render() {
-        this.state.saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
         if(this.state.saveFiles === null){
             this.saveLevel();
         }

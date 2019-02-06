@@ -19,6 +19,7 @@ class ColorPickerValue extends React.Component {
                 <img
                     src="images/selected-cross.svg"
                     className = {classNames({ 'selected': this.props.selected }, "cross")}
+                    alt="selected"
                 />
             </span>
         );
@@ -30,22 +31,19 @@ class ColorPicker extends React.Component {
     }
 
     render() {
-        const options = this.props.options || ['#cccccc'];
         const optionElements = [];
         this.props.options.forEach((option, i) => {
             const selected = this.props.value === i ? true : false; 
             optionElements.push(
                 <ColorPickerValue 
                     selected = {selected}
+                    key={i}
                     className="color-option"
                     onClick={() => {this.handleClick(i)}}
                     color = {option}
                 />
             );
         });
-        const style = {
-            fill: options[this.props.value],
-        }
         return (
             <span>
                 {optionElements}
