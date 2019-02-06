@@ -107,7 +107,6 @@ class RuleEditor extends React.Component {
     }
 
     render() {
-        console.log(this.props.rules);
         const output = [];
         this.props.rules.forEach((rule, id) => {
             output.push(<Rule 
@@ -118,12 +117,10 @@ class RuleEditor extends React.Component {
         });
         return(
             <div className="rule-editor">
-                {/* <div className="rule-button-container"> */}
-                    <button
-                        className = {classNames({ 'hidden': this.props.rules.length < 1 }, "new-rule-button")}
-                        onClick = {() => this.props.addNewRule(this.props.cellId)}
-                    >new rule</button>
-                {/* </div> */}
+                <button
+                    className = {classNames({ 'hidden': this.props.rules.length < 1 }, "new-rule-button")}
+                    onClick = {() => this.props.addNewRule(this.props.cellId)}
+                >new rule</button>
                 <MultiView
                     selectedView = {this.props.selectedRule}
                     onClick = {(id) => this.changeRuleView(id)}

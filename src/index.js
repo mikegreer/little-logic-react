@@ -291,37 +291,55 @@ class Game extends React.Component {
     }
 
     handleKeyPress = (event) => {
-        console.log(event.key);
+        let currentCellId = 0;
+        let currentRuleId = 0;
+        let newRuleId = 0;
+        let ruleCount = 0;
         switch (event.key) {
             case 's':
-                console.log('select');
+                this.toolboxClick(0);
                 break;
-            case 'm':
-                console.log('move');
+            case 'm':            
+                this.toolboxClick(1);
                 break;
             case 'e':
-                console.log('emitter');
+                this.toolboxClick(2);
+                this.setCreateType(1);
                 break;
             case 'r':
-                console.log('router');
+                this.toolboxClick(2);
+                this.setCreateType(2);
                 break;
             case 'g':
-                console.log('goal');
+                this.toolboxClick(2);
+                this.setCreateType(3);
                 break;
             case 'h':
-                console.log('hole');
-                break;
-            case 'ArrowLeft':
-                console.log('arrow left');
-                break;
-            case 'ArrowRight':
-                console.log('arrow right');
+                this.toolboxClick(2);
+                this.setCreateType(4);
                 break;
             case 'c':
-                console.log('clear');
+                this.toolboxClick(3);
                 break;
             case 'p':
                 console.log('play / pause');
+                break;
+            case 'ArrowLeft':
+                currentCellId = this.state.selectedCell;
+                currentRuleId = this.state.level[currentCellId].selectedRule;
+                newRuleId = currentRuleId - 1 > 0 ? currentRuleId - 1 : 0;
+                if(newRuleId !== currentRuleId){
+                    this.updateSelectedRule(newRuleId, currentCellId);
+                }
+                break;
+            case 'ArrowRight':
+                currentCellId = this.state.selectedCell;
+                currentRuleId = this.state.level[currentCellId].selectedRule;
+                ruleCount = this.state.level[currentCellId].rulesById.length;
+                newRuleId = currentRuleId + 1 < ruleCount ? currentRuleId + 1 : currentRuleId;
+                if(newRuleId !== currentRuleId){
+                    this.updateSelectedRule(newRuleId, currentCellId);
+                }
                 break;
             default:
                 console.log(event.key);

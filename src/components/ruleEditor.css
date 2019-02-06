@@ -58,22 +58,6 @@
     line-height: 45px;
     display: inline-block;
 }
-  
-.rule-button-container {
-    width: 100%;
-    /* display: flex;
-    align-items: center;
-    justify-content: center; */
-    height: 60px;
-}
-.rule-button-container button{
-  height: 44px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  margin: 8px 0 8px 8px;
-}
 
 .new-rule-button {
     border: none;
