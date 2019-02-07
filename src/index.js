@@ -24,7 +24,6 @@ class Game extends React.Component {
             rules: [],
             currentTool: 0,
             selectedCell: null,
-            hoverCell: 0,
             currentlyAdding: 1,
             cellDragging: {
                 isDragging: false,
@@ -134,22 +133,6 @@ class Game extends React.Component {
                 rules: [],
             }, cellID);
         }
-    }
-
-    cellHover = (cellID) => {
-        //disabling. Shouldn't update whole state on cell hover!
-        // if(this.state.currentTool === 2){
-        //     this.updateCell({
-        //         hover: true,
-        //     }, cellID);
-
-        //     if(this.state.hoverCell || this.state.hoverCell === 0){
-        //         this.updateCell({
-        //             hover: null,
-        //         }, this.state.hoverCell);
-        //     }
-        //     this.setState({hoverCell: cellID});
-        // }  
     }
     
     setCreateType = (type) => {
@@ -279,6 +262,12 @@ class Game extends React.Component {
         this.setState({ rules : rules });
     }
 
+    updateGoalCount = (ruleId, goal) => {
+        const rules = this.state.rules.slice();
+        rules[ruleId].goal = goal;
+        this.setState({ rules : rules });
+    }
+
     updateSettings = (settings) => {
         console.log(settings, this.state.settings);
         this.setState({ settings : settings });
@@ -396,6 +385,7 @@ class Game extends React.Component {
                         cols = {this.state.settings.cols}
                         rows = {this.state.settings.rows}
                         cellSize = {this.state.settings.cellSize}
+                        updateGoalCount = {(ruleID, goal) => this.updateGoalCount(ruleID, goal)}
                     >
                         <HexGrid
                             selected = {this.state.selectedCell}

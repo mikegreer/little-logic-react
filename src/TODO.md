@@ -3,10 +3,10 @@
 ## Working
 * simple goal rules:
   * number
-  * color
-  * samples
     * number decreases when correct color hits
       * saved at LLOutput level
+  * color
+  * samples
     * when all goals are 0, level is complete
 * pause / play / restart icons
 
@@ -63,6 +63,7 @@ ___
   * animals: farm, jungle, 
 
 ## Bugs
+* play / pause label doesn't update
 * When deleting save files, rules are not removed from the rules array
   * Current rule indexing references position. Removing will break all saves.
 * If I delete all saves and refresh, a new blank '0' save does not appear.

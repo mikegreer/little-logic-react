@@ -117,8 +117,7 @@ class LLOutput extends React.Component {
 		});
 	}
 
-	//TODO: remove ctx?
-	playSound(soundID, ctx) {
+	playSound(soundID) {
 		var player;
 		switch(soundID){
 			case 0:
@@ -167,8 +166,7 @@ class LLOutput extends React.Component {
 					router.rulesById.forEach((ruleId) => {
 						const rule = this.props.rules[ruleId].rule;
 						if(this.checkRule(pulse, rule)) {
-							const ctx = this.audioContexts[rule.audioCtx];
-							this.playSound(rule.audioSample, ctx);
+							this.playSound(rule.audioSample);
 							pulse.direction = rule.direction;
 						}
 					});
@@ -179,10 +177,16 @@ class LLOutput extends React.Component {
 				const goal = this.goals[k];
 				if(pulse.gridX === goal.column && pulse.gridY === goal.row){
 					goal.rulesById.forEach((ruleId) => {
-						const rule = this.props.rules[ruleId];
-						const ctx = this.audioContexts[rule.audioCtx];
-						this.playSound(rule.audioSample, ctx);
-						pulsesToRemove.push(i);
+						const rule = this.props.rules[ruleId].rule;
+						if(this.checkRule(pulse, rule)){
+							this.playSound(rule.audioSample);
+							pulsesToRemove.push(i);	
+							rule.goal -= 1;
+							if(rule.goal < -1){
+								rule.goal = 5;
+							}
+							this.props.updateGoalCount(ruleId, rule.goal);
+						}
 					});
 				}
 			}
@@ -283,6 +287,14 @@ class LLOutput extends React.Component {
 					break;
 			}
 		});
+
+		// this.goals.forEach((goal) => {
+		// 	goal.rulesById.forEach((rule) => {
+		// 		console.log(this.props.rules[rule].rule);
+		// 		//TODO: track all goal progress in this object (prevent app rerendering by not saving at top level context.)
+				
+		// 	});
+		// });
 		return(
 			<div className="output-player">
 				<div className="toolbar">

@@ -5,17 +5,9 @@ import ColorPicker from './ColorPicker.js';
 import DirectionPicker from './DirectionPicker.js';
 import SamplePicker from './SamplePicker.js';
 import BeatPicker from './BeatPicker.js';
+import TargetPicker from './TargetPicker.js';
 import MultiView from './MultiView.js';
 import classNames from 'classnames';
-
-//TODO: move remaining picker UIs to separate files.
-class TargetPicker extends React.Component {
-    render() {
-        return(
-            "Target picker."
-        );
-    }
-}
 
 class Rule extends React.Component {
     handleClick = (component, value) => {
