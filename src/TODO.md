@@ -1,14 +1,10 @@
 # TODO
 
 ## Working
-* simple goal rules:
-  * number
-    * number decreases when correct color hits
-      * saved at LLOutput level
-  * color
-  * samples
-    * when all goals are 0, level is complete
 * pause / play / restart icons
+* store goal target rule and restore it when the level is restarted.
+* file system / code structure for loading in puzzles
+* logic to handle playing back puzzles / progressing / etc
 
 ## UI
 * UI for pulses
@@ -74,3 +70,10 @@ ___
   * ~change tool: (s)elect, (m)ove, (e)mitter, (r)outer, (g)oal~
   * jump to rule #, ~arrows~
   * ~(p)lay / (p)ause, (c)lear~
+* simple goal rules:
+  * number
+    * number decreases when correct color hits
+      * saved at LLOutput level
+  * color
+  * samples
+    * when all goals are 0, level is complete

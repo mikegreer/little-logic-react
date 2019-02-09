@@ -5,6 +5,7 @@ import App from './App';
 import RuleEditor from './components/RuleEditor';
 import SettingsEditor from './components/SettingsEditor';
 import Toolbox from './components/Toolbox';
+import LevelLoader from './components/LevelLoader';
 import LevelList from './components/LevelList';
 import LLOutput from './components/LLOutput';
 import * as serviceWorker from './serviceWorker';
@@ -46,6 +47,7 @@ class Game extends React.Component {
                 cellSize: 25,
             },
             saveFiles: [],
+            puzzleId: 0,
         };
         this.state.level = this.generateLevel(this.state.settings.cols * this.state.settings.rows);
         this.state.grid = this.generateGrid(this.state.settings.cols, this.state.settings.rows);
@@ -240,6 +242,13 @@ class Game extends React.Component {
         this.setState({settings: saveFiles[id].settings});
     }
 
+    loadLevelFromFile = (levelJSON) => {
+        this.setState({grid: levelJSON.grid});
+        this.setState({level: levelJSON.level});
+        this.setState({rules: levelJSON.rules});
+        this.setState({settings: levelJSON.settings});
+    }
+
     deleteSave = (id) => {
         console.log(id);
         let saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
@@ -340,6 +349,11 @@ class Game extends React.Component {
         this.setState({saveFiles: JSON.parse(localStorage.getItem('saveFiles'))});
     }    
     
+    handlePuzzleComplete = (puzzleId) => {
+        this.setState({ puzzleId : puzzleId + 1 });
+        console.log(puzzleId + 1);
+    }
+
     render() {
         if(this.state.saveFiles === null){
             this.saveLevel();
@@ -360,6 +374,9 @@ class Game extends React.Component {
             <div className="game"> 
             
                 <div className="level-editor">
+                    <LevelLoader
+                        loadLevelFromFile = {(levelJSON) => this.loadLevelFromFile(levelJSON)}
+                    />
                     <SettingsEditor
                         cols = {this.state.settings.cols}
                         rows = {this.state.settings.rows}
@@ -386,6 +403,8 @@ class Game extends React.Component {
                         rows = {this.state.settings.rows}
                         cellSize = {this.state.settings.cellSize}
                         updateGoalCount = {(ruleID, goal) => this.updateGoalCount(ruleID, goal)}
+                        puzzleComplete = {(puzzleId) => this.handlePuzzleComplete(puzzleId)}
+                        puzzleId = {this.state.puzzleId}
                     >
                         <HexGrid
                             selected = {this.state.selectedCell}

@@ -5,9 +5,7 @@ import classNames from 'classnames';
 class Toolbox extends React.Component {
     handleCreateClick = (createId) => {
         this.props.onClick("2");
-        console.log(this.props.onClick);
         this.props.setCreateType(createId)
-        console.log(createId);
     }
 
     render () {

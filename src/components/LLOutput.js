@@ -25,10 +25,12 @@ class LLOutput extends React.Component {
 		this.cellHeight = (this.props.cellSize * 2) * .75;
 		this.cellWidth = Math.sqrt(3) * this.props.cellSize;
 		this.paused = false;
+		this.win = false;
+		this.puzzleIsPlaying = true;
 		this.width = this.cellWidth * this.props.cols + (this.cellWidth / 2);
 		this.height = this.cellHeight * this.props.rows + (this.cellHeight / 4);
 		//maintain an array of audio contexts, and pass cells reference
-		this.audioContexts = [];
+		// this.audioContexts = [];
 
 		//TODO: build asset loader to pre-load all the audio files passed in with sampleList
 		// this.samples = [];
@@ -41,6 +43,10 @@ class LLOutput extends React.Component {
 
 	componentDidMount() {
 		this.ctx = this.canvas.current.getContext("2d");
+		if(this.props.puzzleId !== null){
+			console.log(this.props.puzzleId);
+			// this.puzzle = 
+		}
 	}
 
 	drawPulseOnHex(col, row, color) {
@@ -150,9 +156,16 @@ class LLOutput extends React.Component {
 	}
 
 	checkRule(pulse, rule) {
-		if(rule.color === pulse.color) {
-			return true;
+		let ruleMatch = true;
+		if(rule.color !== pulse.color) {
+			ruleMatch = false;
 		}
+		if(rule.goal) {
+			if(rule.goal < 0){
+				ruleMatch = false;
+			}
+		}
+		return ruleMatch;
 	}
 
 	advancePulsePositions() {
@@ -182,9 +195,6 @@ class LLOutput extends React.Component {
 							this.playSound(rule.audioSample);
 							pulsesToRemove.push(i);	
 							rule.goal -= 1;
-							if(rule.goal < -1){
-								rule.goal = 5;
-							}
 							this.props.updateGoalCount(ruleId, rule.goal);
 						}
 					});
@@ -214,6 +224,19 @@ class LLOutput extends React.Component {
 		}
 	}
 
+	checkPuzzleComplete(){
+		let complete = true;
+		this.props.rules.forEach((rule) => {
+			//TODO: if goal is 0, check to see if the property exists is false.
+			if(rule.rule.goal) {
+				if(rule.rule.goal > -1) {
+					complete = false;
+				}
+			}
+		});
+		return complete;
+	}
+
 	onAnimationFrame(time) {
 		if(!this.paused){
 			//on beat
@@ -229,14 +252,30 @@ class LLOutput extends React.Component {
 						const rule = this.props.rules[ruleId].rule;
 						if(beatCount === rule.releaseOnBeat){
 							this.emitParticle(emitter, rule);
-							const ctx = this.audioContexts[rule.audioCtx];
-							this.playSound(rule.audioSample, ctx);
+							this.playSound(rule.audioSample);
 						}
 					});
 				});
 				
 				//move pulses along a cell
 				this.advancePulsePositions();
+
+				//check to see if puzzle is complete
+				// if(this.puzzleIsPlaying){
+					if(this.checkPuzzleComplete()){
+						this.win = true;
+						this.paused = true;
+						this.props.puzzleComplete(this.props.puzzleId);
+						//play win state.
+					}
+				// }
+			}
+		}
+		//if paused for win, restart when no longer winning
+		if(this.win === true) {
+			if(!this.checkPuzzleComplete()){
+				this.win = false;
+				this.paused = false;
 			}
 		}	
 	}

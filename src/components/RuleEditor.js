@@ -100,7 +100,6 @@ class RuleEditor extends React.Component {
     }
 
     changeRuleView = (id) => {
-        console.log(id);
         this.props.updateSelectedRule(id, this.props.cellId);
     }
 
