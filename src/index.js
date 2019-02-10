@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import './level-editor.css';
 import App from './App';
 import RuleEditor from './components/RuleEditor';
 import SettingsEditor from './components/SettingsEditor';
@@ -10,6 +11,7 @@ import LevelList from './components/LevelList';
 import LLOutput from './components/LLOutput';
 import * as serviceWorker from './serviceWorker';
 import HexGrid from './components/HexGrid';
+
 
 // import ToolboxCreate from './components/ToolboxCreate';
 
@@ -278,7 +280,13 @@ class Game extends React.Component {
     }
 
     updateSettings = (settings) => {
-        console.log(settings, this.state.settings);
+        //calculate cellSize to fit width
+        const cellSizeToFitWidth = 285 / Math.sqrt(3) / (settings.cols + 0.5);
+        const cellSizeToFitHeight = 435 /(settings.rows + 0.5) / 2 / 0.75;
+        // if(cellSizeToFitWidth > cellSizeToFitHeight){
+
+        // }
+        settings.cellSize = cellSizeToFitHeight;
         this.setState({ settings : settings });
     }
 

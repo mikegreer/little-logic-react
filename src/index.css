@@ -29,11 +29,6 @@ button{
   position: relative;
 }
 
-.level-editor{
-  width: 160px;
-  position: relative;
-}
-
 .level{
   border-radius: 4px;
   width: 375px;

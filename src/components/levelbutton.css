@@ -1,14 +1,25 @@
+.level-button {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
 .level-button .label{
-    cursor: pointer;
     display: inline-block;
-    line-height: 35px;
+    line-height: 25px;
     text-align: center;
     vertical-align: middle;
     width: 35px;
-    height: 35px;
+    height: 25px;
 }
 
-.level-button .label:hover{
+.level-button .load{
+    cursor: pointer;
+    display: inline-block;
+    line-height: 25px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0 10px;
+    height: 25px;
+}
+.level-button .load:hover{
     background-color: #ffff00;
 }
 
@@ -18,14 +29,28 @@
 
 .level-button .delete{
     display: inline-block;
-    line-height: 35px;
+    line-height: 25px;
     text-align: center;
     vertical-align: middle;
     width: 35px;
-    height: 35px;
+    height: 25px;
     cursor: pointer;
 }
 .level-button .delete:hover{
+    background-color: #ff6666;
+    color: #fff;
+}
+
+.level-button .download{
+    display: inline-block;
+    line-height: 25px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0 10px;
+    height: 25px;
+    cursor: pointer;
+}
+.level-button .download:hover{
     background-color: #ff6666;
     color: #fff;
 }

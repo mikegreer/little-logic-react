@@ -17,6 +17,9 @@ class LevelLoader extends React.Component {
                 },{
                     name : 'Jetison complete',
                     file : 'level4.json',
+                },{
+                    name : 'emerging goal',
+                    file : 'level5.json',
                 }
             ]
         }
@@ -57,6 +60,7 @@ class LevelLoader extends React.Component {
         });
         return (
             <span>
+                <h4>Levels</h4>
                 {levelList}
             </span>
         )

@@ -5,15 +5,18 @@ class LevelButton extends React.Component {
     render () {
         return (
             <div className="level-button">  
-                <span className="label"
+                <span className="label">
+                    {this.props.levelId}
+                </span>
+                <span className="load"
                     onClick={() => this.props.loadLevel()}
                 >
-                    {this.props.levelId}
+                    load
                 </span>
                 <span className="delete"
                     onClick={() => this.props.deleteSave()}
                 >
-                    x
+                    ×
                 </span>
                 <span className="download"
                     onClick={() => this.props.downloadSave()}
@@ -50,7 +53,7 @@ class LevelList extends React.Component {
         }
         return (
             <span>
-                <h4>Load</h4>
+                <h4>Saves</h4>
                 {levelButtons}
             </span>
         )

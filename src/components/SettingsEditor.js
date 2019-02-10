@@ -1,4 +1,9 @@
+import 'rc-slider/assets/index.css';
+import 'rc-tooltip/assets/bootstrap.css';
 import React from 'react';
+import Tooltip from 'rc-tooltip';
+import Slider from 'rc-slider';
+
 
 class SettingsEditor extends React.Component {
     constructor (props) {
@@ -15,12 +20,26 @@ class SettingsEditor extends React.Component {
         this.setState({ cols : cols });
         this.updateSettings(this.state);
     }
+    setCols = (value) => {
+        this.setState({
+            cols: value
+        }, () => {
+            this.updateSettings(this.state);
+        });
+    }
 
     incrementRows = () => {
         let rows = this.state.rows;
         rows ++;
         this.setState({ rows : rows });
         this.updateSettings(this.state);
+    }
+    setRows = (value) => {
+        this.setState({
+            rows: value
+        }, () => {
+            this.updateSettings(this.state);
+        });
     }
 
     incrementCellSize = () => {
@@ -33,13 +52,47 @@ class SettingsEditor extends React.Component {
     updateSettings = (settings) => {
         this.props.updateSettings(this.state);
     }
-
+    
     render () {
+        // const Handle = Slider.Handle;
+        // const handle = (props) => {
+        // const { value, dragging, index, ...restProps } = props;
+        // return (
+        //     <Tooltip
+        //     prefixCls="rc-slider-tooltip"
+        //     overlay={value}
+        //     visible={dragging}
+        //     placement="top"
+        //     key={index}
+        //     >
+        //     <Handle value={value} {...restProps} />
+        //     </Tooltip>
+        // );
+        // };
+
         return (
             <span>
                 <h4>Settings</h4>
-                columns: <span onClick = { () => this.incrementCols() } >{this.state.cols}</span><br />
-                rows: <span  onClick = { () => this.incrementRows() } >{this.state.rows}</span><br />
+                columns: <span>{this.state.cols}</span>
+                <span className="settings-slider">
+                    <Slider
+                        min={0}
+                        max={20}
+                        defaultValue={this.state.cols}
+                        onChange={(value) => this.setCols(value)}
+                        // handle={handle}
+                    />
+                </span>
+                rows: <span>{this.state.rows}</span>
+                <span className="settings-slider">
+                    <Slider
+                        min={0}
+                        max={20}
+                        defaultValue={this.state.rows}
+                        onChange={(value) => this.setRows(value)}
+                        // handle={handle}
+                    />
+                </span>
                 cell size: <span  onClick = { () => this.incrementCellSize() } >{this.state.cellSize}</span>
             </span>
         )
