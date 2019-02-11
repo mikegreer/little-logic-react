@@ -49,7 +49,6 @@ class LevelLoader extends React.Component {
         const levelList = [];
         this.state.levels.forEach((level, id) => {
             const path = '../levels/' + level.file;
-            console.log(path);
             levelList.push(
                 <div 
                     className = "level-list"

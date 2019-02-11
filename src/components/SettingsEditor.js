@@ -1,7 +1,7 @@
 import 'rc-slider/assets/index.css';
 import 'rc-tooltip/assets/bootstrap.css';
 import React from 'react';
-import Tooltip from 'rc-tooltip';
+// import Tooltip from 'rc-tooltip';
 import Slider from 'rc-slider';
 
 
@@ -42,34 +42,11 @@ class SettingsEditor extends React.Component {
         });
     }
 
-    incrementCellSize = () => {
-        let cellSize = this.state.cellSize;
-        cellSize += 2;
-        this.setState({ cellSize : cellSize });
-        this.updateSettings(this.state);
-    }
-
     updateSettings = (settings) => {
         this.props.updateSettings(this.state);
     }
     
     render () {
-        // const Handle = Slider.Handle;
-        // const handle = (props) => {
-        // const { value, dragging, index, ...restProps } = props;
-        // return (
-        //     <Tooltip
-        //     prefixCls="rc-slider-tooltip"
-        //     overlay={value}
-        //     visible={dragging}
-        //     placement="top"
-        //     key={index}
-        //     >
-        //     <Handle value={value} {...restProps} />
-        //     </Tooltip>
-        // );
-        // };
-
         return (
             <span>
                 <h4>Settings</h4>
@@ -80,6 +57,7 @@ class SettingsEditor extends React.Component {
                         max={20}
                         defaultValue={this.state.cols}
                         onChange={(value) => this.setCols(value)}
+                        trackStyle={{ backgroundColor: '#000' }}
                         // handle={handle}
                     />
                 </span>
@@ -87,13 +65,12 @@ class SettingsEditor extends React.Component {
                 <span className="settings-slider">
                     <Slider
                         min={0}
-                        max={20}
+                        max={35}
                         defaultValue={this.state.rows}
                         onChange={(value) => this.setRows(value)}
-                        // handle={handle}
                     />
                 </span>
-                cell size: <span  onClick = { () => this.incrementCellSize() } >{this.state.cellSize}</span>
+                cell size: <span>{this.state.cellSize}</span>
             </span>
         )
     }

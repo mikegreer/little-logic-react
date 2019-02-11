@@ -1,9 +1,9 @@
 # TODO
 
 ## Working
+* save cut off cells when grid is resized and restore them if enlarged
 * pause / play / restart icons
 * store goal target rule and restore it when the level is restarted.
-* file system / code structure for loading in puzzles
 * logic to handle playing back puzzles / progressing / etc
 
 ## UI
@@ -32,11 +32,10 @@ ___
 * sound pack options panel:
   * switch between sample packs
   * save sample pack selection to level settings
-* auto cell size to fit available space given rows / columns
 * make colours represent instruments / voice
   * sample selection (1 - 6) within each color.
 ___
-* settings menu: columns, rows, tempo
+* add tempo to settings menu
 * per cell mute button
 * highlight the currently loaded save slot. Remove highlight when rule or cell changes are made.
 * keyboard shortcut for rule number - num keys map to rule (if it has that many rules)
@@ -77,3 +76,8 @@ ___
   * color
   * samples
     * when all goals are 0, level is complete
+* sliders to resize hex grid
+* update existing cells when grid is resized
+* file system / code structure for loading in puzzles
+* auto cell size to fit available space given rows / columns
+* settings menu: columns, rows

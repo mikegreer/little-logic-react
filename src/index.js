@@ -51,11 +51,21 @@ class Game extends React.Component {
             saveFiles: [],
             puzzleId: 0,
         };
-        this.state.level = this.generateLevel(this.state.settings.cols * this.state.settings.rows);
+        this.state.level = this.generateLevel(this.state.settings.cols, this.state.settings.rows);
         this.state.grid = this.generateGrid(this.state.settings.cols, this.state.settings.rows);
     }
 
-    generateLevel = (numCells) => {
+    hexPosToArrayPos = (col, row, cols, rows) => {
+        let arrayPos = null;
+        if(col < cols && row < rows){
+            arrayPos = row * cols + col;
+        }
+        return arrayPos;
+    }
+
+    generateLevel = (cols, rows) => {
+        const numCells = cols * rows;
+        const currentLevel = this.state.level.slice();
         const level = [];
         for(let i = 0; i < numCells; i ++) {
             level.push({
@@ -65,6 +75,15 @@ class Game extends React.Component {
                 selectedRule: 0,
             });
         }
+        currentLevel.forEach((cell) => {
+            if(cell.type !== 0){
+                const newPos = this.hexPosToArrayPos(cell.column, cell.row, cols, rows);
+                if(newPos !== null) {
+                    cell.id = newPos;
+                    level[newPos] = cell;
+                }
+            }
+        });
         return level;
     }
 
@@ -283,11 +302,17 @@ class Game extends React.Component {
         //calculate cellSize to fit width
         const cellSizeToFitWidth = 285 / Math.sqrt(3) / (settings.cols + 0.5);
         const cellSizeToFitHeight = 435 /(settings.rows + 0.5) / 2 / 0.75;
-        // if(cellSizeToFitWidth > cellSizeToFitHeight){
-
-        // }
-        settings.cellSize = cellSizeToFitHeight;
+        if(cellSizeToFitWidth > cellSizeToFitHeight){
+            settings.cellSize = cellSizeToFitHeight;
+        }else{
+            settings.cellSize = cellSizeToFitWidth;
+        }
+        const newLevel = this.generateLevel(settings.cols, settings.rows);
+        const newGrid = this.generateGrid(settings.cols, settings.rows);
         this.setState({ settings : settings });
+        this.setState({ level : newLevel });
+        this.setState({ grid : newGrid });
+        this.setState({ selectedCell : null });
     }
 
     updateSelectedRule = (id, cell) => {
@@ -359,7 +384,6 @@ class Game extends React.Component {
     
     handlePuzzleComplete = (puzzleId) => {
         this.setState({ puzzleId : puzzleId + 1 });
-        console.log(puzzleId + 1);
     }
 
     render() {

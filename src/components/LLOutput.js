@@ -24,8 +24,11 @@ class LLOutput extends React.Component {
 		}
 		this.cellHeight = (this.props.cellSize * 2) * .75;
 		this.cellWidth = Math.sqrt(3) * this.props.cellSize;
-		this.paused = false;
-		this.win = false;
+		this.state = {
+			paused: false,
+			win: false,
+		}
+		// this.win = false;
 		this.puzzleIsPlaying = true;
 		this.width = this.cellWidth * this.props.cols + (this.cellWidth / 2);
 		this.height = this.cellHeight * this.props.rows + (this.cellHeight / 4);
@@ -238,7 +241,7 @@ class LLOutput extends React.Component {
 	}
 
 	onAnimationFrame(time) {
-		if(!this.paused){
+		if(!this.state.paused){
 			//on beat
 			let currentBeat = Math.floor(time / this.time.beatLength) % this.time.barLength;
 			if(currentBeat !== this.time.previousBeat) {			
@@ -264,7 +267,7 @@ class LLOutput extends React.Component {
 				// if(this.puzzleIsPlaying){
 					if(this.checkPuzzleComplete()){
 						this.win = true;
-						this.paused = true;
+						// this.state.paused = true;
 						this.props.puzzleComplete(this.props.puzzleId);
 						//play win state.
 					}
@@ -274,14 +277,16 @@ class LLOutput extends React.Component {
 		//if paused for win, restart when no longer winning
 		if(this.win === true) {
 			if(!this.checkPuzzleComplete()){
-				this.win = false;
-				this.paused = false;
+				this.setState({ win : false });
+				this.setState({ paused : false });
 			}
 		}	
 	}
 
 	pausePlay() {
-		this.paused = !this.paused;
+		const newPauseState = !this.state.paused;
+		console.log(newPauseState);
+		this.setState({ paused : newPauseState });
 	}
 
 	render() {
@@ -337,7 +342,7 @@ class LLOutput extends React.Component {
 		return(
 			<div className="output-player">
 				<div className="toolbar">
-					<button onClick={() => this.pausePlay()}>{this.paused ? "play" : "pause"}</button>
+					<button onClick={() => this.pausePlay()}>{this.state.paused ? "play" : "pause"}</button>
 					<button onClick={() => this.restart()}>restart</button>
 				</div>
 				<canvas ref={this.canvas} width={this.width} height={this.height} />
