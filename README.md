@@ -47,6 +47,8 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ### Assets
 Routed Gothic - https://webonastick.com/fonts/routed-gothic/
+Vapor Wave Sample Pack, SHADLEY PETERSON, soundpacks.com - https://soundpacks.com/free-sound-packs/vaporwave-sample-pack/
+
 
 ### Reading
 Hexagonal grids - https://www.redblobgames.com/grids/hexagons/

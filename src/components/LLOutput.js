@@ -1,13 +1,5 @@
 import React from 'react';
 import ReactAnimationFrame from 'react-animation-frame';
-import Tone from 'tone';
-import arp1 from '../assets/audio/gb_drums/arp (1).wav';
-import hihat from '../assets/audio/gb_drums/hihat (2).wav';
-import kick from '../assets/audio/gb_drums/kick (1).wav';
-import perc from '../assets/audio/gb_drums/perc (9).wav';
-import pulse from '../assets/audio/gb_drums/pulse (2).wav';
-import sfx from '../assets/audio/gb_drums/sfx (1).wav';
-import snare from '../assets/audio/gb_drums/snare (3).wav';
 
 class LLOutput extends React.Component {
 	constructor(props) {
@@ -32,23 +24,72 @@ class LLOutput extends React.Component {
 		this.puzzleIsPlaying = true;
 		this.width = this.cellWidth * this.props.cols + (this.cellWidth / 2);
 		this.height = this.cellHeight * this.props.rows + (this.cellHeight / 4);
-		//maintain an array of audio contexts, and pass cells reference
-		// this.audioContexts = [];
-
-		//TODO: build asset loader to pre-load all the audio files passed in with sampleList
-		// this.samples = [];
-		// this.props.sampleList.forEach((sample) => {
-		// 	console.log(sample);
-		// 	const filePath = '../assets/audio/gb_drums/' + sample
-		// 	import a from filePath;
-		// });
+		this.instruments = [{
+				0 : 'Chords 1.wav',
+				1 : 'Chords 4.wav',
+				2 : 'Chords 5.wav',
+				3 : 'Chords 7.wav',
+				4 : 'Chords 8.wav',
+				5 : 'Chords 9.wav',
+			},{
+				0 : 'Drums Clap.wav',
+				1 : 'Drums HH Big.wav',
+				2 : 'Drums Kick drum 1.wav',
+				3 : 'Drums Kick drum 80s mastered 3.wav',
+				4 : 'Drums Kick drum 80s mastered.wav',
+				5 : 'Drums Snare 3.wav',
+			},{
+				0 : 'Funk bass stab 2.wav',
+				1 : 'Funk bass stab 3.wav',
+				2 : 'Funk bass stab 5.wav',
+				3 : 'Funk bass stab 7.wav',
+				4 : 'Funk bass stab 8.wav',
+				5 : 'Funk bass stab 14.wav',
+			},{
+				0 : 'Lick 1.wav',
+				1 : 'Lick 4.wav',
+				2 : 'Lick 6.wav',
+				3 : 'Lick 8.wav',
+				4 : 'Lick 9.wav',
+				5 : 'Lick 10.wav',
+			},
+		];
+		this.instruments = [{
+				0 : 'drum1.wav',
+				1 : 'drum2.wav',
+				2 : 'drum3.wav',
+				3 : 'drum4.wav',
+				4 : 'drum5.wav',
+				5 : 'drum6.wav',
+			},{
+				0 : 'jump1.wav',
+				1 : 'jump2.wav',
+				2 : 'jump3.wav',
+				3 : 'jump4.wav',
+				4 : 'jump5.wav',
+				5 : 'jump6.wav',
+			},{
+				0 : 'pop1.wav',
+				1 : 'pop2.wav',
+				2 : 'pop3.wav',
+				3 : 'pop4.wav',
+				4 : 'pop5.wav',
+				5 : 'pop6.wav',
+			},{
+				0 : 'wrp1.wav',
+				1 : 'wrp2.wav',
+				2 : 'wrp3.wav',
+				3 : 'wrp4.wav',
+				4 : 'wrp5.wav',
+				5 : 'wrp6.wav',
+			},
+		];
 	}
 
 	componentDidMount() {
 		this.ctx = this.canvas.current.getContext("2d");
 		if(this.props.puzzleId !== null){
 			console.log(this.props.puzzleId);
-			// this.puzzle = 
 		}
 	}
 
@@ -126,36 +167,12 @@ class LLOutput extends React.Component {
 		});
 	}
 
-	playSound(soundID) {
-		var player;
-		switch(soundID){
-			case 0:
-				player = new Tone.Player(arp1).toMaster();
-				player.autostart = true;
-				break;
-			case 1:
-				player = new Tone.Player(hihat).toMaster();
-				player.autostart = true;
-				break;
-			case 2:
-				player = new Tone.Player(kick).toMaster();
-				player.autostart = true;
-				break;
-			case 3:
-				player = new Tone.Player(pulse).toMaster();
-				player.autostart = true;
-				break;
-			case 4:
-				player = new Tone.Player(perc).toMaster();
-				player.autostart = true;
-				break;
-			case 5:
-				player = new Tone.Player(snare).toMaster();
-				player.autostart = true;
-				break;
-			default:
-				break;
-		}
+	playSoundFile = (instrumentId, soundId) => {
+		const fileName = this.instruments[instrumentId][soundId];
+		var url = '../audio/minimal/' + fileName;
+		window.audio = new Audio();
+		window.audio.src = url;
+		window.audio.play();
 	}
 
 	checkRule(pulse, rule) {
@@ -182,7 +199,7 @@ class LLOutput extends React.Component {
 					router.rulesById.forEach((ruleId) => {
 						const rule = this.props.rules[ruleId].rule;
 						if(this.checkRule(pulse, rule)) {
-							this.playSound(rule.audioSample);
+							this.playSoundFile(rule.color, rule.audioSample);
 							pulse.direction = rule.direction;
 						}
 					});
@@ -195,7 +212,7 @@ class LLOutput extends React.Component {
 					goal.rulesById.forEach((ruleId) => {
 						const rule = this.props.rules[ruleId].rule;
 						if(this.checkRule(pulse, rule)){
-							this.playSound(rule.audioSample);
+							this.playSoundFile(rule.color, rule.audioSample);
 							pulsesToRemove.push(i);	
 							rule.goal -= 1;
 							this.props.updateGoalCount(ruleId, rule.goal);
@@ -208,8 +225,8 @@ class LLOutput extends React.Component {
 				const gap = this.gaps[l];
 				if(pulse.gridX === gap.column && pulse.gridY === gap.row){
 					pulsesToRemove.push(i);
-					var player = new Tone.Player(sfx).toMaster();
-					player.autostart = true;
+					//TODO: add back sound effect for crashing into gap
+					// this.playSoundEffect(0);
 				}
 			}
 
@@ -255,7 +272,7 @@ class LLOutput extends React.Component {
 						const rule = this.props.rules[ruleId].rule;
 						if(beatCount === rule.releaseOnBeat){
 							this.emitParticle(emitter, rule);
-							this.playSound(rule.audioSample);
+							this.playSoundFile(rule.color, rule.audioSample);
 						}
 					});
 				});
@@ -264,14 +281,14 @@ class LLOutput extends React.Component {
 				this.advancePulsePositions();
 
 				//check to see if puzzle is complete
-				// if(this.puzzleIsPlaying){
+				if(this.puzzleIsPlaying){
 					if(this.checkPuzzleComplete()){
 						this.win = true;
 						// this.state.paused = true;
 						this.props.puzzleComplete(this.props.puzzleId);
 						//play win state.
 					}
-				// }
+				}
 			}
 		}
 		//if paused for win, restart when no longer winning

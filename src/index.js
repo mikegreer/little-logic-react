@@ -51,8 +51,28 @@ class Game extends React.Component {
             saveFiles: [],
             puzzleId: 0,
         };
+        this.cutOffCells = [];
         this.state.level = this.generateLevel(this.state.settings.cols, this.state.settings.rows);
         this.state.grid = this.generateGrid(this.state.settings.cols, this.state.settings.rows);
+    }
+
+    clearGrid = () => {
+        this.cutOffCells = [];
+        const level = [];
+        for(let i = 0; i < this.state.settings.cols * this.state.settings.rows; i ++) {
+            level.push({
+                id: i,
+                type: 0,
+                rulesById: [],
+                selectedRule: 0,
+            });
+        }
+        this.setState({
+            emitters: [],
+            level: level,
+            grid: this.generateGrid(this.state.settings.cols, this.state.settings.rows),
+            rules: [],
+        });
     }
 
     hexPosToArrayPos = (col, row, cols, rows) => {
@@ -75,15 +95,32 @@ class Game extends React.Component {
                 selectedRule: 0,
             });
         }
+        //move any pre-existing cells into new level map
         currentLevel.forEach((cell) => {
             if(cell.type !== 0){
                 const newPos = this.hexPosToArrayPos(cell.column, cell.row, cols, rows);
                 if(newPos !== null) {
                     cell.id = newPos;
                     level[newPos] = cell;
+                } else {
+                    this.cutOffCells.push(cell);
                 }
             }
         });
+        //restore cutoff cells when map is made bigger
+        const cutOffCellsToRemove = [];
+        this.cutOffCells.forEach((cell, id) => {
+            if(cell.column < cols && cell.row  < rows){
+                const newPos = this.hexPosToArrayPos(cell.column, cell.row, cols, rows);
+                cell.id = newPos;
+                level[newPos] = cell;
+                cutOffCellsToRemove.push(id);
+            }
+        });
+        cutOffCellsToRemove.sort(function(a,b){ return b - a; });
+		for (var i = 0; i < cutOffCellsToRemove.length; i++) {
+			this.cutOffCells.splice(cutOffCellsToRemove[i], 1);
+        }
         return level;
     }
 
@@ -257,26 +294,28 @@ class Game extends React.Component {
 
     loadLevel = (id) => {
         const saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
-        this.setState({grid: saveFiles[id].grid});
-        this.setState({level: saveFiles[id].level});
-        this.setState({rules: saveFiles[id].rules});
-        this.setState({settings: saveFiles[id].settings});
+        this.setState({
+            grid: saveFiles[id].grid,
+            level: saveFiles[id].level,
+            rules: saveFiles[id].rules,
+            settings: saveFiles[id].settings
+        });
+        this.cutOffCells = [];
     }
 
     loadLevelFromFile = (levelJSON) => {
-        this.setState({grid: levelJSON.grid});
-        this.setState({level: levelJSON.level});
-        this.setState({rules: levelJSON.rules});
-        this.setState({settings: levelJSON.settings});
+        this.setState({
+            grid: levelJSON.grid,
+            level: levelJSON.level,
+            rules: levelJSON.rules,
+            settings: levelJSON.settings
+        });
+        this.cutOffCells = [];
     }
 
     deleteSave = (id) => {
-        console.log(id);
         let saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
-        // console.log(saveFiles.splice(id, 1));
-        console.log(saveFiles);
         const removed = saveFiles.splice(id, 1);
-        console.log(saveFiles, removed);
         localStorage.setItem('saveFiles', JSON.stringify(saveFiles));
         this.setState({saveFiles: saveFiles});
     }
@@ -309,10 +348,12 @@ class Game extends React.Component {
         }
         const newLevel = this.generateLevel(settings.cols, settings.rows);
         const newGrid = this.generateGrid(settings.cols, settings.rows);
-        this.setState({ settings : settings });
-        this.setState({ level : newLevel });
-        this.setState({ grid : newGrid });
-        this.setState({ selectedCell : null });
+        this.setState({
+            settings : settings,
+            level : newLevel,
+            grid : newGrid,
+            selectedCell : null,
+        });
     }
 
     updateSelectedRule = (id, cell) => {
@@ -383,13 +424,15 @@ class Game extends React.Component {
     }    
     
     handlePuzzleComplete = (puzzleId) => {
+        // console.log("COMPLETE!");
         this.setState({ puzzleId : puzzleId + 1 });
     }
 
     render() {
-        if(this.state.saveFiles === null){
-            this.saveLevel();
-        }
+        //crete blank savefile if no local storage exists.
+        // if(this.state.saveFiles === null){
+        //     this.saveLevel();
+        // }
 
         const rulesInEditor = [];
         let selectedRule = null;
@@ -404,7 +447,6 @@ class Game extends React.Component {
         return (
         <div className="wrapper">
             <div className="game"> 
-            
                 <div className="level-editor">
                     <LevelLoader
                         loadLevelFromFile = {(levelJSON) => this.loadLevelFromFile(levelJSON)}
@@ -421,6 +463,7 @@ class Game extends React.Component {
                         loadLevel = {(levelId) => this.loadLevel(levelId)}
                     />
                     <button onClick={() => this.saveLevel(this.state.level)}>save</button>
+                    <button onClick={() => this.clearGrid()}>clear grid</button>
                     {/* TODO: replace with blank creation button
                     <button onClick={(ID) => this.loadLevel(0)}>load</button> */}
                 </div>
