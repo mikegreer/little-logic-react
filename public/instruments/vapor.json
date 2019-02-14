@@ -1,0 +1,32 @@
+{
+    "path": "../audio/vapor/",
+    "instruments": [{
+        "0" : "Chords 1.wav",
+        "1" : "Chords 4.wav",
+        "2" : "Chords 5.wav",
+        "3" : "Chords 7.wav",
+        "4" : "Chords 8.wav",
+        "5" : "Chords 9.wav"
+    },{
+        "0" : "Drums Clap.wav",
+        "1" : "Drums HH Big.wav",
+        "2" : "Drums Kick drum 1.wav",
+        "3" : "Drums Kick drum 80s mastered 3.wav",
+        "4" : "Drums Kick drum 80s mastered.wav",
+        "5" : "Drums Snare 3.wav"
+    },{
+        "0" : "Funk bass stab 2.wav",
+        "1" : "Funk bass stab 3.wav",
+        "2" : "Funk bass stab 5.wav",
+        "3" : "Funk bass stab 7.wav",
+        "4" : "Funk bass stab 8.wav",
+        "5" : "Funk bass stab 14.wav"
+    },{
+        "0" : "Lick 1.wav",
+        "1" : "Lick 4.wav",
+        "2" : "Lick 6.wav",
+        "3" : "Lick 8.wav",
+        "4" : "Lick 9.wav",
+        "5" : "Lick 10.wav"
+    }]
+}

@@ -1,14 +1,14 @@
 # TODO
 
 ## Working
-* per color voice ideas
-  * kick, hat, pulse, snare
-  * strings, brass, percussion, woodwind
-  * animals: farm, jungle, 
+* style sliders
+* propery associate soundPackId to pack it represents
+* save sample pack selection to level settings / reload on load
 * pause / play / restart icons
 * handle puzzle win state
 * logic to handle playing back puzzles / progressing / etc
 * store goal target rule and restore it when the level is restarted.
+* prevent overwriting cells with add tools
 
 ## UI
 * UI for pulses
@@ -43,6 +43,10 @@ ___
 * keyboard shortcut for rule number - num keys map to rule (if it has that many rules)
 
 ## consider
+* game mode: goals and gaps appear as you go. Fulfill a goal to proceed (more goals added).
+  * goals as persistent (need red dots, but no specified number), need to keep all satisfied to get another.
+  * emitters / routers limited resource until more goals are met, forcing creative use of existing assets to cover multiple goals (use router model for goals here - redirects pulse on hit, doesn't absorb it).
+  * could simplify by removing multi-rule per cell
 * add evolving logic to routers:
   * counter
     * (a rule level variable)
@@ -55,13 +59,9 @@ ___
   * Better state management generally
   * Redux
 * change goal to target (shortcuts e/r/t consecutive on keyboard)
-* sound pack options panel:
-  * switch between sample packs
-  * save sample pack selection to level settings
 
 ## Bugs
-* LLOutput render being called repeatedly
-* pause / play doesn't work when a goal is present (even if goals deleted)
+* ensure pulses are removed as soon as they leave cells
 * When deleting cell, rules are not removed from the rules array
   * Current rule indexing references position. Removing will break all saves.
   * Change rules to key value pair object (map?)
@@ -89,3 +89,11 @@ ___
 * clear array of cut off cells when a new level / save is loaded
 * remove blank 0 from saves, and add a button to create a blank creation.
 * If I delete all saves and refresh, a new blank '0' save does not appear.
+* per color voice ideas
+  * kick, hat, pulse, snare
+  * strings, brass, percussion, woodwind
+  * animals: farm, jungle, 
+* sound pack options panel:
+  * switch between sample packs
+* LLOutput render being called repeatedly
+* pause / play doesn't work when a goal is present (even if goals deleted)

@@ -138,3 +138,21 @@ button{
 .hotkey-hint {
   border-bottom: 1px solid #72096d;
 }
+
+.level-list, .instrument-list{
+  cursor: pointer;
+  display: inline-block;
+  line-height: 25px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0 10px;
+  height: 25px;
+}
+
+.level-list:hover, .instrument-list:hover{
+  background-color: #ffff00;
+}
+
+.instrument-list.selected{
+  border: 2px solid #ffff00;
+}

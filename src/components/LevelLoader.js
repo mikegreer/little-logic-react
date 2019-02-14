@@ -20,13 +20,20 @@ class LevelLoader extends React.Component {
                 },{
                     name : 'emerging goal',
                     file : 'level5.json',
+                },
+                {
+                    name : 'number six',
+                    file : 'level6.json',
+                },
+                {
+                    name : 'number seven',
+                    file : 'level7.json',
                 }
             ]
         }
     }
 
     fetchFile = (filePath) => {
-        console.log(filePath);
         fetch(filePath, {
             method: "GET",
             dataType: "JSON",

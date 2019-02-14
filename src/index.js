@@ -7,6 +7,7 @@ import RuleEditor from './components/RuleEditor';
 import SettingsEditor from './components/SettingsEditor';
 import Toolbox from './components/Toolbox';
 import LevelLoader from './components/LevelLoader';
+import SoundPackList from './components/SoundPackList';
 import LevelList from './components/LevelList';
 import LLOutput from './components/LLOutput';
 import * as serviceWorker from './serviceWorker';
@@ -47,10 +48,13 @@ class Game extends React.Component {
                 cols: 6,
                 rows: 11,
                 cellSize: 25,
+                soundPackId: null,
             },
             saveFiles: [],
             puzzleId: 0,
+            instruments: {},
         };
+        
         this.cutOffCells = [];
         this.state.level = this.generateLevel(this.state.settings.cols, this.state.settings.rows);
         this.state.grid = this.generateGrid(this.state.settings.cols, this.state.settings.rows);
@@ -313,6 +317,12 @@ class Game extends React.Component {
         this.cutOffCells = [];
     }
 
+    loadInstrumentFromFile = (instrumentsJSON, soundPackId) => {
+        const settings = Object.assign({}, this.state.settings);
+        settings.soundPackId = soundPackId;
+        this.setState({ settings : settings, instruments : instrumentsJSON });
+    }
+
     deleteSave = (id) => {
         let saveFiles = JSON.parse(localStorage.getItem('saveFiles'));
         const removed = saveFiles.splice(id, 1);
@@ -429,11 +439,6 @@ class Game extends React.Component {
     }
 
     render() {
-        //crete blank savefile if no local storage exists.
-        // if(this.state.saveFiles === null){
-        //     this.saveLevel();
-        // }
-
         const rulesInEditor = [];
         let selectedRule = null;
         if(this.state.selectedCell || this.state.selectedCell === 0){
@@ -449,7 +454,11 @@ class Game extends React.Component {
             <div className="game"> 
                 <div className="level-editor">
                     <LevelLoader
-                        loadLevelFromFile = {(levelJSON) => this.loadLevelFromFile(levelJSON)}
+                        loadLevelFromFile = {(levelJSON, soundPackId) => this.loadLevelFromFile(levelJSON)}
+                    />
+                     <SoundPackList
+                        soundPackId = {this.state.settings.soundPackId}
+                        loadInstrumentFromFile = {(instrumentJSON, soundPackId) => this.loadInstrumentFromFile(instrumentJSON, soundPackId)}
                     />
                     <SettingsEditor
                         cols = {this.state.settings.cols}
@@ -464,8 +473,6 @@ class Game extends React.Component {
                     />
                     <button onClick={() => this.saveLevel(this.state.level)}>save</button>
                     <button onClick={() => this.clearGrid()}>clear grid</button>
-                    {/* TODO: replace with blank creation button
-                    <button onClick={(ID) => this.loadLevel(0)}>load</button> */}
                 </div>
                 <div className="level">
                     <LLOutput
@@ -480,6 +487,7 @@ class Game extends React.Component {
                         updateGoalCount = {(ruleID, goal) => this.updateGoalCount(ruleID, goal)}
                         puzzleComplete = {(puzzleId) => this.handlePuzzleComplete(puzzleId)}
                         puzzleId = {this.state.puzzleId}
+                        instruments = {this.state.instruments}
                     >
                         <HexGrid
                             selected = {this.state.selectedCell}

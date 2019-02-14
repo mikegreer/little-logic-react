@@ -24,72 +24,13 @@ class LLOutput extends React.Component {
 		this.puzzleIsPlaying = true;
 		this.width = this.cellWidth * this.props.cols + (this.cellWidth / 2);
 		this.height = this.cellHeight * this.props.rows + (this.cellHeight / 4);
-		this.instruments = [{
-				0 : 'Chords 1.wav',
-				1 : 'Chords 4.wav',
-				2 : 'Chords 5.wav',
-				3 : 'Chords 7.wav',
-				4 : 'Chords 8.wav',
-				5 : 'Chords 9.wav',
-			},{
-				0 : 'Drums Clap.wav',
-				1 : 'Drums HH Big.wav',
-				2 : 'Drums Kick drum 1.wav',
-				3 : 'Drums Kick drum 80s mastered 3.wav',
-				4 : 'Drums Kick drum 80s mastered.wav',
-				5 : 'Drums Snare 3.wav',
-			},{
-				0 : 'Funk bass stab 2.wav',
-				1 : 'Funk bass stab 3.wav',
-				2 : 'Funk bass stab 5.wav',
-				3 : 'Funk bass stab 7.wav',
-				4 : 'Funk bass stab 8.wav',
-				5 : 'Funk bass stab 14.wav',
-			},{
-				0 : 'Lick 1.wav',
-				1 : 'Lick 4.wav',
-				2 : 'Lick 6.wav',
-				3 : 'Lick 8.wav',
-				4 : 'Lick 9.wav',
-				5 : 'Lick 10.wav',
-			},
-		];
-		this.instruments = [{
-				0 : 'drum1.wav',
-				1 : 'drum2.wav',
-				2 : 'drum3.wav',
-				3 : 'drum4.wav',
-				4 : 'drum5.wav',
-				5 : 'drum6.wav',
-			},{
-				0 : 'jump1.wav',
-				1 : 'jump2.wav',
-				2 : 'jump3.wav',
-				3 : 'jump4.wav',
-				4 : 'jump5.wav',
-				5 : 'jump6.wav',
-			},{
-				0 : 'pop1.wav',
-				1 : 'pop2.wav',
-				2 : 'pop3.wav',
-				3 : 'pop4.wav',
-				4 : 'pop5.wav',
-				5 : 'pop6.wav',
-			},{
-				0 : 'wrp1.wav',
-				1 : 'wrp2.wav',
-				2 : 'wrp3.wav',
-				3 : 'wrp4.wav',
-				4 : 'wrp5.wav',
-				5 : 'wrp6.wav',
-			},
-		];
 	}
 
 	componentDidMount() {
 		this.ctx = this.canvas.current.getContext("2d");
 		if(this.props.puzzleId !== null){
 			console.log(this.props.puzzleId);
+			
 		}
 	}
 
@@ -168,8 +109,9 @@ class LLOutput extends React.Component {
 	}
 
 	playSoundFile = (instrumentId, soundId) => {
-		const fileName = this.instruments[instrumentId][soundId];
-		var url = '../audio/minimal/' + fileName;
+		const fileName = this.props.instruments.instruments[instrumentId][soundId];
+		var url = this.props.instruments.path + fileName;
+		// var url = '../audio/minimal/' + fileName;
 		window.audio = new Audio();
 		window.audio.src = url;
 		window.audio.play();
@@ -281,14 +223,14 @@ class LLOutput extends React.Component {
 				this.advancePulsePositions();
 
 				//check to see if puzzle is complete
-				if(this.puzzleIsPlaying){
-					if(this.checkPuzzleComplete()){
-						this.win = true;
-						// this.state.paused = true;
-						this.props.puzzleComplete(this.props.puzzleId);
-						//play win state.
-					}
-				}
+				// if(this.puzzleIsPlaying){
+				// 	if(this.checkPuzzleComplete()){
+				// 		this.win = true;
+				// 		// this.state.paused = true;
+				// 		this.props.puzzleComplete(this.props.puzzleId);
+				// 		//play win state.
+				// 	}
+				// }
 			}
 		}
 		//if paused for win, restart when no longer winning
@@ -302,7 +244,6 @@ class LLOutput extends React.Component {
 
 	pausePlay() {
 		const newPauseState = !this.state.paused;
-		console.log(newPauseState);
 		this.setState({ paused : newPauseState });
 	}
 

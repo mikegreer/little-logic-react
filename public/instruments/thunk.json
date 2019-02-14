@@ -1,0 +1,32 @@
+{
+    "path": "../audio/minimal/",
+    "instruments": [{
+        "0" : "drum1.wav",
+        "1" : "drum2.wav",
+        "2" : "drum3.wav",
+        "3" : "drum4.wav",
+        "4" : "drum5.wav",
+        "5" : "drum6.wav"
+    },{
+        "0" : "jump1.wav",
+        "1" : "jump2.wav",
+        "2" : "jump3.wav",
+        "3" : "jump4.wav",
+        "4" : "jump5.wav",
+        "5" : "jump6.wav"
+    },{
+        "0" : "pop1.wav",
+        "1" : "pop2.wav",
+        "2" : "pop3.wav",
+        "3" : "pop4.wav",
+        "4" : "pop5.wav",
+        "5" : "pop6.wav"
+    },{
+        "0" : "wrp1.wav",
+        "1" : "wrp2.wav",
+        "2" : "wrp3.wav",
+        "3" : "wrp4.wav",
+        "4" : "wrp5.wav",
+        "5" : "wrp6.wav"
+    }]
+}

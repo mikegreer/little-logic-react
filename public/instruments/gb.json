@@ -1,0 +1,32 @@
+{
+    "path": "../audio/gb_drums/",
+    "instruments": [{
+        "0" : "pulse 1.wav",
+        "1" : "pulse 2.wav",
+        "2" : "pulse 3.wav",
+        "3" : "pulse 4.wav",
+        "4" : "pulse 5.wav",
+        "5" : "pulse 6.wav"
+    },{
+        "0" : "perc 1.wav",
+        "1" : "perc 2.wav",
+        "2" : "perc 3.wav",
+        "3" : "perc 4.wav",
+        "4" : "perc 5.wav",
+        "5" : "perc 6.wav"
+    },{
+        "0" : "kick 1.wav",
+        "1" : "kick 2.wav",
+        "2" : "kick 3.wav",
+        "3" : "kick 4.wav",
+        "4" : "kick 5.wav",
+        "5" : "kick 6.wav"
+    },{
+        "0" : "arp 1.wav",
+        "1" : "arp 2.wav",
+        "2" : "arp 3.wav",
+        "3" : "arp 4.wav",
+        "4" : "crash 1.wav",
+        "5" : "crash 2.wav"
+    }]
+}
