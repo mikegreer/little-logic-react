@@ -1,14 +1,22 @@
 # TODO
 
 ## Working
-* style sliders
+* style sliders (settingsEditor.js)
 * propery associate soundPackId to pack it represents
 * save sample pack selection to level settings / reload on load
 * pause / play / restart icons
 * handle puzzle win state
 * logic to handle playing back puzzles / progressing / etc
 * store goal target rule and restore it when the level is restarted.
-* prevent overwriting cells with add tools
+* remove goals
+* sound effect for hole
+* change mouse cursor for toolbox modes
+  * select: cursor
+  * move: arrow cross
+  * create: small cross / plus
+  * hole: drill?
+  * clear:  
+* hide delete / download in saves menu - squares inline to load all the save files.
 
 ## UI
 * UI for pulses
@@ -16,12 +24,6 @@
 * emitter, router, goal icons rendered on grid
 ___
 * show cell moving while dragging
-* change mouse cursor for toolbox modes
-  * select: cursor
-  * move: arrow cross
-  * create: small cross / plus
-  * hole: drill?
-  * clear:  
 * hover over hex in create mode should show ghost of asset to be created
 * sound on / off UI and controls
 * UI for save / load
@@ -97,3 +99,6 @@ ___
   * switch between sample packs
 * LLOutput render being called repeatedly
 * pause / play doesn't work when a goal is present (even if goals deleted)
+* randomise properties of new emitters
+* prevent overwriting cells with add tools
+* hold to delete save file + prompt when clicking

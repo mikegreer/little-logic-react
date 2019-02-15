@@ -6,7 +6,6 @@
     height: 643px;
     width: 355px;
     box-sizing: border-box;
-    padding: 20px;
     margin: 10px 0 0 0;
     border-radius: 4px 0 0 4px;
     user-select: none;
@@ -16,4 +15,8 @@
     z-index: 1;
     box-shadow: inset -27px 0px 0px 0px rgba(51,51,51,0.3);
 }
-  
+
+.level-editor-section {
+    padding: 10px 20px;
+    border-bottom: 3px solid #000000;
+}

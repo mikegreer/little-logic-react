@@ -47,18 +47,34 @@ class SettingsEditor extends React.Component {
     }
     
     render () {
+        const sliderStyle = {
+            backgroundColor: 'rgba(0, 0, 0, .4)',
+        };
+        const handleStyle = {
+            borderColor: 'rgba(0, 0, 0)',
+            height: 20,
+            width: 20,
+            marginLeft: -10,
+            marginTop: -8,
+            backgroundColor: 'rgb(215, 95, 57)',
+        }
+        const railStyle = {
+            backgroundColor: 'rgba(0, 0, 0, .05)',
+            height: 4,
+        }
         return (
             <span>
                 <h4>Settings</h4>
                 columns: <span>{this.state.cols}</span>
                 <span className="settings-slider">
                     <Slider
-                        min={0}
-                        max={20}
-                        defaultValue={this.state.cols}
-                        onChange={(value) => this.setCols(value)}
-                        trackStyle={{ backgroundColor: '#000' }}
-                        // handle={handle}
+                        min = {0}
+                        max = {20}
+                        defaultValue = {this.state.cols}
+                        onChange = {(value) => this.setCols(value)}
+                        trackStyle = {sliderStyle}
+                        handleStyle = {handleStyle}
+                        railStyle = {railStyle}
                     />
                 </span>
                 rows: <span>{this.state.rows}</span>
@@ -68,6 +84,9 @@ class SettingsEditor extends React.Component {
                         max={35}
                         defaultValue={this.state.rows}
                         onChange={(value) => this.setRows(value)}
+                        trackStyle = {sliderStyle}
+                        handleStyle = {handleStyle}
+                        railStyle = {railStyle}
                     />
                 </span>
                 cell size: <span>{this.state.cellSize}</span>

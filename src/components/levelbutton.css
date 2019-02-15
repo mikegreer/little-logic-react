@@ -43,14 +43,13 @@
 
 .level-button .download{
     display: inline-block;
-    line-height: 25px;
+    line-height: 35px;
     text-align: center;
     vertical-align: middle;
     padding: 0 10px;
-    height: 25px;
+    height: 35px;
     cursor: pointer;
 }
 .level-button .download:hover{
-    background-color: #ff6666;
-    color: #fff;
+    background-color: #ffff00;
 }

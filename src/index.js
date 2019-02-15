@@ -185,11 +185,13 @@ class Game extends React.Component {
             this.setState({cellDragging: cellDragging});
         }
         if(this.state.currentTool === 2){
-            this.updateCell({
-                type: this.state.currentlyAdding,
-                //setRule and return ID?
-                rulesById: [this.newRule(this.state.currentlyAdding)],
-            }, cellID);
+            if(this.state.level[cellID].type === 0){
+                this.updateCell({
+                    type: this.state.currentlyAdding,
+                    //setRule and return ID?
+                    rulesById: [this.newRule(this.state.currentlyAdding)],
+                }, cellID);
+            }
         }
         if(this.state.currentTool === 3){
             this.updateCell({
@@ -207,18 +209,20 @@ class Game extends React.Component {
         let rule = null;
         switch(cellType){
             case 1:
+                //emitter
                 rule = {
                     id: this.state.rules.length,
                     rule: {
-                        releaseOnBeat: 1,
-                        color: 0,
-                        direction: 0,
-                        audioSample:0,
+                        releaseOnBeat: Math.floor(Math.random() * 12),
+                        color: Math.floor(Math.random() * 4),
+                        direction: Math.floor(Math.random() * 6),
+                        audioSample: Math.floor(Math.random() * 6),
                     }
                 }
                 this.state.rules.push(rule);
                 return this.state.rules.length - 1;
             case 2:
+                //router
                 rule = {
                     id: this.state.rules.length,
                     rule: {
@@ -230,6 +234,7 @@ class Game extends React.Component {
                 this.state.rules.push(rule);
                 return this.state.rules.length - 1;
             case 3:
+                //goal
                 rule = {
                     id: this.state.rules.length,
                     rule: {
@@ -453,26 +458,34 @@ class Game extends React.Component {
         <div className="wrapper">
             <div className="game"> 
                 <div className="level-editor">
-                    <LevelLoader
-                        loadLevelFromFile = {(levelJSON, soundPackId) => this.loadLevelFromFile(levelJSON)}
-                    />
-                     <SoundPackList
-                        soundPackId = {this.state.settings.soundPackId}
-                        loadInstrumentFromFile = {(instrumentJSON, soundPackId) => this.loadInstrumentFromFile(instrumentJSON, soundPackId)}
-                    />
-                    <SettingsEditor
-                        cols = {this.state.settings.cols}
-                        rows = {this.state.settings.rows}
-                        cellSize = {this.state.settings.cellSize}
-                        updateSettings = {(settings) => this.updateSettings(settings)}
-                    />
-                    <LevelList 
-                        saveFiles = {this.state.saveFiles}
-                        deleteSave = {(id) => this.deleteSave(id)}
-                        loadLevel = {(levelId) => this.loadLevel(levelId)}
-                    />
-                    <button onClick={() => this.saveLevel(this.state.level)}>save</button>
-                    <button onClick={() => this.clearGrid()}>clear grid</button>
+                    <div class="level-editor-section">
+                        <LevelLoader
+                            loadLevelFromFile = {(levelJSON, soundPackId) => this.loadLevelFromFile(levelJSON)}
+                        />
+                    </div>
+                    <div class="level-editor-section">
+                        <SoundPackList
+                            soundPackId = {this.state.settings.soundPackId}
+                            loadInstrumentFromFile = {(instrumentJSON, soundPackId) => this.loadInstrumentFromFile(instrumentJSON, soundPackId)}
+                        />
+                    </div>
+                    <div class="level-editor-section">
+                        <SettingsEditor
+                            cols = {this.state.settings.cols}
+                            rows = {this.state.settings.rows}
+                            cellSize = {this.state.settings.cellSize}
+                            updateSettings = {(settings) => this.updateSettings(settings)}
+                        />
+                    </div>
+                    <div class="level-editor-section">
+                        <LevelList 
+                            saveFiles = {this.state.saveFiles}
+                            deleteSave = {(id) => this.deleteSave(id)}
+                            loadLevel = {(levelId) => this.loadLevel(levelId)}
+                        />
+                        <button onClick={() => this.saveLevel(this.state.level)}>save</button>
+                        <button onClick={() => this.clearGrid()}>clear grid</button>
+                    </div>
                 </div>
                 <div className="level">
                     <LLOutput

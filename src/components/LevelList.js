@@ -1,5 +1,6 @@
 import React from 'react';
 import './levelbutton.css';
+import DeleteHold from './DeleteHold.js';
 
 class LevelButton extends React.Component {
     render () {
@@ -13,11 +14,9 @@ class LevelButton extends React.Component {
                 >
                     load
                 </span>
-                <span className="delete"
-                    onClick={() => this.props.deleteSave()}
-                >
-                    ×
-                </span>
+                <DeleteHold
+                    deleteSave = {() => this.props.deleteSave()}
+                />
                 <span className="download"
                     onClick={() => this.props.downloadSave()}
                 >
