@@ -1,7 +1,6 @@
 # TODO
 
-## Working
-* style sliders (settingsEditor.js)
+## Ready
 * propery associate soundPackId to pack it represents
 * save sample pack selection to level settings / reload on load
 * pause / play / restart icons
@@ -102,3 +101,4 @@ ___
 * randomise properties of new emitters
 * prevent overwriting cells with add tools
 * hold to delete save file + prompt when clicking
+* style sliders (settingsEditor.js)
