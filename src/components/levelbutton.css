@@ -1,13 +1,15 @@
 .level-button {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: inline-block;
 }
 .level-button .label{
     display: inline-block;
-    line-height: 25px;
+    line-height: 35px;
     text-align: center;
     vertical-align: middle;
     width: 35px;
-    height: 25px;
+    height: 35px;
+    cursor: pointer;
 }
 
 .level-button .load{
@@ -19,11 +21,11 @@
     padding: 0 10px;
     height: 25px;
 }
-.level-button .load:hover{
+.level-button .load:hover, .level-button .label:hover{
     background-color: #ffff00;
 }
 
-.level-button:active{
+.level-button .label:active{
     background-color: #00ffff;
 }
 
@@ -52,4 +54,14 @@
 }
 .level-button .download:hover{
     background-color: #ffff00;
+}
+.level-button.current{
+    background-color: #ffff00;
+}
+
+.level-button .options-menu{
+    display: block;
+    width: auto;
+    position: absolute;
+    background: #fff;
 }

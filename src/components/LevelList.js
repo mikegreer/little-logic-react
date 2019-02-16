@@ -3,25 +3,40 @@ import './levelbutton.css';
 import DeleteHold from './DeleteHold.js';
 
 class LevelButton extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isHidden: true,
+        }
+    }
+
+    showOptions = () => {
+        this.setState({isHidden: false})
+    }
     render () {
         return (
-            <div className="level-button">  
-                <span className="label">
-                    {this.props.levelId}
-                </span>
-                <span className="load"
+            <div className="level-button"
+                onMouseEnter={() => {this.setState({isHidden: false})}}
+                onMouseLeave={() => {this.setState({isHidden: true})}}
+            >  
+                <span className="label"
                     onClick={() => this.props.loadLevel()}
                 >
-                    load
+                    {this.props.levelId}
                 </span>
-                <DeleteHold
-                    deleteSave = {() => this.props.deleteSave()}
-                />
-                <span className="download"
-                    onClick={() => this.props.downloadSave()}
-                >
-                    download
-                </span>
+                {!this.state.isHidden &&
+                    <div class="options-menu">
+                        <DeleteHold
+                            deleteSave = {() => this.props.deleteSave()}
+                        />
+                        <span className="download"
+                            onClick={() => this.props.downloadSave()}
+                        >
+                            download
+                        </span>
+                    </div>
+                }
+                
             </div>
         );
     }

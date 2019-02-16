@@ -66,7 +66,7 @@ class LevelLoader extends React.Component {
         });
         return (
             <span>
-                <h4>Levels</h4>
+                <h4>Examples</h4>
                 {levelList}
             </span>
         )
