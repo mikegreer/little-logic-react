@@ -1,0 +1,70 @@
+.delete-hold-container {
+    position: relative;
+}
+.delete-hold{
+    display: inline-block;
+    line-height: 35px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0 10px;
+    height: 35px;
+    cursor: pointer;
+    background-image: url('../assets/red.jpg');
+    background-position-y: -100%;
+    background-repeat: no-repeat;
+}
+
+.delete-hold:hover{
+    background-color: #ff6633;
+}
+
+.delete-hold:active, .delete-hold-prompt:active{
+    animation: fillup 1s;
+}
+
+@keyframes fillup {
+    from {background-position-y: -10%;}
+    to {background-position-y: 0%;}
+}
+
+.delete-hold-prompt {
+    opacity: 1;
+    /* display: none; */
+    display: block;
+    position: absolute;
+    top: -40px;
+    left: -30%;
+    padding: 10px;
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    background-color: #fff;
+}
+.delete-hold-prompt:after{
+    content: ' ';
+    display: block;
+    width: 0px;
+    height: 0px;
+    position: relative;
+    top: 10px;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 20px solid #ffffff;
+}
+.show-delete-hold-prompt {
+    display: block;
+    animation: show-prompt 1s;
+    pointer-events: none;
+}
+
+@keyframes show-prompt {
+    from {
+        top: -40px;
+        opacity: 0;
+    }
+    to {
+        top: -60px;
+        opacity: 1;
+    }
+}

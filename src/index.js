@@ -12,6 +12,7 @@ import LevelList from './components/LevelList';
 import LLOutput from './components/LLOutput';
 import * as serviceWorker from './serviceWorker';
 import HexGrid from './components/HexGrid';
+// import DeleteAfterHold from './components/DeleteAfterHold';
 
 
 // import ToolboxCreate from './components/ToolboxCreate';
@@ -486,6 +487,7 @@ class Game extends React.Component {
                         <button onClick={() => this.saveLevel(this.state.level)}>save</button>
                         <button onClick={() => this.clearGrid()}>clear grid</button>
                     </div>
+                    {/* <DeleteAfterHold /> */}
                 </div>
                 <div className="level">
                     <LLOutput
