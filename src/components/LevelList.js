@@ -1,6 +1,7 @@
 import React from 'react';
 import './levelbutton.css';
 import DeleteHold from './DeleteHold.js';
+import classNames from 'classnames' 
 
 class LevelButton extends React.Component {
     constructor(props) {
@@ -19,7 +20,8 @@ class LevelButton extends React.Component {
                 onMouseEnter={() => {this.setState({isHidden: false})}}
                 onMouseLeave={() => {this.setState({isHidden: true})}}
             >  
-                <span className="label"
+                <span
+                    className={classNames({ "selected": !this.state.isHidden}, "label")}
                     onClick={() => this.props.loadLevel()}
                 >
                     {this.props.levelId}

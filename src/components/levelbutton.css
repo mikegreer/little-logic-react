@@ -11,6 +11,9 @@
     height: 35px;
     cursor: pointer;
 }
+.level-button .label.selected{
+    background-color: #ffff00;
+}
 
 .level-button .load{
     cursor: pointer;
