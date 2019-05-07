@@ -8,15 +8,39 @@
     cursor: pointer;
 }
 
+.dropdown-picker {
+    display: inline-block;
+    height: 72px;
+    width: 80px;
+    overflow: hidden;
+    position: absolute;
+    top: 40px;
+    left: -35px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 2;
+}
+.dropdown-container {
+    display: inline-block;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    margin: 5px 8px 0 7px;
+}
+.rule-component {
+    font-size: 22px;
+}
+
 .drop {
     width: 20px;
     height: 20px;
-    margin: 10px;
+    /* margin: 10px; */
     border-radius: 100%;
     border: 5px solid #3a3a30;
 }
 
-.int-picker .selected, .drop .selected, .sample-picker .selected, .target-picker .selected {
+.int-picker .selected, .sample-picker .selected, .target-picker .selected {
     /* color: yellow; */
     /* transform: scale(2, 2) translate(0px,-1px); */
     background-image: url('../assets/slected-cross.svg');
@@ -26,6 +50,7 @@
 .color-picker-value{
     display: inline-block;
     position: relative;
+    margin: 1px 5px;
 }
 .cross{
     display: none;
@@ -35,8 +60,8 @@
 .cross.selected{
     display: block;
     position: absolute;
-    top: 5px;
-    left: 5px;
+    top: -5px;
+    left: -5px;
 }
 
 .color-picker{
@@ -48,8 +73,8 @@
 }
 
 .color-picker-shadow {
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     border-radius: 100%;
     background-image: linear-gradient(
         to top right, 
@@ -59,7 +84,12 @@
         rgba(0, 0, 0, 0.2) 100%
     );
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 5px;
+    left: 5px;
     pointer-events: none;
+}
+
+.color-picker-display {
+    display: flex;
+    align-content: center;
 }

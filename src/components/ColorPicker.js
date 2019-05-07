@@ -25,13 +25,44 @@ class ColorPickerValue extends React.Component {
         );
     }
 }
+class ColorPickerDisplay extends React.Component {
+    render() {
+        const style = {
+            backgroundColor: this.props.color,
+        }
+        return(
+            <span className="color-picker-display">
+                <div
+                    className = "drop"
+                    onClick = {this.props.onClick}
+                    style={style}
+                />
+                <div
+                    className = {classNames("color-picker-shadow", "noselect")}
+                />
+            </span>
+        );
+    }
+}
 class ColorPicker extends React.Component {  
+    constructor(props) {
+        super(props);
+        this.state = {
+            optionsOpen: false,
+        }
+    }
+
     handleClick(value) {
         this.props.onClick("color", value);
     }
 
+    toggleOptions() {
+        this.setState({optionsOpen: !this.state.optionsOpen});
+    }
+
     render() {
         const optionElements = [];
+        let currentValue = "";
         this.props.options.forEach((option, i) => {
             const selected = this.props.value === i ? true : false; 
             optionElements.push(
@@ -43,10 +74,17 @@ class ColorPicker extends React.Component {
                     color = {option}
                 />
             );
+            if(selected) {
+                currentValue = <ColorPickerDisplay color = {option} onClick = { () => this.toggleOptions() } />
+            }
         });
         return (
-            <span>
-                {optionElements}
+            <span class="dropdown-container">
+                {currentValue}
+                {this.state.optionsOpen && <span className = "dropdown-picker" isHidden = {this.state.optionsOpen} >
+                    {optionElements}
+                </span>}
+                
             </span>
         );
     }

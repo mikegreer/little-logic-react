@@ -39,11 +39,13 @@ class Rule extends React.Component {
                     subCountKey ++;
                     ruleComponents.push(
                         <div className="rule-component" key = {subCountKey}>
+                            if( pulse is 
                             <ColorPicker 
                                 value = {rule[subrule]}
                                 options = {this.props.ruleOptions.colorList}
                                 onClick = {(component, value) => this.handleClick(component, value)}
                             />
+                             ) {'\{'}
                         </div>
                     );
                     break;
