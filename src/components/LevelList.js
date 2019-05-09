@@ -27,7 +27,7 @@ class LevelButton extends React.Component {
                     {this.props.levelId}
                 </span>
                 {!this.state.isHidden &&
-                    <div class="options-menu">
+                    <div className="options-menu">
                         <DeleteHold
                             deleteSave = {() => this.props.deleteSave()}
                         />

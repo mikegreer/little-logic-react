@@ -459,18 +459,18 @@ class Game extends React.Component {
         <div className="wrapper">
             <div className="game"> 
                 <div className="level-editor">
-                    <div class="level-editor-section">
+                    <div className="level-editor-section">
                         <LevelLoader
                             loadLevelFromFile = {(levelJSON, soundPackId) => this.loadLevelFromFile(levelJSON)}
                         />
                     </div>
-                    <div class="level-editor-section">
+                    <div className="level-editor-section">
                         <SoundPackList
                             soundPackId = {this.state.settings.soundPackId}
                             loadInstrumentFromFile = {(instrumentJSON, soundPackId) => this.loadInstrumentFromFile(instrumentJSON, soundPackId)}
                         />
                     </div>
-                    <div class="level-editor-section">
+                    <div className="level-editor-section">
                         <SettingsEditor
                             cols = {this.state.settings.cols}
                             rows = {this.state.settings.rows}
@@ -478,7 +478,7 @@ class Game extends React.Component {
                             updateSettings = {(settings) => this.updateSettings(settings)}
                         />
                     </div>
-                    <div class="level-editor-section">
+                    <div className="level-editor-section">
                         <LevelList 
                             saveFiles = {this.state.saveFiles}
                             deleteSave = {(id) => this.deleteSave(id)}

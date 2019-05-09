@@ -54,6 +54,7 @@ class ColorPicker extends React.Component {
 
     handleClick(value) {
         this.props.onClick("color", value);
+        this.setState({optionsOpen: false});
     }
 
     toggleOptions() {
@@ -75,13 +76,13 @@ class ColorPicker extends React.Component {
                 />
             );
             if(selected) {
-                currentValue = <ColorPickerDisplay color = {option} onClick = { () => this.toggleOptions() } />
+                currentValue = <ColorPickerDisplay color = {option} />
             }
         });
         return (
-            <span class="dropdown-container">
+            <span className="dropdown-container" onClick = { () => this.toggleOptions() }>
                 {currentValue}
-                {this.state.optionsOpen && <span className = "dropdown-picker" isHidden = {this.state.optionsOpen} >
+                {this.state.optionsOpen && <span className = "dropdown-picker">
                     {optionElements}
                 </span>}
                 

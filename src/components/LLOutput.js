@@ -141,7 +141,7 @@ class LLOutput extends React.Component {
 					router.rulesById.forEach((ruleId) => {
 						const rule = this.props.rules[ruleId].rule;
 						if(this.checkRule(pulse, rule)) {
-							this.playSoundFile(rule.color, rule.audioSample);
+							this.playSoundFile(rule.color, rule.direction);
 							pulse.direction = rule.direction;
 						}
 					});

@@ -13,6 +13,7 @@ class Rule extends React.Component {
     handleClick = (component, value) => {
         this.props.rule.rule[component] = value;
         this.props.onClick(this.props.rule);
+        console.log(this.props.rule);
     }
 
     render() {
@@ -53,24 +54,28 @@ class Rule extends React.Component {
                     subCountKey ++;
                     ruleComponents.push(
                         <div className="rule-component" key = {subCountKey}>
-                            <DirectionPicker 
-                                value = {rule[subrule]}
-                                onClick = {(component, value) => this.handleClick(component, value)}
-                            />
+                            <span className="rule-inset">
+                                pulse direction = 
+                                <DirectionPicker 
+                                    value = {rule[subrule]}
+                                    onClick = {(component, value) => this.handleClick(component, value)}
+                                />
+                            </span><br/>
+                            {'\}'}
                         </div>
                     );
                     break;
-                case("audioSample"):
-                    subCountKey ++;
-                    ruleComponents.push(
-                        <div className="rule-component" key = {subCountKey}>
-                            <SamplePicker 
-                                value = {rule[subrule]}
-                                onClick = {(component, value) => this.handleClick(component, value)}
-                            />
-                        </div>
-                    );
-                    break;
+                // case("audioSample"):
+                //     subCountKey ++;
+                //     ruleComponents.push(
+                //         <div className="rule-component" key = {subCountKey}>
+                //             <SamplePicker 
+                //                 value = {rule[subrule]}
+                //                 onClick = {(component, value) => this.handleClick(component, value)}
+                //             />
+                //         </div>
+                //     );
+                //     break;
                 case("goal"):
                     subCountKey ++;
                     ruleComponents.push(
@@ -118,16 +123,18 @@ class RuleEditor extends React.Component {
         });
         return(
             <div className="rule-editor">
-                <button
-                    className = {classNames({ 'hidden': this.props.rules.length < 1 }, "new-rule-button")}
-                    onClick = {() => this.props.addNewRule(this.props.cellId)}
-                >new rule</button>
-                <MultiView
+                
+                {/* <MultiView
                     selectedView = {this.props.selectedRule}
                     onClick = {(id) => this.changeRuleView(id)}
-                >
+                > */}
                     {output}
-                </MultiView>
+                    <div className="rule-component">
+                            <span className={classNames({"hidden" : this.props.rules.length > 3},"new-rule")} onClick = {() => this.props.addNewRule(this.props.cellId)}>
+                                new rule
+                            </span>
+                    </div>
+                {/* </MultiView> */}
             </div>
         );
     }

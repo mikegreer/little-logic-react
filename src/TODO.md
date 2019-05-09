@@ -1,27 +1,34 @@
 # TODO
 
 ## May fork
-* levels only place routers. Emitters and goals are in place.
-* mode difference: level designer vs level player: designer broadly as is. Player can place a router, or change their rules.
-* early levels have routers pre placed, and users need to change their direction
-* later levels allow users to place and code routers to reach goals.
-* Associate sounds to direction arrows (users define direction, not sound).
-* Add language back into rules: if *red* push *direction-arrow*
-* style rules to look like typed code (but simpler, with drop downs).
-* make multiple rules much clearer: use language structure to simplify.
+
 * UI to show what goals need.
 * if goal receives the wrong color, reset the goal objectives (+ play sound)?
+* mode difference: level designer vs level player: designer broadly as is. Player can place a router, or change their rules.
+
 * level complete state: play sound, show level select modal to tick off the current level and let user select next.
 * level select modal: grid of puzzles, ticks to show which are complete.
 * use 'examples' file structure as levels.
-* arrow keys move between routers?
 * create 10 levels: 
     * route a single color to get to the goal
     * route a two colors to go to different goals
     * use two routers to go to different goals (holes prevent same being used for both)
     * place routers to solve maze
     * two emitters
+* levels only place routers. Emitters and goals are in place.
+* early levels have routers pre placed, and users need to change their direction
+* later levels allow users to place and code routers to reach goals.
+* delete rule option
 
+* arrow keys move between routers?
+
+#May fork done
+* Associate sounds to direction arrows (users define direction, not sound).
+* make multiple rules much clearer: use language structure to simplify.
+* Add 'new rule' button to bottom of text rules (adding another section beneath, not paging)
+* style rules to look like typed code (but simpler, with drop downs).
+* Make clickable elements of texct rules clearer.
+* Add language back into rules: if *red* push *direction-arrow*
 
 ## Ready
 * propery associate soundPackId to pack it represents
