@@ -1,14 +1,14 @@
 # TODO
 
 ## May fork
-
 * UI to show what goals need.
+* UI to show when a goal has been fulfilled
+* mode difference: level designer vs level player: designer broadly as is. Player can place a router (limited number available?), or change their rules.
 * if goal receives the wrong color, reset the goal objectives (+ play sound)?
-* mode difference: level designer vs level player: designer broadly as is. Player can place a router, or change their rules.
 
-* level complete state: play sound, show level select modal to tick off the current level and let user select next.
 * level select modal: grid of puzzles, ticks to show which are complete.
 * use 'examples' file structure as levels.
+* level complete state: play sound, show level select modal to tick off the current level and let user select next.
 * create 10 levels: 
     * route a single color to get to the goal
     * route a two colors to go to different goals
@@ -18,11 +18,13 @@
 * levels only place routers. Emitters and goals are in place.
 * early levels have routers pre placed, and users need to change their direction
 * later levels allow users to place and code routers to reach goals.
-* delete rule option
+* delete rule UI
 
+* play sound when changing direction in rule
 * arrow keys move between routers?
 
 #May fork done
+* goals keep absorbing pulses after they've completed the number
 * Associate sounds to direction arrows (users define direction, not sound).
 * make multiple rules much clearer: use language structure to simplify.
 * Add 'new rule' button to bottom of text rules (adding another section beneath, not paging)

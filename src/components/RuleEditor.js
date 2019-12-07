@@ -130,7 +130,7 @@ class RuleEditor extends React.Component {
                 > */}
                     {output}
                     <div className="rule-component">
-                            <span className={classNames({"hidden" : this.props.rules.length > 3},"new-rule")} onClick = {() => this.props.addNewRule(this.props.cellId)}>
+                            <span className={classNames({"hidden" : this.props.rules.length > 3 || this.props.rules.length < 1},"new-rule")} onClick = {() => this.props.addNewRule(this.props.cellId)}>
                                 new rule
                             </span>
                     </div>

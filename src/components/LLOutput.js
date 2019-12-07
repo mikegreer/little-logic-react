@@ -122,11 +122,11 @@ class LLOutput extends React.Component {
 		if(rule.color !== pulse.color) {
 			ruleMatch = false;
 		}
-		if(rule.goal) {
-			if(rule.goal < 0){
-				ruleMatch = false;
-			}
-		}
+		// if(rule.goal) {
+		// 	if(rule.goal < 0){
+		//		ruleMatch = false;
+		// 	}
+		// }
 		return ruleMatch;
 	}
 
